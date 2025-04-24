@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "moriarty"
+version = "0.1.0"
+description = "A comprehensive sports video analysis system with pose estimation, biomechanical analysis, and AI-powered insights"
+readme = "README.md"
+requires-python = ">=3.8"
+license = {text = "MIT"}
+keywords = ["sports", "video analysis", "pose estimation", "ai", "biomechanics"]
+authors = [
+    {name = "Moriarty Team"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+
+[project.urls]
+Documentation = "https://github.com/yourusername/moriarty/docs"
+Repository = "https://github.com/yourusername/moriarty"
+Issues = "https://github.com/yourusername/moriarty/issues"
+
+[project.scripts]
+moriarty = "moriarty.main:main" 

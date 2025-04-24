@@ -1,0 +1,16 @@
+include README.md
+include LICENSE
+include requirements.txt
+include setup.py
+include MANIFEST.in
+
+recursive-include src *.py
+recursive-include src/api/templates *.html
+recursive-include src/api/static *.js *.css *.png *.jpg
+recursive-include docs *.md
+
+recursive-exclude .venv *
+recursive-exclude .idea *
+recursive-exclude __pycache__ *
+recursive-exclude .DS_Store *
+global-exclude *.pyc *.pyo *.pyd *.swp *.bak *.egg-info/* *.egg-info 

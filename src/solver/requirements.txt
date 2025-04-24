@@ -1,0 +1,13 @@
+# Requirements for the Posture Analysis Solver module
+numpy>=1.24.0  # Used for numerical operations in posture models
+
+# The rest of the imports used in posture_solver.py and example_usage.py
+# are from the Python standard library and don't require installation:
+# - os
+# - json 
+# - logging
+# - typing
+# - pathlib
+# - traceback
+# - argparse
+# - time 
