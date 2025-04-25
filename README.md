@@ -1,8 +1,8 @@
 <h1 align="center">Moriarty Sese-Seko</h1>
-<p align="center"><em> Going as fast as you can see</em></p>
+<p align="center"><em> What has been will be again,what has been done will be done again</em></p>
 
 <p align="center">
-  <img src="greyhound_sketch_fixed.png" alt="Moriarty Logo" width="400"/>
+  <img src="./greyhound_sketch_fixed.png" alt="Moriarty Logo" />
 </p>
 
 ## Overview
