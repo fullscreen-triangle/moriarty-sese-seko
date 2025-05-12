@@ -12,7 +12,7 @@ import logging
 import traceback
 import datetime
 import subprocess
-from typing import List, Dict, Any, Optional, Callable, Union, Iterator
+from typing import List, Dict, Any, Optional, Callable, Union, Iterator, Tuple
 from pathlib import Path
 from tqdm import tqdm
 import signal

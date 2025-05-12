@@ -1,5 +1,5 @@
 <h1 align="center">Moriarty Sese-Seko</h1>
-<p align="center"><em> What more can the king’s successor do
+<p align="center"><em> What more can the king's successor do
     than what has already been done?</em></p>
 
 <p align="center">
@@ -592,4 +592,175 @@ Moriarty is designed to be easily extended with new modules:
 
 ## License
 
-MIT License 
+MIT License
+
+## Examples of Working Code and Visualizations
+
+Moriarty has been successfully used to analyze athletic performance in sprint running. Below are examples of real working implementations showing the system's capabilities.
+
+### Annotated Sprint Analysis
+
+![Sprint Analysis with Skeletal Tracking](public/results/gif/sprint_skeleton_tracking.gif)
+
+The system automatically detects athletes, tracks their skeletons, and analyzes biomechanical parameters in real-time. This visualization shows full skeleton tracking with joint confidence visualization.
+
+### Multi-Athlete Tracking with Performance Metrics
+
+![Multi-Athlete Tracking and Analysis](public/results/gif/multi_athlete_analysis.gif)
+
+Moriarty can simultaneously track multiple athletes, assigning unique identifiers and calculating individual performance metrics including:
+- VO₂ consumption estimates
+- Stride length and frequency
+- Velocity and acceleration profiles
+- Ground contact detection with reactive bounding boxes
+
+```python
+# Example code for multi-athlete tracking and analysis
+from src.moriarty_pipeline import MoriartyPipeline
+
+pipeline = MoriartyPipeline(output_dir="output")
+results = pipeline.analyze_multiple_athletes(
+    video_path="input/sprint_race.mp4",
+    metrics=["vo2", "stride", "velocity", "ground_contact"],
+    visualize=True
+)
+
+# Access individual athlete data
+for athlete_id, metrics in results.items():
+    print(f"Athlete {athlete_id}:")
+    print(f"  Average VO₂: {metrics['vo2_avg']} ml/kg/min")
+    print(f"  Stride length: {metrics['stride_length']} m")
+    print(f"  Peak velocity: {metrics['peak_velocity']} m/s")
+```
+
+### Posture and Biomechanics Analysis
+
+![Posture Analysis](public/results/posture/posture_assessment.png)
+
+Detailed biomechanical analysis provides insights on:
+- Joint angles and alignment
+- Postural deviations during movement
+- Force vector visualization
+- Efficiency metrics
+
+```python
+# Example code for posture analysis
+from src.core.dynamics import PostureAnalyzer
+
+analyzer = PostureAnalyzer(reference_model="elite_sprinter")
+posture_results = analyzer.analyze_video(
+    video_path="input/athlete_sprint.mp4",
+    output_dir="results/posture",
+    generate_report=True
+)
+
+# Get posture assessment and recommendations
+alignment_score = posture_results["alignment_score"]
+recommendations = posture_results["recommendations"]
+
+print(f"Posture alignment score: {alignment_score}/100")
+print("Recommendations:")
+for rec in recommendations:
+    print(f"- {rec}")
+```
+
+### Ground Reaction Force Estimation
+
+![Ground Reaction Force Analysis](public/results/gif/grf_visualization.gif)
+
+Moriarty estimates ground reaction forces without force plates, using video analysis and biomechanical modeling. The visualization shows force vectors during foot contact.
+
+### Real-time Performance Dashboard
+
+Using the generated analysis data, Moriarty can create comprehensive dashboards for coaches and athletes:
+
+![Performance Dashboard](public/results/posture/performance_dashboard.png)
+
+The dashboard combines multiple metrics into an intuitive interface showing:
+- Performance trends over time
+- Comparison to reference models or previous performances
+- Fatigue indicators
+- Biomechanical efficiency metrics
+
+These examples demonstrate Moriarty's capabilities for comprehensive athletic performance analysis, combining computer vision, biomechanics, and machine learning to provide actionable insights for athletes and coaches.
+
+### Advanced Biomechanical Analysis Visualization
+
+![Integrated Biomechanical Analysis](public/results/posture/advanced_biomech_analysis.png)
+
+For elite athletes and research purposes, Moriarty provides advanced biomechanical analysis that integrates multiple data streams:
+
+```python
+# Advanced biomechanical analysis with integrated sensors
+from src.core.integration import SensorFusion
+from src.core.dynamics import AdvancedBiomechanics
+
+# Setup sensor fusion if external sensors are available (optional)
+sensor_fusion = SensorFusion()
+sensor_fusion.add_sensor("imu", sensor_type="xsens", location="lower_back")
+sensor_fusion.add_sensor("pressure_insole", sensor_type="novel", foot="both")
+
+# Initialize the advanced biomechanics analyzer
+analyzer = AdvancedBiomechanics(
+    use_gpu=True,
+    sensor_fusion=sensor_fusion,  # Will use video-only if None
+    model_precision="high"
+)
+
+# Perform comprehensive analysis
+results = analyzer.process_video(
+    video_path="input/elite_sprinter.mp4",
+    extract_metrics=[
+        "joint_power",
+        "energy_transfer",
+        "muscle_activation_prediction",
+        "asymmetry_index",
+        "elastic_energy_utilization"
+    ],
+    visualization_types=["integrated_report", "3d_reconstruction"],
+    export_formats=["csv", "json", "pdf"]
+)
+
+# Access specialized metrics
+asymmetry_indices = results["asymmetry_index"]
+joint_power_curves = results["joint_power"]
+muscle_activation = results["muscle_activation_prediction"]
+
+print(f"Peak hip power: {max(joint_power_curves['hip'])} W/kg")
+print(f"Limb asymmetry index: {asymmetry_indices['overall']:.2f}%")
+print(f"Elastic energy utilization: {results['elastic_energy_utilization']:.2f}%")
+```
+
+The integrated visualization combines:
+- Frame-by-frame joint angles, velocities, and accelerations
+- Predicted muscle activation patterns
+- Power and work analysis at each joint
+- Asymmetry detection with color-coded alerts
+- Energy transfer visualization between body segments
+
+This level of analysis helps identify subtle inefficiencies in technique and can inform highly targeted training interventions for elite athletes.
+
+### Using the CLI with Public Folder
+
+The recently updated CLI makes it easy to analyze videos directly from the public folder:
+
+```bash
+# Analyze a specific video from the public folder
+python src/cli/main.py analyze --public-video sprint_100m.mp4 --output results --visualize
+
+# Process all videos in the public videos folder
+python src/cli/main.py batch --use-public --output-dir results
+
+# Use a specific subfolder in public
+python src/cli/main.py batch --use-public --public-dir public/training_videos --output-dir results/training
+```
+
+The CLI outputs include:
+- Biomechanical metrics in CSV and JSON formats
+- Visualization videos with overlays
+- PDF reports summarizing findings
+- Comparative analysis between athletes
+
+![CLI Output Example](public/results/gif/cli_visualization_output.gif)
+
+This streamlined interface makes it easy to perform complex biomechanical analysis without writing code, ideal for coaches and sport scientists working with video collections. 

@@ -79,25 +79,34 @@ def merge_cli_args(config: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, An
     
     # Map CLI args to configuration structure
     if args.get('command') == 'analyze':
-        # Analyze command mappings
-        if args.get('video_path'):
-            merged_config.setdefault('input', {})['video_path'] = args['video_path']
+        # Handle public folder video specification
+        if args.get('public_video'):
+            # Construct full path from public directory and video filename
+            public_dir = args.get('public_dir', 'public/videos')
+            video_path = os.path.join(public_dir, args.get('public_video'))
+            merged_config.setdefault('input', {})['video_path'] = video_path
+        # Standard input path takes precedence if both are specified
+        elif args.get('input'):
+            merged_config.setdefault('input', {})['video_path'] = args['input']
         
-        if args.get('output_dir'):
-            merged_config.setdefault('output', {})['directory'] = args['output_dir']
+        if args.get('output'):
+            merged_config.setdefault('output', {})['directory'] = args['output']
             
-        if args.get('save_visualization'):
+        if args.get('visualize'):
             merged_config.setdefault('visualization', {})['enabled'] = True
             
-        if args.get('save_data'):
-            merged_config.setdefault('output', {})['save_raw_data'] = True
+        if args.get('visualization_types'):
+            merged_config.setdefault('visualization', {})['types'] = args['visualization_types']
             
         if args.get('model'):
             merged_config.setdefault('models', {})['analysis_model'] = args['model']
     
     elif args.get('command') == 'batch':
-        # Batch command mappings
-        if args.get('input_dir'):
+        # Handle public folder for batch processing
+        if args.get('use_public'):
+            public_dir = args.get('public_dir', 'public/videos')
+            merged_config.setdefault('batch', {})['input_directory'] = public_dir
+        elif args.get('input_dir'):
             merged_config.setdefault('batch', {})['input_directory'] = args['input_dir']
             
         if args.get('output_dir'):
@@ -108,23 +117,14 @@ def merge_cli_args(config: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, An
             
         if args.get('parallel'):
             merged_config.setdefault('batch', {})['parallel_jobs'] = args['parallel']
-            
-        if args.get('save_visualization'):
-            merged_config.setdefault('visualization', {})['enabled'] = True
-            
-        if args.get('save_data'):
-            merged_config.setdefault('output', {})['save_raw_data'] = True
     
     elif args.get('command') == 'distill':
         # Distill command mappings
-        if args.get('model'):
-            merged_config.setdefault('knowledge_distillation', {})['base_model'] = args['model']
+        if args.get('training_data'):
+            merged_config.setdefault('knowledge_distillation', {})['data_directory'] = args['training_data']
             
-        if args.get('data'):
-            merged_config.setdefault('knowledge_distillation', {})['data_directory'] = args['data']
-            
-        if args.get('output_dir'):
-            merged_config.setdefault('knowledge_distillation', {})['output_directory'] = args['output_dir']
+        if args.get('model_output'):
+            merged_config.setdefault('knowledge_distillation', {})['output_directory'] = args['model_output']
             
         if args.get('epochs'):
             merged_config.setdefault('knowledge_distillation', {})['epochs'] = args['epochs']
@@ -132,34 +132,37 @@ def merge_cli_args(config: Dict[str, Any], args: Dict[str, Any]) -> Dict[str, An
         if args.get('batch_size'):
             merged_config.setdefault('knowledge_distillation', {})['batch_size'] = args['batch_size']
             
-        if args.get('examples'):
-            merged_config.setdefault('knowledge_distillation', {})['num_examples'] = args['examples']
-            
     elif args.get('command') == 'report':
         # Report command mappings
-        if args.get('input_dir'):
-            merged_config.setdefault('report', {})['input_directory'] = args['input_dir']
+        if args.get('input'):
+            merged_config.setdefault('report', {})['input_directory'] = args['input']
             
-        if args.get('output_file'):
-            merged_config.setdefault('report', {})['output_file'] = args['output_file']
+        if args.get('output'):
+            merged_config.setdefault('report', {})['output_file'] = args['output']
             
         if args.get('format'):
             merged_config.setdefault('report', {})['format'] = args['format']
             
+        if args.get('template'):
+            merged_config.setdefault('report', {})['template'] = args['template']
+            
     elif args.get('command') == 'visualize':
         # Visualize command mappings
-        if args.get('input_file'):
-            merged_config.setdefault('visualization', {})['input_file'] = args['input_file']
+        if args.get('input'):
+            merged_config.setdefault('visualization', {})['input_file'] = args['input']
             
-        if args.get('output_file'):
-            merged_config.setdefault('visualization', {})['output_file'] = args['output_file']
+        if args.get('output'):
+            merged_config.setdefault('visualization', {})['output_file'] = args['output']
             
-        if args.get('type'):
-            merged_config.setdefault('visualization', {})['type'] = args['type']
+        if args.get('types'):
+            merged_config.setdefault('visualization', {})['type'] = args['types']
     
     # Global options
-    if args.get('log_level'):
-        merged_config.setdefault('logging', {})['level'] = args['log_level']
+    if args.get('verbose') is not None:
+        # Map verbosity count to log level
+        verbosity = args.get('verbose', 0)
+        level = 'debug' if verbosity >= 2 else 'info' if verbosity == 1 else 'warning'
+        merged_config.setdefault('logging', {})['level'] = level
         
     if args.get('log_file'):
         merged_config.setdefault('logging', {})['file'] = args['log_file']
@@ -216,12 +219,15 @@ def get_config_value(config: Dict[Any, Any], path: str, default: Any = None) -> 
     
     return current
 
-def generate_default_config(output_path: str) -> None:
+def generate_default_config(output_path: Optional[str] = None) -> Dict[str, Any]:
     """
-    Generate a default configuration file.
+    Generate a default configuration dictionary and optionally save it to a file.
     
     Args:
-        output_path: Path to save the configuration file
+        output_path: Optional path to save the configuration file
+        
+    Returns:
+        Default configuration dictionary
     """
     # Create default configuration
     default_config = {
@@ -301,19 +307,24 @@ def generate_default_config(output_path: str) -> None:
         },
     }
     
-    # Ensure output directory exists
-    os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
+    # If output path is provided, save configuration to file
+    if output_path:
+        # Ensure output directory exists
+        os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
+        
+        # Write configuration to file
+        with open(output_path, 'w') as file:
+            yaml.safe_dump(default_config, file, default_flow_style=False, sort_keys=False)
     
-    # Write configuration to file
-    with open(output_path, 'w') as file:
-        yaml.safe_dump(default_config, file, default_flow_style=False, sort_keys=False)
+    return default_config
 
-def validate_config(config: Dict[str, Any]) -> List[str]:
+def validate_config(config: Dict[str, Any], command: Optional[str] = None) -> List[str]:
     """
     Validate configuration dictionary.
     
     Args:
         config: Configuration dictionary
+        command: Optional command name to validate specific command settings
         
     Returns:
         List of validation issues (empty list if valid)
@@ -322,12 +333,18 @@ def validate_config(config: Dict[str, Any]) -> List[str]:
     
     # Check if required sections exist
     required_sections = []
-    if config.get('command') == 'analyze':
+    cmd = command or config.get('command')
+    
+    if cmd == 'analyze':
         required_sections = ['input']
-    elif config.get('command') == 'batch':
+    elif cmd == 'batch':
         required_sections = ['batch']
-    elif config.get('command') == 'distill':
+    elif cmd == 'distill':
         required_sections = ['knowledge_distillation']
+    elif cmd == 'report':
+        required_sections = ['report']
+    elif cmd == 'visualize':
+        required_sections = ['visualization']
     
     for section in required_sections:
         if section not in config:

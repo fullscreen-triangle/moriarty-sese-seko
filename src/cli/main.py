@@ -108,6 +108,17 @@ def create_parser() -> argparse.ArgumentParser:
         help="Input video file path"
     )
     analyze_parser.add_argument(
+        "--public-video", 
+        type=str, 
+        help="Video filename in the public folder (e.g., 'runner_test.mp4')"
+    )
+    analyze_parser.add_argument(
+        "--public-dir", 
+        type=str, 
+        default="public/videos",
+        help="Public directory containing videos (default: public/videos)"
+    )
+    analyze_parser.add_argument(
         "--output", 
         "-o", 
         type=str, 
@@ -140,6 +151,17 @@ def create_parser() -> argparse.ArgumentParser:
         "--input-dir", 
         type=str, 
         help="Input directory containing videos"
+    )
+    batch_parser.add_argument(
+        "--public-dir", 
+        type=str, 
+        default="public/videos",
+        help="Public directory containing videos to process (default: public/videos)"
+    )
+    batch_parser.add_argument(
+        "--use-public", 
+        action="store_true",
+        help="Process videos from the public directory"
     )
     batch_parser.add_argument(
         "--output-dir", 

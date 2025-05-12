@@ -22,7 +22,7 @@ from typing import Dict, List, Any, Optional, Union
 # Import internal components
 from src.pipeline import VideoPipeline
 from src.models.train_llm import LLMTrainer
-from src.distributed.memory_monitor import MemoryMonitor
+from src.distributed.memory_monitor import MemoryMonitor # this function does not exist
 from src.utils.file_utils import ensure_dir_exists
 from src.core_integrator import CoreIntegrator  # Import our new CoreIntegrator
 from src.utils.logging_manager import configure_logging, get_logger
@@ -39,15 +39,15 @@ from src.core.dynamics.sync_analyzer import SynchronizationAnalyzer
 from src.core.dynamics.dynamics_analyzer import DynamicsAnalyzer
 from src.core.dynamics.grf_analyzer import GRFAnalyzer
 
-from src.core.motion.motion_classifier import MotionClassifier
-from src.core.motion.movement_detector import MovementDetector
+from src.core.motion.motion_classifier import MotionClassifier # none existent function
+from src.core.motion.movement_detector import MovementDetector # none existent function
 from src.core.motion.movement_tracker import MovementTracker
 from src.core.motion.stabilography import StabilographyAnalyzer
 
 from src.core.scene.scene_detector import SceneDetector
-from src.core.scene.video_manager import VideoManager
+from src.core.scene.video_manager import VideoManager # none existent function
 from src.core.scene.processor import VideoProcessor
-from src.core.scene.analyzer import SceneAnalyzer
+from src.core.scene.analyzer import SceneAnalyzer # none existent function
 from src.core.scene.metrics import MetricsCalculator
 
 # Configure unified logging system
@@ -251,7 +251,7 @@ class MoriartyPipeline:
             try:
                 report_path = os.path.join(self.video_output_dir, "sprint_report.html")
                 # This would use the report generator from utils
-                from src.utils.report_generator import generate_sprint_report
+                from src.utils.report_generator import generate_sprint_report # none existent function
                 generate_sprint_report(result["analysis_results"], report_path)
                 result["report_path"] = report_path
                 logger.info(f"Generated sprint report: {report_path}")
@@ -559,10 +559,11 @@ class MoriartyPipeline:
                 logger.info(f"Loading datasets: {', '.join(datasets.keys())}")
 
                 # Import dataset loaders
+                # was this meant to be the c3d dataset ? the amc dataset is not being used
                 from src.datasets.cud_loader import load_cud_dataset
-                from src.datasets.maxplanck_loader import load_maxplanck_dataset
-                from src.datasets.nomo_loader import load_nomo_dataset
-                from src.datasets.dataset_merger import merge_datasets
+                from src.datasets.maxplanck_dataset import load_maxplanck_dataset
+                from src.datasets.nomo_dataset import load_nomo_dataset
+                from src.datasets.unified_dataset import merge_datasets
 
                 # Load individual datasets
                 loaded_datasets = []
