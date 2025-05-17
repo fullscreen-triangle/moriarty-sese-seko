@@ -112,3 +112,9 @@ config.ini
 weights/
 results/
 public/
+
+# Exceptions to allow media for README
+!public/results/gif/
+!public/results/gif/*.gif
+!public/results/posture/
+!public/results/posture/*.png
