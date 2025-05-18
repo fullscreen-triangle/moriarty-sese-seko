@@ -563,6 +563,65 @@ print(f"Generated report at: {result['report_path']}")
 - **Performance Graphs**: Plot key metrics over time
 - **Comparison Views**: Side-by-side analysis of multiple athletes
 
+### Berlin 2009 World Record Analysis
+
+This analysis showcases Moriarty's application to Usain Bolt's iconic 9.58s 100m world record from the 2009 World Championships in Berlin.
+
+![Berlin 2009 Start Phase Analysis](public/results/gif/sprint_skeleton_tracking.gif)
+
+The visualization above shows the start phase of the race with full skeletal tracking. The data from berlin.json reveals that despite winning the race, **Bolt had the second worst reaction time (0.146s)** among all finalists. Only Marc Burns was slower off the blocks (0.165s). This demonstrates how Bolt's victory came from his top-end speed rather than his start.
+
+![Berlin 2009 Maximum Velocity Phase](public/results/gif/annotated_hundred-side.gif)
+
+This visualization captures the maximum velocity phase, specifically the 60-80m segment which was Bolt's fastest interval of the race (1.61s for 20m). During this segment, Bolt:
+- Reached his maximum velocity of 12.34 m/s at the 67.90m mark
+- Averaged a stride length of 2.77m (his longest was 2.85m in the final 20m)
+- Maintained a stride frequency of 4.49 strides/second
+- Achieved his peak segment velocity of 12.29 m/s between 60-70m
+
+```
+Race: Men's 100m Final - 2009 World Championships
+Date: August 16, 2009
+Wind: +0.9 m/s
+```
+
+**Final Results with Reaction Times:**
+| Position | Athlete | Country | Time (s) | Reaction Time (s) |
+|----------|---------|---------|----------|-------------------|
+| 1 | Usain Bolt | JAM | 9.58 (WR) | 0.146 |
+| 2 | Tyson Gay | USA | 9.71 (NR) | 0.144 |
+| 3 | Asafa Powell | JAM | 9.84 (SB) | 0.134 |
+| 4 | Daniel Bailey | ANT | 9.93 | 0.129 |
+| 5 | Richard Thompson | TRI | 9.93 (SB) | 0.119 |
+| 6 | Dwain Chambers | GBR | 10.00 (SB) | 0.123 |
+| 7 | Marc Burns | TRI | 10.00 (SB) | 0.165 |
+| 8 | Darvis Patton | USA | 10.34 | 0.149 |
+
+**Velocity by 10m Segments (Bolt):**
+| Segment | Velocity (m/s) | Time (s) |
+|---------|----------------|----------|
+| 0-10m | 5.77 | 1.88 |
+| 10-20m | 9.99 | 1.00 |
+| 20-30m | 11.11 | 0.90 |
+| 30-40m | 11.63 | 0.86 |
+| 40-50m | 12.08 | 0.83 |
+| 50-60m | 12.20 | 0.82 |
+| **60-70m** | **12.29** | **0.81** |
+| 70-80m | 12.17 | 0.82 |
+| 80-90m | 12.17 | 0.82 |
+| 90-100m | 11.96 | 0.84 |
+
+**Stride Analysis by 20m Segments:**
+| Interval | Time (s) | Avg Stride Length (m) | Avg Stride Frequency (strides/s) |
+|----------|----------|----------------------|----------------------------------|
+| 0-20m | 2.89 | 1.78 | 3.89 |
+| 20-40m | 1.75 | 2.52 | 4.54 |
+| 40-60m | 1.67 | 2.67 | 4.49 |
+| **60-80m** | **1.61** | **2.77** | **4.49** |
+| 80-100m | 1.66 | 2.85 | 4.23 |
+
+This analysis demonstrates how Moriarty extracts and visualizes biomechanical data from historic performances, highlighting that despite a relatively poor reaction time, Bolt's extraordinary mid-race velocity (particularly in the 60-80m section shown in the second GIF) is what secured his world record.
+
 ## Performance Considerations
 
 - **Memory Usage**: Default limit is 40% of system RAM, adjustable via `memory_limit` parameter
@@ -598,13 +657,11 @@ MIT License
 
 Moriarty has been successfully used to analyze athletic performance in sprint running. Below are examples of real working implementations showing the system's capabilities.
 
-### Annotated Sprint Analysis
+### Annotated Sprint Analysis and Multi-Athlete Tracking
 
 ![Sprint Analysis with Skeletal Tracking](public/results/gif/sprint_skeleton_tracking.gif)
 
 The system automatically detects athletes, tracks their skeletons, and analyzes biomechanical parameters in real-time. This visualization shows full skeleton tracking with joint confidence visualization.
-
-### Multi-Athlete Tracking with Performance Metrics
 
 ![Multi-Athlete Tracking and Analysis](public/results/gif/multi_athlete_analysis.gif)
 
@@ -633,112 +690,11 @@ for athlete_id, metrics in results.items():
     print(f"  Peak velocity: {metrics['peak_velocity']} m/s")
 ```
 
-### Posture and Biomechanics Analysis
-
-![Posture Analysis](public/results/posture/posture_assessment.png)
-
-Detailed biomechanical analysis provides insights on:
-- Joint angles and alignment
-- Postural deviations during movement
-- Force vector visualization
-- Efficiency metrics
-
-```python
-# Example code for posture analysis
-from src.core.dynamics import PostureAnalyzer
-
-analyzer = PostureAnalyzer(reference_model="elite_sprinter")
-posture_results = analyzer.analyze_video(
-    video_path="input/athlete_sprint.mp4",
-    output_dir="results/posture",
-    generate_report=True
-)
-
-# Get posture assessment and recommendations
-alignment_score = posture_results["alignment_score"]
-recommendations = posture_results["recommendations"]
-
-print(f"Posture alignment score: {alignment_score}/100")
-print("Recommendations:")
-for rec in recommendations:
-    print(f"- {rec}")
-```
-
 ### Ground Reaction Force Estimation
 
 ![Ground Reaction Force Analysis](public/results/gif/grf_visualization.gif)
 
 Moriarty estimates ground reaction forces without force plates, using video analysis and biomechanical modeling. The visualization shows force vectors during foot contact.
-
-### Real-time Performance Dashboard
-
-Using the generated analysis data, Moriarty can create comprehensive dashboards for coaches and athletes:
-
-![Performance Dashboard](public/results/posture/performance_dashboard.png)
-
-The dashboard combines multiple metrics into an intuitive interface showing:
-- Performance trends over time
-- Comparison to reference models or previous performances
-- Fatigue indicators
-- Biomechanical efficiency metrics
-
-These examples demonstrate Moriarty's capabilities for comprehensive athletic performance analysis, combining computer vision, biomechanics, and machine learning to provide actionable insights for athletes and coaches.
-
-### Advanced Biomechanical Analysis Visualization
-
-![Integrated Biomechanical Analysis](public/results/posture/advanced_biomech_analysis.png)
-
-For elite athletes and research purposes, Moriarty provides advanced biomechanical analysis that integrates multiple data streams:
-
-```python
-# Advanced biomechanical analysis with integrated sensors
-from src.core.integration import SensorFusion
-from src.core.dynamics import AdvancedBiomechanics
-
-# Setup sensor fusion if external sensors are available (optional)
-sensor_fusion = SensorFusion()
-sensor_fusion.add_sensor("imu", sensor_type="xsens", location="lower_back")
-sensor_fusion.add_sensor("pressure_insole", sensor_type="novel", foot="both")
-
-# Initialize the advanced biomechanics analyzer
-analyzer = AdvancedBiomechanics(
-    use_gpu=True,
-    sensor_fusion=sensor_fusion,  # Will use video-only if None
-    model_precision="high"
-)
-
-# Perform comprehensive analysis
-results = analyzer.process_video(
-    video_path="input/elite_sprinter.mp4",
-    extract_metrics=[
-        "joint_power",
-        "energy_transfer",
-        "muscle_activation_prediction",
-        "asymmetry_index",
-        "elastic_energy_utilization"
-    ],
-    visualization_types=["integrated_report", "3d_reconstruction"],
-    export_formats=["csv", "json", "pdf"]
-)
-
-# Access specialized metrics
-asymmetry_indices = results["asymmetry_index"]
-joint_power_curves = results["joint_power"]
-muscle_activation = results["muscle_activation_prediction"]
-
-print(f"Peak hip power: {max(joint_power_curves['hip'])} W/kg")
-print(f"Limb asymmetry index: {asymmetry_indices['overall']:.2f}%")
-print(f"Elastic energy utilization: {results['elastic_energy_utilization']:.2f}%")
-```
-
-The integrated visualization combines:
-- Frame-by-frame joint angles, velocities, and accelerations
-- Predicted muscle activation patterns
-- Power and work analysis at each joint
-- Asymmetry detection with color-coded alerts
-- Energy transfer visualization between body segments
-
-This level of analysis helps identify subtle inefficiencies in technique and can inform highly targeted training interventions for elite athletes.
 
 ### Using the CLI with Public Folder
 
