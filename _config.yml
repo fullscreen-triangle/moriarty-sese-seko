@@ -1,0 +1,42 @@
+title: Moriarty Sports Video Analysis Framework
+description: Advanced computer vision and biomechanical analysis for sports performance
+url: "https://yourusername.github.io"
+baseurl: "/moriarty-sese-seko"
+
+# GitHub Pages configuration
+plugins:
+  - jekyll-sitemap
+  - jekyll-feed
+
+# Exclude files from processing
+exclude:
+  - README.md
+  - src/
+  - scripts/
+  - .venv/
+  - __pycache__/
+  - "*.pyc"
+  - requirements.txt
+  - setup.py
+  - .gitignore
+
+# Markdown settings
+markdown: kramdown
+highlighter: rouge
+
+# SEO settings
+lang: en
+author: Moriarty Development Team
+twitter:
+  username: moriarty_sports
+logo: /greyhound_sketch_fixed.png
+
+# Social links
+github_username: yourusername
+repository: moriarty-sese-seko
+
+# Google Analytics (optional)
+# google_analytics: UA-XXXXXXXX-X
+
+# Theme
+theme: minima 

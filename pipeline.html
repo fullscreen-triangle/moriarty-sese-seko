@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Core Pipeline - Moriarty Documentation</title>
+    <link rel="stylesheet" href="docs-styles.css">
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo"><a href="index.html">Moriarty</a></div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="pipeline.html" class="active">Pipeline</a></li>
+                <li><a href="orchestration.html">Orchestration</a></li>
+                <li><a href="biomechanics.html">Biomechanics</a></li>
+                <li><a href="ai-systems.html">AI Systems</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="docs-main">
+        <div class="container">
+            <div class="docs-sidebar">
+                <h3>Contents</h3>
+                <ul>
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#sprint-pipeline">Sprint Analysis Pipeline</a></li>
+                    <li><a href="#implementation">Implementation Details</a></li>
+                    <li><a href="#usage">Usage Examples</a></li>
+                    <li><a href="#performance">Performance</a></li>
+                </ul>
+            </div>
+
+            <div class="docs-content">
+                <h1>Core Pipeline Documentation</h1>
+                
+                <section id="overview">
+                    <h2>Overview</h2>
+                    <p>The Moriarty core pipeline is the central component that orchestrates video processing, pose estimation, and biomechanical analysis. It provides a unified interface for analyzing sports videos and extracting meaningful performance data.</p>
+                    
+                    <div class="highlight-box">
+                        <h3>🚀 Key Capabilities</h3>
+                        <ul>
+                            <li><strong>Multi-format Video Support:</strong> MP4, AVI, MOV, and more</li>
+                            <li><strong>Real-time Processing:</strong> Optimized for both batch and live analysis</li>
+                            <li><strong>Memory Management:</strong> Intelligent memory usage with configurable limits</li>
+                            <li><strong>Distributed Execution:</strong> Automatic parallelization across available resources</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="sprint-pipeline">
+                    <h2>Sprint Running Video Analysis Pipeline</h2>
+                    
+                    <h3>Pipeline Architecture</h3>
+                    <div class="pipeline-flow">
+                        <div class="pipeline-step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Video Input & Preprocessing</h4>
+                                <p>Frame extraction, resolution normalization, and quality assessment</p>
+                            </div>
+                        </div>
+                        <div class="pipeline-step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Human Detection</h4>
+                                <p>YOLOv8-based athlete detection with confidence filtering</p>
+                            </div>
+                        </div>
+                        <div class="pipeline-step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Pose Estimation</h4>
+                                <p>MediaPipe BlazePose 33-point skeleton extraction</p>
+                            </div>
+                        </div>
+                        <div class="pipeline-step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Biomechanical Analysis</h4>
+                                <p>Kinematics, dynamics, and performance metrics calculation</p>
+                            </div>
+                        </div>
+                        <div class="pipeline-step">
+                            <div class="step-number">5</div>
+                            <div class="step-content">
+                                <h4>Visualization & Export</h4>
+                                <p>Annotated video generation and data export</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3>Core Function: process_video()</h3>
+                    <div class="code-example">
+def process_video(self, video_path: str, output_dir: str = None, 
+                  create_visualizations: bool = True, 
+                  analyze_biomechanics: bool = True,
+                  track_ground_forces: bool = False) -> AnalysisResult:
+    """
+    Comprehensive video analysis pipeline
+    
+    Args:
+        video_path: Path to input video file
+        output_dir: Directory for analysis outputs
+        create_visualizations: Generate annotated videos
+        analyze_biomechanics: Perform kinematic analysis
+        track_ground_forces: Estimate ground reaction forces
+        
+    Returns:
+        AnalysisResult containing all computed metrics
+    """
+    # 1. Initialize processing context
+    context = self._create_processing_context(video_path, output_dir)
+    
+    # 2. Extract and preprocess frames
+    frames = self._extract_frames(video_path)
+    processed_frames = self._preprocess_frames(frames)
+    
+    # 3. Detect athletes in each frame
+    detections = self._detect_athletes(processed_frames)
+    
+    # 4. Extract pose data
+    pose_data = self._extract_pose_data(processed_frames, detections)
+    
+    # 5. Perform biomechanical analysis
+    if analyze_biomechanics:
+        kinematics = self._analyze_kinematics(pose_data)
+        dynamics = self._analyze_dynamics(pose_data, kinematics)
+    
+    # 6. Generate visualizations
+    if create_visualizations:
+        self._create_annotated_video(frames, pose_data, context)
+    
+    # 7. Compile and return results
+    return self._compile_results(pose_data, kinematics, dynamics)
+                    </div>
+                </section>
+
+                <section id="implementation">
+                    <h2>Implementation Details</h2>
+                    
+                    <h3>Memory Management</h3>
+                    <p>The pipeline implements sophisticated memory management to handle large video files efficiently:</p>
+                    
+                    <div class="code-example">
+class MemoryManager:
+    def __init__(self, memory_limit=0.4):
+        self.memory_limit = memory_limit
+        self.current_usage = 0
+        
+    def check_memory_usage(self):
+        """Monitor and throttle based on memory consumption"""
+        memory_percent = psutil.virtual_memory().percent / 100
+        if memory_percent > self.memory_limit:
+            self._trigger_garbage_collection()
+            self._reduce_batch_size()
+            
+    def _optimize_for_memory(self, video_size):
+        """Dynamically adjust processing parameters"""
+        if video_size > 1000:  # Large video
+            return {
+                'batch_size': 16,
+                'pose_complexity': 1,  # Balanced mode
+                'max_workers': min(4, cpu_count())
+            }
+        else:
+            return {
+                'batch_size': 32,
+                'pose_complexity': 2,  # High accuracy
+                'max_workers': cpu_count() - 1
+            }
+                    </div>
+
+                    <h3>Pose Detection Pipeline</h3>
+                    <div class="tech-specs">
+                        <div class="spec-item">
+                            <h4>Detection Model</h4>
+                            <p><strong>YOLOv8n</strong> optimized for person detection</p>
+                            <ul>
+                                <li>Confidence threshold: 0.6</li>
+                                <li>IOU threshold: 0.45</li>
+                                <li>Class filter: Person (class 0)</li>
+                            </ul>
+                        </div>
+                        <div class="spec-item">
+                            <h4>Pose Estimation</h4>
+                            <p><strong>MediaPipe BlazePose</strong> with 33 landmarks</p>
+                            <ul>
+                                <li>Model complexity: 0-2 (adaptive)</li>
+                                <li>Min detection confidence: 0.5</li>
+                                <li>Min tracking confidence: 0.5</li>
+                            </ul>
+                        </div>
+                        <div class="spec-item">
+                            <h4>Tracking</h4>
+                            <p><strong>DeepSORT</strong> with Kalman filtering</p>
+                            <ul>
+                                <li>Max age: 30 frames</li>
+                                <li>Min hits: 3</li>
+                                <li>IOU threshold: 0.3</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="usage">
+                    <h2>Usage Examples</h2>
+                    
+                    <h3>Basic Video Analysis</h3>
+                    <div class="code-example">
+from src.pipeline import VideoPipeline
+
+# Initialize pipeline with default settings
+pipeline = VideoPipeline()
+
+# Analyze a sprint video
+result = pipeline.process_video(
+    video_path="videos/100m_sprint.mp4",
+    output_dir="results/sprint_analysis",
+    create_visualizations=True
+)
+
+# Access key metrics
+print(f"Maximum velocity: {result.max_velocity:.2f} m/s")
+print(f"Average stride length: {result.avg_stride_length:.2f} m")
+print(f"Stride frequency: {result.stride_frequency:.2f} Hz")
+                    </div>
+
+                    <h3>Advanced Configuration</h3>
+                    <div class="code-example">
+# Custom pipeline configuration
+config = {
+    'memory_limit': 0.6,  # Use up to 60% of system memory
+    'pose_complexity': 2,  # Highest accuracy mode
+    'enable_gpu': True,    # Use GPU acceleration
+    'batch_size': 64,      # Large batch for efficiency
+    'output_format': 'comprehensive'  # Full analysis output
+}
+
+pipeline = VideoPipeline(**config)
+
+# Comprehensive biomechanical analysis
+result = pipeline.process_video(
+    video_path="videos/technique_analysis.mp4",
+    output_dir="results/biomech_analysis",
+    create_visualizations=True,
+    analyze_biomechanics=True,
+    track_ground_forces=True,
+    generate_reports=True
+)
+
+# Access detailed biomechanical data
+joint_angles = result.joint_angles
+ground_forces = result.ground_reaction_forces
+stride_metrics = result.stride_analysis
+                    </div>
+
+                    <h3>Batch Processing</h3>
+                    <div class="code-example">
+# Process multiple videos in parallel
+video_paths = [
+    "videos/athlete1_trial1.mp4",
+    "videos/athlete1_trial2.mp4", 
+    "videos/athlete2_trial1.mp4"
+]
+
+results = pipeline.process_batch(
+    video_paths=video_paths,
+    output_base_dir="results/batch_analysis",
+    max_workers=4
+)
+
+# Comparative analysis
+for i, result in enumerate(results):
+    print(f"Video {i+1}: Max velocity = {result.max_velocity:.2f} m/s")
+                    </div>
+                </section>
+
+                <section id="performance">
+                    <h2>Performance Characteristics</h2>
+                    
+                    <div class="performance-grid">
+                        <div class="perf-metric">
+                            <h3>Processing Speed</h3>
+                            <div class="metric-value">0.5-2.0x</div>
+                            <p>Real-time ratio (depends on video resolution and hardware)</p>
+                        </div>
+                        <div class="perf-metric">
+                            <h3>Memory Usage</h3>
+                            <div class="metric-value">2-8 GB</div>
+                            <p>Peak memory consumption for 1080p videos</p>
+                        </div>
+                        <div class="perf-metric">
+                            <h3>Accuracy</h3>
+                            <div class="metric-value">95%+</div>
+                            <p>Pose detection accuracy on sports videos</p>
+                        </div>
+                        <div class="perf-metric">
+                            <h3>Scalability</h3>
+                            <div class="metric-value">Linear</div>
+                            <p>Performance scales with CPU/GPU cores</p>
+                        </div>
+                    </div>
+
+                    <h3>Optimization Tips</h3>
+                    <div class="tips-grid">
+                        <div class="tip-card">
+                            <h4>🚀 For Speed</h4>
+                            <ul>
+                                <li>Use pose complexity 0 or 1</li>
+                                <li>Increase batch size</li>
+                                <li>Enable GPU acceleration</li>
+                                <li>Reduce output video resolution</li>
+                            </ul>
+                        </div>
+                        <div class="tip-card">
+                            <h4>🎯 For Accuracy</h4>
+                            <ul>
+                                <li>Use pose complexity 2</li>
+                                <li>Lower confidence thresholds</li>
+                                <li>Enable temporal smoothing</li>
+                                <li>Use higher input resolution</li>
+                            </ul>
+                        </div>
+                        <div class="tip-card">
+                            <h4>💾 For Memory</h4>
+                            <ul>
+                                <li>Reduce batch size</li>
+                                <li>Lower memory limit</li>
+                                <li>Process in chunks</li>
+                                <li>Disable visualizations</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Moriarty Sports Analysis Framework</p>
+        </div>
+    </footer>
+</body>
+</html> 

@@ -1,6 +1,8 @@
 import os
 import shutil
 import argparse
+import subprocess
+import sys
 
 def create_structure(base_dir):
     """Create necessary directories and files for output system"""
@@ -23,50 +25,45 @@ def write_file(base_dir, relative_path, content):
     
     print(f"Created file: {relative_path}")
 
+def fix_dependencies(base_dir):
+    """Fix Dask and other dependencies"""
+    print("Fixing dependencies...")
+    
+    # Uninstall conflicting packages
+    packages_to_remove = ['dask', 'distributed']
+    for package in packages_to_remove:
+        try:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'uninstall', '-y', package])
+            print(f"Uninstalled {package}")
+        except subprocess.CalledProcessError:
+            print(f"Package {package} was not installed")
+    
+    # Install correct dask version
+    try:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'dask[distributed]>=2023.9.0'])
+        print("Installed dask[distributed]")
+    except subprocess.CalledProcessError as e:
+        print(f"Error installing dask[distributed]: {e}")
+        print("You may need to install manually: pip install dask[distributed]>=2023.9.0")
+
 def main():
     parser = argparse.ArgumentParser(description='Fix Moriarty output system')
     parser.add_argument('--base-dir', default='.', help='Base directory of the project')
+    parser.add_argument('--fix-deps', action='store_true', help='Fix dependency issues')
     args = parser.parse_args()
     
     # Create directory structure
     create_structure(args.base_dir)
     
-    # Write files (Implementation from functions defined above)
-    # Example:
-    file_helpers_content = """import os
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
-
-def ensure_directory(path):
-    """Ensure directory exists for file saving"""
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-
-def save_image_safely(image, output_path, is_matplotlib=False):
-    """Save image with proper error handling and directory creation"""
-    try:
-        ensure_directory(output_path)
-        
-        if is_matplotlib:
-            plt.savefig(output_path, dpi=300, bbox_inches='tight')
-            plt.close()  # Important to prevent memory leaks
-        else:
-            cv2.imwrite(output_path, image)
-            
-        # Verify file was written correctly
-        if os.path.getsize(output_path) < 100:  # Suspiciously small file
-            raise ValueError("Generated file is too small, likely corrupt")
-            
-        return True
-    except Exception as e:
-        print(f"Error saving image to {output_path}: {str(e)}")
-        return False
-"""
-    write_file(args.base_dir, 'src/utils/file_helpers.py', file_helpers_content)
+    # Fix dependencies if requested
+    if args.fix_deps:
+        fix_dependencies(args.base_dir)
     
-    # Write other files similarly...
-    
-    print("Output system fix complete. Run your analysis again to generate proper outputs.")
+    print("Output system fix complete.")
+    print("Next steps:")
+    print("1. If you didn't use --fix-deps, run: pip uninstall dask distributed && pip install dask[distributed]>=2023.9.0")
+    print("2. Run your analysis again to generate proper outputs.")
+    print("3. The system will now gracefully fallback if Dask is not available.")
 
 if __name__ == "__main__":
     main()

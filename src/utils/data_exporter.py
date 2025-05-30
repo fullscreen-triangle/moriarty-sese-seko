@@ -2,6 +2,7 @@ import os
 import json
 import csv
 import pandas as pd
+import numpy as np
 from src.utils.file_helpers import ensure_directory
 
 def export_to_json(analysis_results, output_path):

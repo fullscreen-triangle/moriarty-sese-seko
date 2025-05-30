@@ -19,9 +19,42 @@ from concurrent.futures import ThreadPoolExecutor
 import multiprocessing as mp_lib
 import psutil  # For memory monitoring
 import ray
-import dask
-from dask.distributed import Client, LocalCluster
-from dask import delayed
+
+# Robust Dask imports with fallback
+try:
+    from dask.distributed import Client, LocalCluster
+    from dask import delayed
+    import dask
+    DASK_AVAILABLE = True
+    logger_msg = "Dask distributed computing enabled"
+except ImportError as e:
+    print(f"Warning: Could not import Dask distributed: {e}")
+    print("Falling back to non-distributed processing...")
+    # Create dummy classes for fallback
+    class Client:
+        def __init__(self, *args, **kwargs):
+            print("Warning: Using dummy Dask Client - no distributed processing")
+            pass
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+        def submit(self, func, *args, **kwargs):
+            # Direct execution for fallback
+            return func(*args, **kwargs)
+    
+    class LocalCluster:
+        def __init__(self, *args, **kwargs):
+            print("Warning: Using dummy LocalCluster")
+            pass
+    
+    def delayed(func):
+        """Dummy delayed decorator that just returns the function"""
+        return func
+    
+    DASK_AVAILABLE = False
+    logger_msg = "Dask not available - using direct processing"
+
 from typing import List, Dict, Tuple, Any, Optional
 import json
 import logging
@@ -31,7 +64,6 @@ import queue
 import threading
 
 # Import internal moriarty modules
-
 from .core.pose.pose_data_to_llm import PoseDataExtractor
 from .distributed.rayprocessor import RayVideoProcessor
 from .utils import file_utils
@@ -42,6 +74,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger("pipeline")
+logger.info(logger_msg)
 
 # Load environment variables for API keys
 load_dotenv()
@@ -332,6 +365,12 @@ class VideoPipeline:
     def _init_dask(self):
         """Initialize Dask with memory limits."""
         if self.dask_client is None:
+            if not DASK_AVAILABLE:
+                # Use dummy client when Dask is not available
+                logger.info("Using fallback processing instead of Dask distributed")
+                self.dask_client = Client()
+                return
+            
             # Calculate memory limit per worker
             worker_memory_limit = f"{int(self.memory_monitor.memory_limit / self.n_workers / (1024**2))}MB"
             
@@ -441,8 +480,12 @@ class VideoPipeline:
                     
                     # Process batch with Dask (handles MediaPipe processing)
                     batch_process_start = time.time()
-                    future = self.dask_client.submit(process_frame_batch, batch_data)
-                    batch_results = future.result()
+                    if DASK_AVAILABLE:
+                        future = self.dask_client.submit(process_frame_batch, batch_data)
+                        batch_results = future.result()
+                    else:
+                        # Direct processing when Dask is not available
+                        batch_results = process_frame_batch(batch_data)
                     batch_process_time = time.time() - batch_process_start
                     
                     # Extract landmarks and send to Ray for analysis
