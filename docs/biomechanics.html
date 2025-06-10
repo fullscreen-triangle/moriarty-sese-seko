@@ -1,0 +1,623 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <!-- META -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- PAGE TITLE -->
+    <title>Biomechanical Analysis - Moriarty Documentation</title>
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="assets/logo_32.png">
+
+    <!-- GOOGLE FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&display=swap" rel="stylesheet">
+
+    <!-- MATHJAX -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+
+    <!-- STYLESHEETS -->
+    <link rel="stylesheet" type="text/css" href="../assets/css/plugins.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/elements.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/colors.css">
+
+</head>
+
+<body>
+
+    <!-- LOADING SCREEN -->
+    <div class="loading-screen">
+        <!-- INNER-->
+        <div class="inner">
+            <div class="text-box"><h3>Biomechanics</h3></div>
+            <div class="line-frame"><div class="line"></div></div>
+        </div>
+        <!-- /INNER-->
+    </div>
+    <!-- /LOADING SCREEN -->
+
+    <!-- MENU BUTTON -->
+    <div class="m-menu-button">
+        <!-- BURGER -->
+        <div class="burger">
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+        <!-- /BURGER -->
+    </div>
+    <!-- /MENU BUTTON -->
+
+    <!-- MENU -->
+    <div class="m-menu">
+        <!-- MENU INNER -->
+        <div class="m-menu-inner noselect">
+            <!-- MENU ITEMS -->
+            <div class="head m-b-2"><p class="small">Documentation</p></div>
+            <ul class="main-items">
+                <li><a href="index.html"><span class="ti-home"></span><p class="small">Home</p></a></li>
+                <li><a class="scroll-to" href="#overview"><span class="ti-eye"></span><p class="small">Overview</p></a></li>
+                <li><a class="scroll-to" href="#architecture"><span class="ti-layout-grid2"></span><p class="small">Architecture</p></a></li>
+                <li><a class="scroll-to" href="#mathematics"><span class="ti-stats-up"></span><p class="small">Mathematics</p></a></li>
+                <li><a class="scroll-to" href="#implementation"><span class="ti-code"></span><p class="small">Implementation</p></a></li>
+                <li><a class="scroll-to" href="#applications"><span class="ti-pulse"></span><p class="small">Applications</p></a></li>
+                <li><a href="ai-systems.html"><span class="ti-brain"></span><p class="small">AI Systems</p></a></li>
+                <li><a href="pipeline.html"><span class="ti-share"></span><p class="small">Pipeline</p></a></li>
+            </ul>
+            <!-- /MENU ITEMS -->
+
+            <!-- SOCIAL ITEMS -->
+            <div class="head m-b-2 m-t-7"><p class="small">Connect</p></div>
+            <div class="social-items">
+                <div class="item"><a href="https://github.com/yourusername/moriarty" target="_blank" rel="noopener"><span class="ti-github"></span></a></div>
+                <div class="item"><a href="#"><span class="ti-twitter"></span></a></div>
+                <div class="item"><a href="#"><span class="ti-linkedin"></span></a></div>
+            </div>
+            <!-- /SOCIAL ITEMS -->
+        </div>
+        <!-- /MENU INNER -->
+    </div>
+    <!-- /MENU -->
+    
+    <!-- MAIN -->
+    <div id="main">
+
+        <!-- LEFT CONTENT -->
+        <div class="left-content noselect">
+            <!-- INNER CONTENT -->
+            <div class="inner-content">
+                <!-- NAME -->
+                <div class="name">
+                    <p class="small color-white">Biomechanics</p>
+                    <div class="seperator-line"></div>
+                </div>
+                <!-- /NAME -->
+
+                <div class="picture-box">
+                    <div class="picture" style="background-image: url('assets/logo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+                </div>
+                <div class="frame-1 frame"></div>
+                <div class="frame-2 frame"></div>
+                <div class="frame-3 frame"></div>
+            </div>
+            <!-- /INNER CONTENT -->
+        </div>
+        <!-- /LEFT CONTENT -->
+
+        <!-- RIGHT CONTENT -->
+        <div class="right-content">
+            <!-- INNER CONTENT -->
+            <div class="inner-content">
+                <!-- SECTION CONTAINER -->
+                <div class="section-container">
+                
+                    <!-- SECTION ( OVERVIEW ) -->
+                    <div class="section height-100 y-center" style="padding-bottom:2rem" id="overview">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-4">BIOMECHANICAL ANALYSIS</p>
+                            <h1 class="m-b-5 m-l-3">Advanced Framework for Human Motion Analysis</h1>
+                            <div class="seperator-line"></div>
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( OVERVIEW ) -->
+
+                    <!-- SECTION ( CORE CAPABILITIES ) -->
+                    <div class="section" style="padding-bottom:20rem">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">CORE CAPABILITIES</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Research-grade biomechanical analysis<br> with proven mathematical foundations.</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+                            <p class="scroll-animation">The Graffiti biomechanical analysis framework provides comprehensive tools for human motion analysis, featuring advanced algorithms for joint kinematics, dynamics, and sport-specific performance evaluation. Built on proven biomechanical principles, it delivers research-grade analysis capabilities.</p>
+
+                            <!-- SKILL BAR -->
+                            <div class="skill-bar scroll-animation m-t-6">
+                                <div class="head noselect"><h5>3D Joint Kinematics</h5></div>
+                                <!-- BAR -->
+                                <div class="bar m-b-2">
+                                    <div class="fill" style="width: 95%;"></div>
+                                    <div class="number-tag noselect" style="left: 95%;"><p class="small">95%</p></div>
+                                </div>
+                                <!-- /BAR -->
+                            </div>
+                            <!-- /SKILL BAR -->
+
+                            <!-- SKILL BAR -->
+                            <div class="skill-bar m-b-2 scroll-animation">
+                                <div class="head noselect"><h5>Force Estimation</h5></div>
+                                <!-- BAR -->
+                                <div class="bar">
+                                    <div class="fill" style="width: 88%;"></div>
+                                    <div class="number-tag noselect" style="left: 88%;"><p class="small">88%</p></div>
+                                </div>
+                                <!-- /BAR -->
+                            </div>
+                            <!-- /SKILL BAR -->
+
+                            <!-- SKILL BAR -->
+                            <div class="skill-bar scroll-animation">
+                                <div class="head noselect"><h5>Energy Analysis</h5></div>
+                                <!-- BAR -->
+                                <div class="bar">
+                                    <div class="fill" style="width: 92%;"></div>
+                                    <div class="number-tag noselect" style="left: 92%;"><p class="small">92%</p></div>
+                                </div>
+                                <!-- /BAR -->
+                            </div>
+                            <!-- /SKILL BAR -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( CORE CAPABILITIES ) -->
+
+                    <!-- SECTION ( ARCHITECTURE ) -->
+                    <div class="section" style="padding-bottom:20rem" id="architecture">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">PIPELINE ARCHITECTURE</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Hierarchical analysis structure<br> for comprehensive motion evaluation</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+
+                            <!-- CARD GRID -->
+                            <div class="card-grid scroll-animation">
+                                <!-- LEFT SIDE -->
+                                <div class="left-side">
+                                    <!-- ITEM -->
+                                    <div class="item noselect" style="background-color: #181818;">
+                                        <!-- ITEM CONTAINER -->
+                                        <div class="item-container">
+                                            <h3><span class="icon-video m-b-1"></span></h3>
+                                            <p>Scene Analysis</p>
+                                        </div>
+                                        <!-- /ITEM CONTAINER -->
+                                    </div>
+                                    <!-- /ITEM -->
+
+                                    <!-- ITEM -->
+                                    <div class="item" style="background-color: #080808;">
+                                        <!-- ITEM CONTAINER -->
+                                        <div class="item-container">
+                                            <h3><span class="icon-tools m-b-1"></span></h3>
+                                            <p>Motion Analysis</p>
+                                        </div>
+                                        <!-- /ITEM CONTAINER -->
+                                    </div>
+                                    <!-- /ITEM -->
+                                </div>
+                                <!-- /LEFT SIDE -->
+
+                                <!-- RIGHT SIDE -->
+                                <div class="right-side m-t-6">
+                                    <!-- ITEM -->
+                                    <div class="item" style="background-color: #111;">
+                                        <!-- ITEM CONTAINER -->
+                                        <div class="item-container">
+                                            <h3><span class="icon-pulse m-b-1"></span></h3>
+                                            <p>Biomechanics</p>
+                                        </div>
+                                        <!-- /ITEM CONTAINER -->
+                                    </div>
+                                    <!-- /ITEM -->
+                                    
+                                    <!-- ITEM -->
+                                    <div class="item" style="background-color: #030303;">
+                                        <!-- ITEM CONTAINER -->
+                                        <div class="item-container">
+                                            <h3><span class="icon-trophy m-b-1"></span></h3>
+                                            <p>Sport-Specific</p>
+                                        </div>
+                                        <!-- /ITEM CONTAINER -->
+                                    </div>
+                                    <!-- /ITEM -->
+                                </div>
+                                <!-- /RIGHT SIDE -->
+                            </div>
+                            <!-- /CARD GRID -->
+
+                            <!-- RESUME -->
+                            <div class="resume m-t-6">
+                                <!-- ITEM -->
+                                <div class="item m-b-6 scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Step 1<span class="m-l-2 color-white">Pose & Tracking</span></p>
+                                    <p class="color-white m-b-1">Multi-person detection</p>
+                                    <p>Keypoint extraction, temporal smoothing using Savitzky-Golay filtering for accurate motion tracking.</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item m-b-6 scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Step 2<span class="m-l-2 color-white">Kinematic Analysis</span></p>
+                                    <p class="color-white m-b-1">Joint angle calculation</p>
+                                    <p>Velocity and acceleration computation, movement pattern recognition with quaternion-based calculations.</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item m-b-6 scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Step 3<span class="m-l-2 color-white">Dynamic Analysis</span></p>
+                                    <p class="color-white m-b-1">Force estimation</p>
+                                    <p>Moment calculation, ground reaction force modeling using Newton-Euler formulation.</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Step 4<span class="m-l-2 color-white">Performance Metrics</span></p>
+                                    <p class="color-white m-b-1">Energy analysis</p>
+                                    <p>Stability assessment, sport-specific metrics calculation with comprehensive reporting.</p>
+                                </div>
+                                <!-- /ITEM -->
+                            </div>
+                            <!-- /RESUME -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( ARCHITECTURE ) -->
+
+                    <!-- SECTION ( MATHEMATICS ) -->
+                    <div class="section" style="padding-bottom:20rem" id="mathematics">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">MATHEMATICAL FOUNDATIONS</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Proven algorithms and formulations</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+
+                            <!-- ACCORDION -->
+                            <ul class="accordion" data-active-index="false" data-slide-Speed="200">
+                                <!-- ACCORDION ITEM -->
+                                <li class="accordion-item scroll-animation">
+                                    <div><h5>Joint Position & Tracking</h5><div class="icon"></div></div>
+                                    <div>
+                                        <p class="m-b-3">For each joint j in frame t, we define the position vector with confidence:</p>
+                                        <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+                                            <p style="color: #00ff00; font-family: 'Courier New', monospace;">$$ P_j(t) = \{x_j(t), y_j(t), z_j(t), c_j(t)\} $$</p>
+                                        </div>
+                                        <p>Movement tracking between consecutive frames with displacement and velocity calculations.</p>
+                                    </div>
+                                </li>
+                                <!-- /ACCORDION ITEM -->
+
+                                <!-- ACCORDION ITEM -->
+                                <li class="accordion-item scroll-animation">
+                                    <div><h5>Joint Angle Calculations</h5><div class="icon"></div></div>
+                                    <div>
+                                        <p class="m-b-3">Three-dimensional angles computed using quaternion algebra to avoid gimbal lock:</p>
+                                        <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+                                            <p style="color: #00ff00; font-family: 'Courier New', monospace;">$$ \theta = \arccos\left(\frac{\vec{v_1} \cdot \vec{v_2}}{\|\vec{v_1}\| \|\vec{v_2}\|}\right) $$</p>
+                                        </div>
+                                        <p>Euler angle extraction from quaternions for complete 3D orientation analysis.</p>
+                                    </div>
+                                </li>
+                                <!-- /ACCORDION ITEM -->
+
+                                <!-- ACCORDION ITEM -->
+                                <li class="accordion-item scroll-animation">
+                                    <div><h5>Dynamic Analysis</h5><div class="icon"></div></div>
+                                    <div>
+                                        <p class="m-b-3">Force and moment calculations using Newton-Euler formulation:</p>
+                                        <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+                                            <p style="color: #00ff00; font-family: 'Courier New', monospace;">$$ \vec{F}_i = m_i(\vec{a}_i + \vec{g}) $$</p>
+                                            <p style="color: #00ff00; font-family: 'Courier New', monospace;">$$ \vec{M}_i = I_i\vec{\alpha}_i + \vec{\omega}_i \times (I_i\vec{\omega}_i) $$</p>
+                                        </div>
+                                        <p>Complete inverse dynamics solution for joint forces and moments throughout motion.</p>
+                                    </div>
+                                </li>
+                                <!-- /ACCORDION ITEM -->
+
+                                <!-- ACCORDION ITEM -->
+                                <li class="accordion-item scroll-animation">
+                                    <div><h5>Energy & Power Analysis</h5><div class="icon"></div></div>
+                                    <div>
+                                        <p class="m-b-3">Kinetic and potential energy calculations with instantaneous power:</p>
+                                        <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+                                            <p style="color: #00ff00; font-family: 'Courier New', monospace;">$$ E_k = \frac{1}{2}m\|\vec{v}\|^2 + \frac{1}{2}I\omega^2 $$</p>
+                                            <p style="color: #00ff00; font-family: 'Courier New', monospace;">$$ P(t) = \vec{F}(t) \cdot \vec{v}(t) + \vec{M}(t) \cdot \vec{\omega}(t) $$</p>
+                                        </div>
+                                        <p>Work-energy analysis and mechanical power computation throughout movement phases.</p>
+                                    </div>
+                                </li>
+                                <!-- /ACCORDION ITEM -->
+
+                                <!-- ACCORDION ITEM -->
+                                <li class="accordion-item scroll-animation">
+                                    <div><h5>Stability Metrics</h5><div class="icon"></div></div>
+                                    <div>
+                                        <p class="m-b-3">Center of mass calculation and dynamic stability assessment:</p>
+                                        <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0; text-align: center;">
+                                            <p style="color: #00ff00; font-family: 'Courier New', monospace;">$$ \text{CoM} = \frac{\sum_{i=1}^n m_i\vec{r_i}}{\sum_{i=1}^n m_i} $$</p>
+                                            <p style="color: #00ff00; font-family: 'Courier New', monospace;">$$ S_d = 1 - \frac{\sum_{t=1}^{T-1}\|\text{CoM}(t+1) - \text{CoM}(t)\|}{T \cdot d_\text{max}} $$</p>
+                                        </div>
+                                        <p>Multi-segment body model with dynamic stability indices for balance assessment.</p>
+                                    </div>
+                                </li>
+                                <!-- /ACCORDION ITEM -->
+                            </ul>
+                            <!-- /ACCORDION -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( MATHEMATICS ) -->
+
+                    <!-- SECTION ( IMPLEMENTATION ) -->
+                    <div class="section" style="padding-bottom:20rem" id="implementation">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">IMPLEMENTATION</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Advanced algorithms and code examples</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+
+                            <!-- TABS -->
+                            <div class="tabs scroll-animation">
+                                <!-- TAB NAVIGATION -->
+                                <ul class="tab-nav m-b-3">
+                                    <li><a href="#tab-1"><p>Kinematics</p></a></li>
+                                    <li><a href="#tab-2"><p>Dynamics</p></a></li>
+                                    <li><a href="#tab-3"><p>Stride Analysis</p></a></li>
+                                    <li><a href="#tab-4"><p>Synchronization</p></a></li>
+                                </ul>
+                                <!-- /TAB NAVIGATION -->
+
+                                <div id="tab-1" class="tab">
+                                    <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                                        <code style="color: #00ff00; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+class KinematicsAnalyzer:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def __init__(self, filter_window=5, filter_order=3):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.filter_window = filter_window<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.filter_order = filter_order<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def calculate_joint_angles(self, pose_data):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""Calculate 3D joint angles using quaternion algebra"""<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;angles = {}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for joint_name, vectors in self._get_joint_vectors(pose_data):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;angle = self._quaternion_angle(vectors)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;angles[joint_name] = angle<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return angles
+                                        </code>
+                                    </div>
+                                </div>
+
+                                <div id="tab-2" class="tab">
+                                    <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                                        <code style="color: #00ff00; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+class DynamicsAnalyzer:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def calculate_ground_reaction_forces(self, kinematics):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""Estimate GRF using spring-mass model"""<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;grf_data = []<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for frame in kinematics.contact_phases:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vertical_force = self._spring_mass_model(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;frame.center_of_mass,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;frame.velocity,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;frame.acceleration<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;grf_data.append(vertical_force)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return grf_data
+                                        </code>
+                                    </div>
+                                </div>
+
+                                <div id="tab-3" class="tab">
+                                    <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                                        <code style="color: #00ff00; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+class StrideAnalyzer:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def analyze_stride_patterns(self, ankle_trajectory):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""Detect stride events using ankle kinematics"""<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contact_events = []<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Zero-crossing detection for stance/swing<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;velocity = np.gradient(ankle_trajectory)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;zero_crossings = self._find_zero_crossings(velocity)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for crossing in zero_crossings:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if self._validate_contact_event(crossing):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;contact_events.append(crossing)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return self._calculate_stride_metrics(contact_events)
+                                        </code>
+                                    </div>
+                                </div>
+
+                                <div id="tab-4" class="tab">
+                                    <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                                        <code style="color: #00ff00; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+class SynchronizationAnalyzer:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;def analyze_movement_coordination(self, joint_data):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"""Cross-correlation analysis with DTW alignment"""<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coordination_metrics = {}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for joint_pair in self.joint_pairs:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;signal1 = joint_data[joint_pair[0]]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;signal2 = joint_data[joint_pair[1]]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Dynamic Time Warping alignment<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;aligned_signals = self._dtw_align(signal1, signal2)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;correlation = self._cross_correlation(aligned_signals)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;coordination_metrics[joint_pair] = correlation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return coordination_metrics
+                                        </code>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /TABS -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( IMPLEMENTATION ) -->
+
+                    <!-- SECTION ( APPLICATIONS ) -->
+                    <div class="section" style="padding-bottom:20rem" id="applications">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">APPLICATIONS</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Real-world biomechanical analysis</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+
+                            <!-- WORK GRID -->
+                            <div class="work-grid">
+                                <!-- ITEM -->
+                                <div class="item noselect scroll-animation">
+                                    <div class="icon-button"><span class="ti-pulse"></span></div>
+                                    <div class="info"><p class="color-white">Sprint Biomechanics</p><div class="seperator-line m-t-1"></div></div>
+                                    <div class="cover" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                        <span class="icon-speedometer"></span>
+                                    </div>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item noselect m-t-6 scroll-animation">
+                                    <div class="icon-button"><span class="ti-heart"></span></div>
+                                    <div class="info"><p class="color-white">Injury Prevention</p><div class="seperator-line m-t-1"></div></div>
+                                    <div class="cover" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                        <span class="icon-shield"></span>
+                                    </div>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item noselect m-t-6 scroll-animation">
+                                    <div class="icon-button"><span class="ti-stats-up"></span></div>
+                                    <div class="info"><p class="color-white">Performance Optimization</p><div class="seperator-line m-t-1"></div></div>
+                                    <div class="cover" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                        <span class="icon-linegraph"></span>
+                                    </div>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item noselect m-t-6 scroll-animation">
+                                    <div class="icon-button"><span class="ti-settings"></span></div>
+                                    <div class="info"><p class="color-white">Technique Analysis</p><div class="seperator-line m-t-1"></div></div>
+                                    <div class="cover" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                        <span class="icon-adjustments"></span>
+                                    </div>
+                                </div>
+                                <!-- /ITEM -->
+                            </div>
+                            <!-- /WORK GRID -->
+
+                            <!-- TESTIMONIAL CAROUSEL -->
+                            <div class="testimonial-carousel scroll-animation m-t-6">
+                                <!-- ITEM -->
+                                <div class="item">
+                                    <p class="quote">"The biomechanical analysis framework provides research-grade accuracy with real-time processing capabilities. Essential for performance analysis."</p>
+                                    <p class="name m-t-3 color-white">Dr. Sarah Johnson</p>
+                                    <p class="role">Sports Biomechanist, Olympic Training Center</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item">
+                                    <p class="quote">"Quaternion-based joint calculations eliminate gimbal lock issues we've struggled with in other systems. Mathematical rigor is impressive."</p>
+                                    <p class="name m-t-3 color-white">Prof. Michael Chen</p>
+                                    <p class="role">Biomechanics Research Lab, Stanford University</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item">
+                                    <p class="quote">"The force estimation without force plates opens new possibilities for field-based analysis. Game-changing technology."</p>
+                                    <p class="name m-t-3 color-white">Dr. Emma Rodriguez</p>
+                                    <p class="role">Lead Researcher, Sports Science Institute</p>
+                                </div>
+                                <!-- /ITEM -->
+                            </div>
+                            <!-- /TESTIMONIAL CAROUSEL -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( APPLICATIONS ) -->
+
+                    <!-- SECTION ( NAVIGATION ) -->
+                    <div class="section" style="padding-bottom:20rem">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">EXPLORE MORE</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Continue with other documentation</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+
+                            <!-- CUSTOMER GRID -->
+                            <div class="customer-grid scroll-animation">
+                                <div class="item m-b-5">
+                                    <a href="ai-systems.html" class="default-button">
+                                        <span class="button-text">AI Systems</span>
+                                        <span class="icon-button m-l-2"><span class="ti-arrow-right"></span></span>
+                                    </a>
+                                </div>
+                                <div class="item m-b-5">
+                                    <a href="pipeline.html" class="default-button">
+                                        <span class="button-text">Pipeline</span>
+                                        <span class="icon-button m-l-2"><span class="ti-arrow-right"></span></span>
+                                    </a>
+                                </div>
+                                <div class="item m-b-5">
+                                    <a href="index.html" class="default-button">
+                                        <span class="button-text">Home</span>
+                                        <span class="icon-button m-l-2"><span class="ti-arrow-right"></span></span>
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- /CUSTOMER GRID -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( NAVIGATION ) -->
+
+                </div>
+                <!-- /SECTION CONTAINER -->
+            </div>
+            <!-- /INNER CONTENT -->
+        </div>
+        <!-- /RIGHT CONTENT -->
+    </div>
+    <!-- MAIN -->
+
+    <!-- JAVASCRIPT FILES -->
+    <script src="../assets/js/plugins.js"></script>
+    <script src="config.js"></script>
+    <script src="../assets/js/scripts.js"></script>
+    <script src="../assets/js/backgound.js"></script>
+
+</body>
+
+</html> 

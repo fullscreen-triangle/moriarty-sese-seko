@@ -295,3 +295,296 @@ class TrajectoryAnalyzer:
             'peak': {'x': 50, 'y': 50},
             'end': {'x': 100, 'y': 100}
         }
+
+
+class MotionClassifier:
+    """
+    Classifies motion patterns from pose sequences.
+    
+    This class integrates multiple analysis components to provide comprehensive
+    motion classification for biomechanical analysis.
+    """
+    
+    def __init__(self, fps: int = 30):
+        """
+        Initialize the motion classifier.
+        
+        Args:
+            fps: Frames per second of the video
+        """
+        self.fps = fps
+        self.logger = logging.getLogger(__name__)
+        
+        # Initialize analysis components
+        self.metrics_calculator = MotionMetricsCalculator(fps)
+        self.phase_analyzer = PhaseAnalyzer()
+        self.pattern_matcher = PatternMatcher("", 0.7)  # Empty template path for now
+        self.sequence_analyzer = SequenceAnalyzer()
+        self.symmetry_analyzer = SymmetryAnalyzer()
+        self.tempo_analyzer = TempoAnalyzer(fps)
+        self.trajectory_analyzer = TrajectoryAnalyzer()
+        
+        # Classification thresholds
+        self.velocity_thresholds = {
+            'stationary': 0.1,
+            'slow': 1.0,
+            'moderate': 3.0,
+            'fast': 6.0
+        }
+        
+        self.motion_patterns = {
+            'running': {'tempo_range': (120, 200), 'symmetry_min': 0.7},
+            'walking': {'tempo_range': (80, 140), 'symmetry_min': 0.6},
+            'jumping': {'tempo_range': (60, 120), 'velocity_peak': 5.0},
+            'stretching': {'tempo_range': (10, 60), 'smoothness_min': 0.8},
+            'dancing': {'tempo_range': (100, 180), 'rhythm_consistency': 0.7}
+        }
+    
+    def classify(self, pose_sequence: np.ndarray) -> Dict:
+        """
+        Classify motion from a pose sequence.
+        
+        Args:
+            pose_sequence: Array of pose keypoints [frames, keypoints, coords]
+            
+        Returns:
+            Dictionary containing motion classification results
+        """
+        if pose_sequence is None or len(pose_sequence) < 2:
+            return {
+                'motion_class': 'insufficient_data',
+                'confidence': 0.0,
+                'details': {}
+            }
+        
+        try:
+            # Calculate comprehensive metrics
+            metrics = self._calculate_comprehensive_metrics(pose_sequence)
+            
+            # Perform classification
+            motion_class, confidence = self._classify_motion(metrics)
+            
+            return {
+                'motion_class': motion_class,
+                'confidence': confidence,
+                'details': {
+                    'metrics': metrics,
+                    'pattern_analysis': self._analyze_patterns(pose_sequence),
+                    'temporal_analysis': self._analyze_temporal_features(pose_sequence)
+                }
+            }
+            
+        except Exception as e:
+            self.logger.error(f"Error in motion classification: {e}")
+            return {
+                'motion_class': 'error',
+                'confidence': 0.0,
+                'details': {'error': str(e)}
+            }
+    
+    def _calculate_comprehensive_metrics(self, pose_sequence: np.ndarray) -> Dict:
+        """Calculate comprehensive motion metrics."""
+        metrics = {}
+        
+        try:
+            # Basic motion metrics
+            motion_metrics = self.metrics_calculator.calculate_metrics(pose_sequence)
+            metrics['motion'] = motion_metrics
+            
+            # Temporal analysis
+            tempo_data = self.tempo_analyzer.analyze_tempo(pose_sequence)
+            metrics['tempo'] = tempo_data
+            
+            # Symmetry analysis
+            symmetry_data = self.symmetry_analyzer.analyze(pose_sequence)
+            metrics['symmetry'] = symmetry_data
+            
+            # Trajectory analysis
+            trajectory_data = self.trajectory_analyzer.analyze(pose_sequence)
+            metrics['trajectory'] = trajectory_data
+            
+            # Sequence analysis
+            sequence_data = self.sequence_analyzer.analyze(pose_sequence)
+            metrics['sequence'] = sequence_data
+            
+        except Exception as e:
+            self.logger.error(f"Error calculating metrics: {e}")
+            metrics['error'] = str(e)
+        
+        return metrics
+    
+    def _classify_motion(self, metrics: Dict) -> Tuple[str, float]:
+        """Classify motion based on calculated metrics."""
+        if 'error' in metrics:
+            return 'error', 0.0
+        
+        # Extract key metrics for classification
+        motion_data = metrics.get('motion', {})
+        tempo_data = metrics.get('tempo', {})
+        symmetry_data = metrics.get('symmetry', {})
+        trajectory_data = metrics.get('trajectory', {})
+        
+        # Calculate overall velocity
+        velocity = motion_data.get('velocity', np.array([[0, 0]]))
+        if isinstance(velocity, list):
+            velocity = np.array(velocity)
+        avg_velocity = np.mean(np.linalg.norm(velocity, axis=1)) if velocity.ndim > 1 else 0.0
+        
+        # Classify based on velocity
+        if avg_velocity < self.velocity_thresholds['stationary']:
+            motion_class = 'stationary'
+            confidence = 0.9
+        elif avg_velocity < self.velocity_thresholds['slow']:
+            motion_class = self._classify_slow_motion(metrics)
+            confidence = 0.7
+        elif avg_velocity < self.velocity_thresholds['moderate']:
+            motion_class = self._classify_moderate_motion(metrics)
+            confidence = 0.8
+        else:
+            motion_class = self._classify_fast_motion(metrics)
+            confidence = 0.8
+        
+        # Adjust confidence based on data quality
+        if symmetry_data and symmetry_data.get('overall_symmetry', 0) > 0.8:
+            confidence = min(1.0, confidence + 0.1)
+        
+        return motion_class, confidence
+    
+    def _classify_slow_motion(self, metrics: Dict) -> str:
+        """Classify slow motion patterns."""
+        tempo_data = metrics.get('tempo', {})
+        smoothness = metrics.get('trajectory', {}).get('smoothness', 0.5)
+        
+        tempo = tempo_data.get('tempo', 0)
+        
+        if smoothness > 0.8 and tempo < 60:
+            return 'stretching'
+        elif tempo > 60:
+            return 'walking'
+        else:
+            return 'slow_movement'
+    
+    def _classify_moderate_motion(self, metrics: Dict) -> str:
+        """Classify moderate motion patterns."""
+        tempo_data = metrics.get('tempo', {})
+        symmetry_data = metrics.get('symmetry', {})
+        
+        tempo = tempo_data.get('tempo', 0)
+        symmetry = symmetry_data.get('overall_symmetry', 0.5) if symmetry_data else 0.5
+        
+        if 120 <= tempo <= 180 and symmetry > 0.7:
+            return 'running'
+        elif 80 <= tempo <= 140 and symmetry > 0.6:
+            return 'walking'
+        elif 100 <= tempo <= 180:
+            return 'dancing'
+        else:
+            return 'moderate_movement'
+    
+    def _classify_fast_motion(self, metrics: Dict) -> str:
+        """Classify fast motion patterns."""
+        trajectory_data = metrics.get('trajectory', {})
+        tempo_data = metrics.get('tempo', {})
+        
+        velocity_peak = trajectory_data.get('velocity', {}).get('peak', 0)
+        tempo = tempo_data.get('tempo', 0)
+        
+        if velocity_peak > 5.0 and 60 <= tempo <= 120:
+            return 'jumping'
+        elif tempo > 150:
+            return 'sprinting'
+        else:
+            return 'fast_movement'
+    
+    def _analyze_patterns(self, pose_sequence: np.ndarray) -> Dict:
+        """Analyze motion patterns."""
+        try:
+            # Phase analysis
+            phases = self.phase_analyzer.analyze_phases(pose_sequence)
+            
+            # Pattern matching (simplified)
+            pattern_result = self.pattern_matcher.match_pattern(pose_sequence)
+            
+            return {
+                'phases': phases,
+                'pattern_match': pattern_result,
+                'complexity': self._calculate_pattern_complexity(pose_sequence)
+            }
+        except Exception as e:
+            self.logger.error(f"Error in pattern analysis: {e}")
+            return {'error': str(e)}
+    
+    def _analyze_temporal_features(self, pose_sequence: np.ndarray) -> Dict:
+        """Analyze temporal features of motion."""
+        try:
+            # Calculate frame-to-frame variations
+            if len(pose_sequence) < 2:
+                return {'insufficient_data': True}
+            
+            # Calculate temporal consistency
+            frame_differences = np.diff(pose_sequence, axis=0)
+            temporal_consistency = 1.0 / (1.0 + np.std(frame_differences))
+            
+            # Calculate motion phases
+            motion_intensity = np.linalg.norm(frame_differences, axis=(1, 2))
+            
+            return {
+                'temporal_consistency': float(temporal_consistency),
+                'motion_intensity': motion_intensity.tolist() if len(motion_intensity) < 100 else motion_intensity[:100].tolist(),
+                'duration': len(pose_sequence) / self.fps,
+                'frame_count': len(pose_sequence)
+            }
+        except Exception as e:
+            self.logger.error(f"Error in temporal analysis: {e}")
+            return {'error': str(e)}
+    
+    def _calculate_pattern_complexity(self, pose_sequence: np.ndarray) -> float:
+        """Calculate the complexity of the motion pattern."""
+        try:
+            if len(pose_sequence) < 3:
+                return 0.0
+            
+            # Calculate spatial complexity (variation in pose configurations)
+            pose_variations = np.var(pose_sequence, axis=0)
+            spatial_complexity = np.mean(pose_variations)
+            
+            # Calculate temporal complexity (variation in motion speed)
+            frame_differences = np.diff(pose_sequence, axis=0)
+            motion_speeds = np.linalg.norm(frame_differences, axis=(1, 2))
+            temporal_complexity = np.std(motion_speeds) if len(motion_speeds) > 1 else 0.0
+            
+            # Combine complexities
+            total_complexity = (spatial_complexity + temporal_complexity) / 2
+            
+            # Normalize to [0, 1]
+            return min(1.0, total_complexity / 10.0)
+            
+        except Exception as e:
+            self.logger.error(f"Error calculating pattern complexity: {e}")
+            return 0.0
+    
+    def classify_motion_type(self, pose_sequence: np.ndarray) -> str:
+        """
+        Simplified motion type classification.
+        
+        Args:
+            pose_sequence: Array of pose keypoints
+            
+        Returns:
+            String representing the motion type
+        """
+        result = self.classify(pose_sequence)
+        return result.get('motion_class', 'unknown')
+    
+    def get_motion_features(self, pose_sequence: np.ndarray) -> Dict:
+        """
+        Extract motion features for further analysis.
+        
+        Args:
+            pose_sequence: Array of pose keypoints
+            
+        Returns:
+            Dictionary of motion features
+        """
+        result = self.classify(pose_sequence)
+        return result.get('details', {}).get('metrics', {})

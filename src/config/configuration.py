@@ -22,38 +22,55 @@ logger = logging.getLogger(__name__)
 
 class ConfigurationManager:
     """
-    Unified configuration management system for Moriarty.
+    Manages configuration settings for the computer vision pipeline.
     
-    This class implements the Singleton pattern to ensure only one configuration
-    instance exists throughout the application.
+    This class handles loading configuration from files and environment variables,
+    provides default values, and validates settings.
     """
+    
     _instance = None
     
     def __new__(cls):
-        """Create a singleton instance or return existing one."""
+        """Implement singleton pattern."""
         if cls._instance is None:
             cls._instance = super(ConfigurationManager, cls).__new__(cls)
             cls._instance._initialized = False
         return cls._instance
     
     def __init__(self):
-        """Initialize the configuration manager."""
-        # Only initialize once
+        """Initialize configuration manager."""
         if getattr(self, '_initialized', False):
             return
             
-        # Initialize with default configuration
-        self._config = self._get_default_config()
-        self._config_sources = ["default"]
+        self.config_path = Path("config.json")
+        self.config = self._load_config()
         self._initialized = True
         
+        logger.info("Configuration manager initialized")
+    
+    def _load_config(self) -> Dict[str, Any]:
+        """Load configuration from file or create default."""
+        if self.config_path.exists():
+            try:
+                with open(self.config_path, 'r') as f:
+                    config = json.load(f)
+                logger.info(f"Loaded configuration from {self.config_path}")
+                return self._merge_with_defaults(config)
+            except (json.JSONDecodeError, IOError) as e:
+                logger.warning(f"Failed to load config file: {e}")
+        
+        # Return default config if file doesn't exist or couldn't be loaded
+        config = self._get_default_config()
+        self._save_config(config)
+        return config
+    
     def _get_default_config(self) -> Dict[str, Any]:
         """Get the default configuration settings."""
         return {
             "system": {
-                "memory_limit_fraction": 0.8,
-                "workers": None,  # Auto-detect
-                "batch_size": 32,
+                "memory_limit_fraction": 0.25,  # Conservative 25% instead of 80%
+                "workers": None,  # Auto-detect (conservative)
+                "batch_size": 5,  # Small batch size for stability  
                 "device": "cuda" if self._is_cuda_available() else "cpu",
             },
             "paths": {
@@ -61,11 +78,18 @@ class ConfigurationManager:
                 "model_dir": "models",
                 "llm_training_dir": "llm_training_data",
                 "llm_model_dir": "llm_models",
+                "cache_dir": "cache",  # For model caching
             },
             "pose": {
-                "model_complexity": 1,
+                "model_complexity": 1,  # Lower complexity for faster processing
                 "min_detection_confidence": 0.5,
                 "min_tracking_confidence": 0.5,
+            },
+            "mediapipe": {
+                "cache_models": True,  # Enable model caching
+                "default_complexity": 1,  # Conservative complexity
+                "max_cached_models": 3,  # Limit cached models to save memory
+                "model_cache_dir": "cache/mediapipe_models",
             },
             "video": {
                 "extract_fps": 30,
@@ -78,6 +102,9 @@ class ConfigurationManager:
                 "use_dask": True,
                 "enable_visualizations": True,
                 "enable_progress_bars": True,
+                "conservative_mode": True,  # Enable conservative resource usage
+                "max_workers": 4,  # Hard cap on workers
+                "max_batch_size": 10,  # Hard cap on batch size
             },
             "logging": {
                 "level": "INFO",
@@ -94,132 +121,81 @@ class ConfigurationManager:
         except ImportError:
             return False
     
-    def load_from_env(self) -> None:
-        """Load configuration from environment variables."""
-        env_prefix = "MORIARTY_"
+    def _merge_with_defaults(self, user_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Merge user configuration with defaults."""
+        default_config = self._get_default_config()
         
-        # Only process environment variables starting with the prefix
-        for key, value in os.environ.items():
-            if key.startswith(env_prefix):
-                # Remove prefix and convert to lowercase
-                config_key = key[len(env_prefix):].lower()
-                
-                # Split by double underscore to get hierarchical keys
-                parts = config_key.split("__")
-                
-                # Navigate to the right place in the config
-                config = self._config
-                for part in parts[:-1]:
-                    if part not in config:
-                        config[part] = {}
-                    config = config[part]
-                
-                # Set the value (convert to appropriate type)
-                try:
-                    # Try to parse as JSON first (for complex values)
-                    config[parts[-1]] = json.loads(value)
-                except json.JSONDecodeError:
-                    # Fall back to string if not valid JSON
-                    config[parts[-1]] = value
-        
-        self._config_sources.append("environment")
-        logger.info("Configuration loaded from environment variables")
-    
-    def load_from_file(self, file_path: Union[str, Path]) -> None:
-        """
-        Load configuration from a file (YAML or JSON).
-        
-        Args:
-            file_path: Path to the configuration file
-        """
-        file_path = Path(file_path)
-        
-        if not file_path.exists():
-            logger.warning(f"Configuration file not found: {file_path}")
-            return
-        
-        try:
-            with open(file_path, 'r') as f:
-                if file_path.suffix.lower() in ['.yml', '.yaml']:
-                    file_config = yaml.safe_load(f)
-                elif file_path.suffix.lower() == '.json':
-                    file_config = json.load(f)
+        def deep_merge(default: Dict, user: Dict) -> Dict:
+            merged = default.copy()
+            for key, value in user.items():
+                if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
+                    merged[key] = deep_merge(merged[key], value)
                 else:
-                    logger.error(f"Unsupported configuration file format: {file_path.suffix}")
-                    return
-            
-            # Deep merge with existing configuration
-            self._deep_update(self._config, file_config)
-            self._config_sources.append(str(file_path))
-            logger.info(f"Configuration loaded from {file_path}")
+                    merged[key] = value
+            return merged
         
-        except Exception as e:
-            logger.error(f"Error loading configuration from {file_path}: {e}")
+        return deep_merge(default_config, user_config)
     
-    def _deep_update(self, target: Dict, source: Dict) -> None:
-        """
-        Deep update of nested dictionaries.
+    def _save_config(self, config: Dict[str, Any]) -> None:
+        """Save configuration to file."""
+        try:
+            with open(self.config_path, 'w') as f:
+                json.dump(config, f, indent=2)
+            logger.info(f"Saved configuration to {self.config_path}")
+        except IOError as e:
+            logger.warning(f"Failed to save config file: {e}")
+    
+    def get(self, key: str, default: Any = None) -> Any:
+        """Get a configuration value using dot notation."""
+        keys = key.split('.')
+        value = self.config
         
-        Args:
-            target: Target dictionary to update
-            source: Source dictionary with updates
-        """
-        for key, value in source.items():
-            if key in target and isinstance(target[key], dict) and isinstance(value, dict):
-                # Recursively update nested dictionaries
-                self._deep_update(target[key], value)
+        for k in keys:
+            if isinstance(value, dict) and k in value:
+                value = value[k]
             else:
-                # Update or set the value
-                target[key] = value
-    
-    def get(self, path: str, default: Any = None) -> Any:
-        """
-        Get a configuration value by path.
-        
-        Args:
-            path: Dot-separated path to the configuration value (e.g., 'system.workers')
-            default: Default value to return if the path doesn't exist
-            
-        Returns:
-            The configuration value or the default
-        """
-        parts = path.split('.')
-        
-        # Navigate through the nested dictionary
-        config = self._config
-        for part in parts:
-            if part not in config:
                 return default
-            config = config[part]
         
-        return config
+        return value
     
-    def set(self, path: str, value: Any) -> None:
-        """
-        Set a configuration value by path.
+    def set(self, key: str, value: Any) -> None:
+        """Set a configuration value using dot notation."""
+        keys = key.split('.')
+        config = self.config
         
-        Args:
-            path: Dot-separated path to the configuration value (e.g., 'system.workers')
-            value: Value to set
-        """
-        parts = path.split('.')
+        for k in keys[:-1]:
+            if k not in config:
+                config[k] = {}
+            config = config[k]
         
-        # Navigate through the nested dictionary
-        config = self._config
-        for part in parts[:-1]:
-            if part not in config:
-                config[part] = {}
-            config = config[part]
-        
-        config[parts[-1]] = value
+        config[keys[-1]] = value
+        self._save_config(self.config)
     
-    def get_all(self) -> Dict[str, Any]:
-        """Get the complete configuration dictionary."""
-        return self._config.copy()
+    def get_mediapipe_config(self) -> Dict[str, Any]:
+        """Get MediaPipe-specific configuration."""
+        return self.get('mediapipe', {})
     
-    def get_sources(self) -> List[str]:
-        """Get the list of configuration sources that have been loaded."""
-        return self._config_sources.copy()
+    def get_conservative_limits(self) -> Dict[str, Any]:
+        """Get conservative resource limits to prevent system crashes."""
+        return {
+            "memory_limit_fraction": min(0.25, self.get('system.memory_limit_fraction', 0.25)),
+            "max_workers": min(4, self.get('pipeline.max_workers', 4)),
+            "max_batch_size": min(10, self.get('pipeline.max_batch_size', 10)),
+            "conservative_mode": self.get('pipeline.conservative_mode', True),
+        }
+    
+    def should_cache_models(self) -> bool:
+        """Check if model caching is enabled."""
+        return self.get('mediapipe.cache_models', True)
+    
+    def get_model_cache_dir(self) -> Path:
+        """Get the model cache directory."""
+        cache_dir = Path(self.get('mediapipe.model_cache_dir', 'cache/mediapipe_models'))
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        return cache_dir
 
-# Global instance for easy access
-config = ConfigurationManager() 
+# Global configuration instance
+config_manager = ConfigurationManager()
+
+# Export the global config instance for easier access
+config = config_manager 

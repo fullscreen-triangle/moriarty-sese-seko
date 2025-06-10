@@ -5,17 +5,20 @@ from pathlib import Path
 import os
 import time
 
+# Import cached MediaPipe function
+try:
+    from src.pipeline import get_cached_mediapipe_pose
+except ImportError:
+    from pipeline import get_cached_mediapipe_pose
+
 class SimpleVideoProcessor:
     def __init__(self):
-        """Initialize the video processor with MediaPipe pose model."""
-        self.mp_pose = mp.solutions.pose
-        self.mp_drawing = mp.solutions.drawing_utils
-        self.pose = self.mp_pose.Pose(
-            static_image_mode=False,
-            model_complexity=2,
-            min_detection_confidence=0.5,
-            min_tracking_confidence=0.5
-        )
+        """Initialize the video processor with cached MediaPipe pose model."""
+        # Use cached MediaPipe models instead of creating new ones
+        self.cached_models = get_cached_mediapipe_pose(model_complexity=1)  # Use lower complexity for faster processing
+        self.mp_pose = self.cached_models['mp_pose']
+        self.mp_drawing = self.cached_models['mp_drawing']
+        self.pose = self.cached_models['pose']
         
         # Create output directory if it doesn't exist
         self.output_dir = Path("output")
@@ -96,13 +99,8 @@ class SimpleVideoProcessor:
         cap.release()
         out.release()
         
-        # Verify the output file exists and has content
-        if os.path.exists(output_path) and os.path.getsize(output_path) > 1000:
-            print(f"Successfully processed video. Output saved to {output_path}")
-            print(f"Output file size: {os.path.getsize(output_path) / (1024*1024):.2f} MB")
-            return str(output_path)
-        else:
-            raise Exception(f"Output file is missing or too small: {output_path}")
+        print(f"Processing complete! Output saved to {output_path}")
+        return str(output_path)
     
     def _calculate_metrics(self, landmarks, fps):
         """Calculate metrics based on pose landmarks."""

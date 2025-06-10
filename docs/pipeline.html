@@ -1,0 +1,614 @@
+<!doctype html>
+
+<html lang="en">
+
+<head>
+
+    <!-- META -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- PAGE TITLE -->
+    <title>Video Processing Pipeline - Moriarty Documentation</title>
+
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="assets/logo_32.png">
+
+    <!-- GOOGLE FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&display=swap" rel="stylesheet">
+
+    <!-- STYLESHEETS -->
+    <link rel="stylesheet" type="text/css" href="../assets/css/plugins.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/style.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/elements.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/colors.css">
+
+</head>
+
+<body>
+
+    <!-- LOADING SCREEN -->
+    <div class="loading-screen">
+        <!-- INNER-->
+        <div class="inner">
+            <div class="text-box"><h3>Pipeline</h3></div>
+            <div class="line-frame"><div class="line"></div></div>
+        </div>
+        <!-- /INNER-->
+    </div>
+    <!-- /LOADING SCREEN -->
+
+    <!-- MENU BUTTON -->
+    <div class="m-menu-button">
+        <!-- BURGER -->
+        <div class="burger">
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+        <!-- /BURGER -->
+    </div>
+    <!-- /MENU BUTTON -->
+
+    <!-- MENU -->
+    <div class="m-menu">
+        <!-- MENU INNER -->
+        <div class="m-menu-inner noselect">
+            <!-- MENU ITEMS -->
+            <div class="head m-b-2"><p class="small">Documentation</p></div>
+            <ul class="main-items">
+                <li><a href="index.html"><span class="ti-home"></span><p class="small">Home</p></a></li>
+                <li><a class="scroll-to" href="#overview"><span class="ti-eye"></span><p class="small">Overview</p></a></li>
+                <li><a class="scroll-to" href="#architecture"><span class="ti-layout-grid2"></span><p class="small">Architecture</p></a></li>
+                <li><a class="scroll-to" href="#usage"><span class="ti-code"></span><p class="small">Usage</p></a></li>
+                <li><a class="scroll-to" href="#api"><span class="ti-settings"></span><p class="small">API Options</p></a></li>
+                <li><a class="scroll-to" href="#flow"><span class="ti-share"></span><p class="small">Process Flow</p></a></li>
+                <li><a href="biomechanics.html"><span class="ti-pulse"></span><p class="small">Biomechanics</p></a></li>
+                <li><a href="ai-systems.html"><span class="ti-brain"></span><p class="small">AI Systems</p></a></li>
+            </ul>
+            <!-- /MENU ITEMS -->
+
+            <!-- SOCIAL ITEMS -->
+            <div class="head m-b-2 m-t-7"><p class="small">Connect</p></div>
+            <div class="social-items">
+                <div class="item"><a href="https://github.com/yourusername/moriarty" target="_blank" rel="noopener"><span class="ti-github"></span></a></div>
+                <div class="item"><a href="#"><span class="ti-twitter"></span></a></div>
+                <div class="item"><a href="#"><span class="ti-linkedin"></span></a></div>
+            </div>
+            <!-- /SOCIAL ITEMS -->
+        </div>
+        <!-- /MENU INNER -->
+    </div>
+    <!-- /MENU -->
+    
+    <!-- MAIN -->
+    <div id="main">
+
+        <!-- LEFT CONTENT -->
+        <div class="left-content noselect">
+            <!-- INNER CONTENT -->
+            <div class="inner-content">
+                <!-- NAME -->
+                <div class="name">
+                    <p class="small color-white">Pipeline</p>
+                    <div class="seperator-line"></div>
+                </div>
+                <!-- /NAME -->
+
+                <div class="picture-box">
+                    <div class="picture" style="background-image: url('assets/logo.png'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
+                </div>
+                <div class="frame-1 frame"></div>
+                <div class="frame-2 frame"></div>
+                <div class="frame-3 frame"></div>
+            </div>
+            <!-- /INNER CONTENT -->
+        </div>
+        <!-- /LEFT CONTENT -->
+
+        <!-- RIGHT CONTENT -->
+        <div class="right-content">
+            <!-- INNER CONTENT -->
+            <div class="inner-content">
+                <!-- SECTION CONTAINER -->
+                <div class="section-container">
+                
+                    <!-- SECTION ( OVERVIEW ) -->
+                    <div class="section height-100 y-center" style="padding-bottom:2rem" id="overview">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-4">VIDEO PROCESSING PIPELINE</p>
+                            <h1 class="m-b-5 m-l-3">Distributed Processing for Sports Video Analysis</h1>
+                            <div class="seperator-line"></div>
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( OVERVIEW ) -->
+
+                    <!-- SECTION ( FEATURES ) -->
+                    <div class="section" style="padding-bottom:20rem">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">CORE FEATURES</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Distributed video processing with<br> intelligent memory management</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+                            <p class="scroll-animation">The pipeline processes videos using distributed computing to extract pose data, generate annotated videos, and train LLMs. It combines Ray for distributed analysis, Dask for parallel processing, and MediaPipe for pose estimation.</p>
+
+                            <!-- SKILL BAR -->
+                            <div class="skill-bar scroll-animation m-t-6">
+                                <div class="head noselect"><h5>Distributed Processing</h5></div>
+                                <!-- BAR -->
+                                <div class="bar m-b-2">
+                                    <div class="fill" style="width: 94%;"></div>
+                                    <div class="number-tag noselect" style="left: 94%;"><p class="small">94%</p></div>
+                                </div>
+                                <!-- /BAR -->
+                            </div>
+                            <!-- /SKILL BAR -->
+
+                            <!-- SKILL BAR -->
+                            <div class="skill-bar m-b-2 scroll-animation">
+                                <div class="head noselect"><h5>Memory Management</h5></div>
+                                <!-- BAR -->
+                                <div class="bar">
+                                    <div class="fill" style="width: 90%;"></div>
+                                    <div class="number-tag noselect" style="left: 90%;"><p class="small">90%</p></div>
+                                </div>
+                                <!-- /BAR -->
+                            </div>
+                            <!-- /SKILL BAR -->
+
+                            <!-- SKILL BAR -->
+                            <div class="skill-bar scroll-animation">
+                                <div class="head noselect"><h5>LLM Integration</h5></div>
+                                <!-- BAR -->
+                                <div class="bar">
+                                    <div class="fill" style="width: 88%;"></div>
+                                    <div class="number-tag noselect" style="left: 88%;"><p class="small">88%</p></div>
+                                </div>
+                                <!-- /BAR -->
+                            </div>
+                            <!-- /SKILL BAR -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( FEATURES ) -->
+
+                    <!-- SECTION ( ARCHITECTURE ) -->
+                    <div class="section" style="padding-bottom:20rem" id="architecture">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">SYSTEM ARCHITECTURE</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Distributed components working<br> together for optimal performance</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+
+                            <!-- CARD GRID -->
+                            <div class="card-grid scroll-animation">
+                                <!-- LEFT SIDE -->
+                                <div class="left-side">
+                                    <!-- ITEM -->
+                                    <div class="item noselect" style="background-color: #181818;">
+                                        <!-- ITEM CONTAINER -->
+                                        <div class="item-container">
+                                            <h3><span class="icon-video m-b-1"></span></h3>
+                                            <p>Video Pipeline</p>
+                                        </div>
+                                        <!-- /ITEM CONTAINER -->
+                                    </div>
+                                    <!-- /ITEM -->
+
+                                    <!-- ITEM -->
+                                    <div class="item" style="background-color: #080808;">
+                                        <!-- ITEM CONTAINER -->
+                                        <div class="item-container">
+                                            <h3><span class="icon-tools m-b-1"></span></h3>
+                                            <p>MediaPipe Processor</p>
+                                        </div>
+                                        <!-- /ITEM CONTAINER -->
+                                    </div>
+                                    <!-- /ITEM -->
+                                </div>
+                                <!-- /LEFT SIDE -->
+
+                                <!-- RIGHT SIDE -->
+                                <div class="right-side m-t-6">
+                                    <!-- ITEM -->
+                                    <div class="item" style="background-color: #111;">
+                                        <!-- ITEM CONTAINER -->
+                                        <div class="item-container">
+                                            <h3><span class="icon-pulse m-b-1"></span></h3>
+                                            <p>Memory Monitor</p>
+                                        </div>
+                                        <!-- /ITEM CONTAINER -->
+                                    </div>
+                                    <!-- /ITEM -->
+                                    
+                                    <!-- ITEM -->
+                                    <div class="item" style="background-color: #030303;">
+                                        <!-- ITEM CONTAINER -->
+                                        <div class="item-container">
+                                            <h3><span class="icon-brain m-b-1"></span></h3>
+                                            <p>LLM Trainer</p>
+                                        </div>
+                                        <!-- /ITEM CONTAINER -->
+                                    </div>
+                                    <!-- /ITEM -->
+                                </div>
+                                <!-- /RIGHT SIDE -->
+                            </div>
+                            <!-- /CARD GRID -->
+
+                            <!-- TECHNOLOGIES -->
+                            <div class="resume m-t-6">
+                                <!-- ITEM -->
+                                <div class="item m-b-6 scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Ray<span class="m-l-2 color-white">Distributed Analysis</span></p>
+                                    <p class="color-white m-b-1">Parallel processing</p>
+                                    <p>Distributed analysis of pose data with automatic load balancing and fault tolerance.</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item m-b-6 scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Dask<span class="m-l-2 color-white">Frame Processing</span></p>
+                                    <p class="color-white m-b-1">Parallel video frames</p>
+                                    <p>Efficient batch processing of video frames with intelligent memory management.</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item m-b-6 scroll-animation">
+                                    <p class="color-white m-b-1-5 small">MediaPipe<span class="m-l-2 color-white">Pose Estimation</span></p>
+                                    <p class="color-white m-b-1">Real-time landmarks</p>
+                                    <p>High-accuracy pose estimation with confidence scoring and temporal consistency.</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Memory Monitor<span class="m-l-2 color-white">Resource Control</span></p>
+                                    <p class="color-white m-b-1">Intelligent limits</p>
+                                    <p>Prevents crashes by limiting memory usage to 40% of system RAM with dynamic scaling.</p>
+                                </div>
+                                <!-- /ITEM -->
+                            </div>
+                            <!-- /TECHNOLOGIES -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( ARCHITECTURE ) -->
+
+                    <!-- SECTION ( USAGE ) -->
+                    <div class="section" style="padding-bottom:20rem" id="usage">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">USAGE EXAMPLES</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Simple commands for powerful processing</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+
+                            <!-- TABS -->
+                            <div class="tabs scroll-animation">
+                                <!-- TAB NAVIGATION -->
+                                <ul class="tab-nav m-b-3">
+                                    <li><a href="#tab-1"><p>Basic Usage</p></a></li>
+                                    <li><a href="#tab-2"><p>Batch Processing</p></a></li>
+                                    <li><a href="#tab-3"><p>Memory Control</p></a></li>
+                                    <li><a href="#tab-4"><p>LLM Training</p></a></li>
+                                </ul>
+                                <!-- /TAB NAVIGATION -->
+
+                                <div id="tab-1" class="tab">
+                                    <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                                        <code style="color: #00ff00; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+# Process a single video<br>
+python pipeline.py --video public/your_video.mp4<br>
+<br>
+# Generate both annotated video and pose model<br>
+python pipeline.py --video public/basketball_game.mp4 --sport_type basketball<br>
+<br>
+# Output to custom directory<br>
+python pipeline.py --video public/training.mp4 --output results
+                                        </code>
+                                    </div>
+                                    <p class="m-t-3">Single video processing with automatic pose detection and annotation generation.</p>
+                                </div>
+
+                                <div id="tab-2" class="tab">
+                                    <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                                        <code style="color: #00ff00; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+# Process all videos in a folder<br>
+python pipeline.py --input public<br>
+<br>
+# Batch process with custom workers<br>
+python pipeline.py --input videos --workers 6 --batch_size 8<br>
+<br>
+# Generate only pose models (no videos)<br>
+python pipeline.py --input public --no_video
+                                        </code>
+                                    </div>
+                                    <p class="m-t-3">Batch processing multiple videos with distributed workers and customizable parameters.</p>
+                                </div>
+
+                                <div id="tab-3" class="tab">
+                                    <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                                        <code style="color: #00ff00; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+# Limit memory usage to 30% of system RAM<br>
+python pipeline.py --memory_limit 0.3<br>
+<br>
+# Conservative processing for low-spec machines<br>
+python pipeline.py --memory_limit 0.2 --workers 2 --batch_size 3<br>
+<br>
+# High-performance processing<br>
+python pipeline.py --memory_limit 0.6 --workers 8 --batch_size 10
+                                        </code>
+                                    </div>
+                                    <p class="m-t-3">Intelligent memory management prevents crashes and optimizes performance for your hardware.</p>
+                                </div>
+
+                                <div id="tab-4" class="tab">
+                                    <div style="background: #111; padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                                        <code style="color: #00ff00; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+# Train LLM with generated pose data<br>
+python pipeline.py --input public --train_llm<br>
+<br>
+# Use OpenAI API for synthetic data generation<br>
+python pipeline.py --train_llm --use_openai<br>
+<br>
+# Use Claude API for enhanced analysis<br>
+python pipeline.py --train_llm --use_claude
+                                        </code>
+                                    </div>
+                                    <p class="m-t-3">Integrate with LLM training and API services for advanced AI-powered analysis.</p>
+                                </div>
+                            </div>
+                            <!-- /TABS -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( USAGE ) -->
+
+                    <!-- SECTION ( API OPTIONS ) -->
+                    <div class="section" style="padding-bottom:20rem" id="api">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">COMMAND LINE OPTIONS</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Complete parameter reference</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+
+                            <!-- ACCORDION -->
+                            <ul class="accordion" data-active-index="false" data-slide-Speed="200">
+                                <!-- ACCORDION ITEM -->
+                                <li class="accordion-item scroll-animation">
+                                    <div><h5>Input/Output Options</h5><div class="icon"></div></div>
+                                    <div>
+                                        <div class="m-b-3">
+                                            <p><strong>--input, -i:</strong> Input folder containing videos (default: public)</p>
+                                            <p><strong>--video, -v:</strong> Process a single video file</p>
+                                            <p><strong>--output, -o:</strong> Output folder for processed videos (default: output)</p>
+                                            <p><strong>--models, -m:</strong> Folder for pose models (default: models)</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- /ACCORDION ITEM -->
+
+                                <!-- ACCORDION ITEM -->
+                                <li class="accordion-item scroll-animation">
+                                    <div><h5>Processing Control</h5><div class="icon"></div></div>
+                                    <div>
+                                        <div class="m-b-3">
+                                            <p><strong>--memory_limit:</strong> Memory limit as fraction of total (default: 0.4)</p>
+                                            <p><strong>--workers:</strong> Number of worker processes (default: auto)</p>
+                                            <p><strong>--batch_size:</strong> Frames to process per batch (default: 5)</p>
+                                            <p><strong>--no_video:</strong> Skip generating annotated videos (models only)</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- /ACCORDION ITEM -->
+
+                                <!-- ACCORDION ITEM -->
+                                <li class="accordion-item scroll-animation">
+                                    <div><h5>AI Integration</h5><div class="icon"></div></div>
+                                    <div>
+                                        <div class="m-b-3">
+                                            <p><strong>--train_llm:</strong> Train LLM using the generated pose models</p>
+                                            <p><strong>--use_openai:</strong> Use OpenAI API for synthetic data generation</p>
+                                            <p><strong>--use_claude:</strong> Use Claude API for synthetic data generation</p>
+                                            <p><strong>--sport_type:</strong> Type of sport for context (e.g., basketball, soccer)</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <!-- /ACCORDION ITEM -->
+
+                                <!-- ACCORDION ITEM -->
+                                <li class="accordion-item scroll-animation">
+                                    <div><h5>Storage Options</h5><div class="icon"></div></div>
+                                    <div>
+                                        <div class="m-b-3">
+                                            <p><strong>--llm_data, -l:</strong> Folder for LLM training data (default: llm_training_data)</p>
+                                            <p><strong>--llm_models:</strong> Folder for trained LLM models (default: llm_models)</p>
+                                        </div>
+                                        <p>All paths can be absolute or relative to the current working directory.</p>
+                                    </div>
+                                </li>
+                                <!-- /ACCORDION ITEM -->
+                            </ul>
+                            <!-- /ACCORDION -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( API OPTIONS ) -->
+
+                    <!-- SECTION ( PROCESS FLOW ) -->
+                    <div class="section" style="padding-bottom:20rem" id="flow">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">PROCESSING FLOW</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Step-by-step pipeline execution</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+
+                            <!-- WORK GRID -->
+                            <div class="work-grid">
+                                <!-- ITEM -->
+                                <div class="item noselect scroll-animation">
+                                    <div class="icon-button"><span class="ti-video"></span></div>
+                                    <div class="info"><p class="color-white">Video Loading</p><div class="seperator-line m-t-1"></div></div>
+                                    <div class="cover" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                        <span class="icon-camera"></span>
+                                    </div>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item noselect m-t-6 scroll-animation">
+                                    <div class="icon-button"><span class="ti-layout-grid2"></span></div>
+                                    <div class="info"><p class="color-white">Batch Processing</p><div class="seperator-line m-t-1"></div></div>
+                                    <div class="cover" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                        <span class="icon-grid"></span>
+                                    </div>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item noselect m-t-6 scroll-animation">
+                                    <div class="icon-button"><span class="ti-pulse"></span></div>
+                                    <div class="info"><p class="color-white">Pose Analysis</p><div class="seperator-line m-t-1"></div></div>
+                                    <div class="cover" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                        <span class="icon-user"></span>
+                                    </div>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item noselect m-t-6 scroll-animation">
+                                    <div class="icon-button"><span class="ti-brain"></span></div>
+                                    <div class="info"><p class="color-white">LLM Training</p><div class="seperator-line m-t-1"></div></div>
+                                    <div class="cover" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
+                                        <span class="icon-robot"></span>
+                                    </div>
+                                </div>
+                                <!-- /ITEM -->
+                            </div>
+                            <!-- /WORK GRID -->
+
+                            <!-- PROCESS STEPS -->
+                            <div class="resume m-t-6">
+                                <!-- ITEM -->
+                                <div class="item m-b-6 scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Step 1<span class="m-l-2 color-white">Video Loading & Batch Split</span></p>
+                                    <p class="color-white m-b-1">Intelligent preprocessing</p>
+                                    <p>Videos are loaded and split into manageable batches for distributed processing with memory monitoring.</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item m-b-6 scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Step 2<span class="m-l-2 color-white">MediaPipe Processing</span></p>
+                                    <p class="color-white m-b-1">Pose estimation</p>
+                                    <p>Batches are processed with MediaPipe via Dask workers for real-time pose landmark detection.</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item m-b-6 scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Step 3<span class="m-l-2 color-white">Ray Analysis</span></p>
+                                    <p class="color-white m-b-1">Distributed computation</p>
+                                    <p>Pose landmarks are analyzed with Ray for parallel processing and biomechanical calculations.</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item m-b-6 scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Step 4<span class="m-l-2 color-white">Results Combination</span></p>
+                                    <p class="color-white m-b-1">Output generation</p>
+                                    <p>Results are combined and saved as annotated videos and pose model JSON files.</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item scroll-animation">
+                                    <p class="color-white m-b-1-5 small">Step 5<span class="m-l-2 color-white">LLM Training</span></p>
+                                    <p class="color-white m-b-1">AI integration</p>
+                                    <p>Pose data is converted to training examples and used for LLM training or synthetic data generation.</p>
+                                </div>
+                                <!-- /ITEM -->
+                            </div>
+                            <!-- /PROCESS STEPS -->
+
+                            <!-- PERFORMANCE METRICS -->
+                            <div class="testimonial-carousel scroll-animation m-t-6">
+                                <!-- ITEM -->
+                                <div class="item">
+                                    <p class="quote">"The distributed pipeline processes our training videos 5x faster than traditional methods while maintaining research-grade accuracy."</p>
+                                    <p class="name m-t-3 color-white">Coach Martinez</p>
+                                    <p class="role">Olympic Training Center</p>
+                                </div>
+                                <!-- /ITEM -->
+
+                                <!-- ITEM -->
+                                <div class="item">
+                                    <p class="quote">"Memory management is flawless - we can process hours of footage on standard hardware without crashes or performance issues."</p>
+                                    <p class="name m-t-3 color-white">Dr. Kim</p>
+                                    <p class="role">Sports Science Institute</p>
+                                </div>
+                                <!-- /ITEM -->
+                            </div>
+                            <!-- /PERFORMANCE METRICS -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( PROCESS FLOW ) -->
+
+                    <!-- SECTION ( NAVIGATION ) -->
+                    <div class="section" style="padding-bottom:20rem">
+                        <!-- CONTAINER -->
+                        <div class="container">
+                            <p class="tag m-b-3 scroll-animation">EXPLORE MORE</p>
+                            <h3 class="m-b-4 m-l-1 scroll-animation">Continue with other documentation</h3>
+                            <div class="seperator-line m-b-4 scroll-animation"></div>
+
+                            <!-- CUSTOMER GRID -->
+                            <div class="customer-grid scroll-animation">
+                                <div class="item m-b-5">
+                                    <a href="biomechanics.html" class="default-button">
+                                        <span class="button-text">Biomechanics</span>
+                                        <span class="icon-button m-l-2"><span class="ti-arrow-right"></span></span>
+                                    </a>
+                                </div>
+                                <div class="item m-b-5">
+                                    <a href="ai-systems.html" class="default-button">
+                                        <span class="button-text">AI Systems</span>
+                                        <span class="icon-button m-l-2"><span class="ti-arrow-right"></span></span>
+                                    </a>
+                                </div>
+                                <div class="item m-b-5">
+                                    <a href="index.html" class="default-button">
+                                        <span class="button-text">Home</span>
+                                        <span class="icon-button m-l-2"><span class="ti-arrow-right"></span></span>
+                                    </a>
+                                </div>
+                            </div>
+                            <!-- /CUSTOMER GRID -->
+                        </div>
+                        <!-- /CONTAINER -->
+                    </div>
+                    <!-- /SECTION ( NAVIGATION ) -->
+
+                </div>
+                <!-- /SECTION CONTAINER -->
+            </div>
+            <!-- /INNER CONTENT -->
+        </div>
+        <!-- /RIGHT CONTENT -->
+    </div>
+    <!-- MAIN -->
+
+    <!-- JAVASCRIPT FILES -->
+    <script src="../assets/js/plugins.js"></script>
+    <script src="config.js"></script>
+    <script src="../assets/js/scripts.js"></script>
+    <script src="../assets/js/backgound.js"></script>
+
+</body>
+
+</html> 

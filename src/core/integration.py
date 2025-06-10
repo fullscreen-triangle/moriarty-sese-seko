@@ -26,7 +26,7 @@ from src.core.pose.pose_detector import PoseDetector
 from src.core.pose.human_detector import HumanDetector
 from src.core.pose.skeleton import SkeletonDrawer
 from src.core.pose.pose_visualizer import PoseVisualizer
-from src.core.pose.pose_data_to_llm import PoseDataConverter
+from src.core.pose.pose_data_to_llm import PoseDataExtractor
 
 # Import core modules - dynamics
 from src.core.dynamics.kinematics_analyzer import KinematicsAnalyzer
@@ -35,17 +35,13 @@ from src.core.dynamics.sync_analyzer import SynchronizationAnalyzer
 from src.core.dynamics.dynamics_analyzer import DynamicsAnalyzer
 from src.core.dynamics.grf_analyzer import GRFAnalyzer
 
-# Import core modules - motion
-from src.core.motion.motion_classifier import MotionClassifier
-from src.core.motion.movement_detector import MovementDetector
+
 from src.core.motion.movement_tracker import MovementTracker
 from src.core.motion.stabilography import StabilographyAnalyzer
 
 # Import core modules - scene
 from src.core.scene.scene_detector import SceneDetector
-from src.core.scene.video_manager import VideoManager
 from src.core.scene.processor import VideoProcessor
-from src.core.scene.analyzer import SceneAnalyzer
 from src.core.scene.metrics import MetricsCalculator
 
 # Import configuration and caching
@@ -108,7 +104,7 @@ class CoreIntegrator:
             )
             self.skeleton_drawer = SkeletonDrawer()
             self.pose_visualizer = PoseVisualizer()
-            self.pose_data_converter = PoseDataConverter()
+            self.pose_data_extractor = PoseDataExtractor()
             logger.info("Pose modules initialized successfully")
         except Exception as e:
             logger.error(f"Error initializing pose modules: {e}")
@@ -132,10 +128,26 @@ class CoreIntegrator:
         """Initialize motion analysis modules."""
         try:
             logger.info("Initializing motion modules...")
-            self.motion_classifier = MotionClassifier()
-            self.movement_detector = MovementDetector()
+            # Initialize movement tracker (exists)
             self.movement_tracker = MovementTracker()
+            # Initialize stabilography analyzer (exists)
             self.stabilography_analyzer = StabilographyAnalyzer()
+            
+            # Initialize optional modules with graceful fallback
+            try:
+                from src.core.motion.motion_classifier import MotionClassifier
+                self.motion_classifier = MotionClassifier()
+            except ImportError:
+                logger.warning("MotionClassifier not available - using basic implementation")
+                self.motion_classifier = None
+                
+            try:
+                from src.core.motion.movement_detector import MovementDetector
+                self.movement_detector = MovementDetector()
+            except ImportError:
+                logger.warning("MovementDetector not available - using basic implementation")
+                self.movement_detector = None
+                
             logger.info("Motion modules initialized successfully")
         except Exception as e:
             logger.error(f"Error initializing motion modules: {e}")
@@ -145,15 +157,76 @@ class CoreIntegrator:
         """Initialize scene analysis modules."""
         try:
             logger.info("Initializing scene modules...")
-            self.scene_detector = SceneDetector()
-            self.video_manager = VideoManager()
+            # Initialize core scene modules (exist)
+            scene_config = {
+                'scene_detection': {
+                    'hist_threshold': 0.5,
+                    'flow_threshold': 0.7,
+                    'edge_threshold': 0.6,
+                    'focus_threshold': 1000
+                }
+            }
+            self.scene_detector = SceneDetector(scene_config)
             self.video_processor = VideoProcessor()
-            self.scene_analyzer = SceneAnalyzer()
             self.metrics_calculator = MetricsCalculator()
+            
+            # Initialize optional modules with graceful fallback
+            try:
+                from src.core.scene.video_manager import VideoManager
+                self.video_manager = VideoManager()
+            except ImportError:
+                logger.warning("VideoManager not available - using basic video handling")
+                # Create a simple video manager substitute
+                self.video_manager = self._create_basic_video_manager()
+                
+            try:
+                from src.core.scene.scene_analyzer import SceneAnalyzer
+                analyzer_config = {
+                    'scene_detection': {
+                        'hist_threshold': 0.5,
+                        'flow_threshold': 0.7,
+                        'edge_threshold': 0.6,
+                        'focus_threshold': 1000
+                    },
+                    'output': {
+                        'plots_directory': str(self.output_dir / 'scene_analysis_plots')
+                    }
+                }
+                self.scene_analyzer = SceneAnalyzer(analyzer_config)
+            except ImportError:
+                logger.warning("SceneAnalyzer not available - using basic implementation")
+                self.scene_analyzer = None
+                
             logger.info("Scene modules initialized successfully")
         except Exception as e:
             logger.error(f"Error initializing scene modules: {e}")
             raise RuntimeError(f"Failed to initialize scene modules: {e}")
+    
+    def _create_basic_video_manager(self):
+        """Create a basic video manager for handling video operations."""
+        class BasicVideoManager:
+            def load_video(self, video_path):
+                """Basic video loading functionality."""
+                cap = cv2.VideoCapture(video_path)
+                if not cap.isOpened():
+                    raise ValueError(f"Could not open video: {video_path}")
+                    
+                fps = cap.get(cv2.CAP_PROP_FPS)
+                width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                
+                cap.release()
+                
+                return {
+                    "fps": fps,
+                    "width": width,
+                    "height": height,
+                    "frame_count": frame_count,
+                    "duration": frame_count / fps if fps > 0 else 0
+                }
+        
+        return BasicVideoManager()
     
     def process_video(self, 
                    video_path: str, 
@@ -655,16 +728,18 @@ class CoreIntegrator:
         
         # Convert kinematics
         if "kinematics" in analysis_results:
-            kinematics_data = self.pose_data_converter.convert_kinematics(
+            # Use pose data extractor to convert data
+            kinematics_data = self.pose_data_extractor.convert_to_text_descriptions(
                 analysis_results["kinematics"]
             )
-            llm_data.extend(kinematics_data)
+            llm_data.extend(kinematics_data if isinstance(kinematics_data, list) else [kinematics_data])
         
         # Convert stride data
         if "stride" in analysis_results:
-            stride_data = self.pose_data_converter.convert_stride_data(
+            # Use pose data extractor to convert data
+            stride_data = self.pose_data_extractor.convert_to_text_descriptions(
                 analysis_results["stride"]
             )
-            llm_data.extend(stride_data)
+            llm_data.extend(stride_data if isinstance(stride_data, list) else [stride_data])
         
         return llm_data 

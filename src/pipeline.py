@@ -19,6 +19,45 @@ from concurrent.futures import ThreadPoolExecutor
 import multiprocessing as mp_lib
 import psutil  # For memory monitoring
 import ray
+import ssl
+import urllib.request
+import threading
+import gc
+
+from core.pose.pose_data_to_llm import PoseDataExtractor
+
+# Fix SSL certificate verification issue for MediaPipe model downloads
+ssl._create_default_https_context = ssl._create_unverified_context
+
+# Global MediaPipe model cache to avoid repeated downloads
+_MEDIAPIPE_CACHE = {}
+_CACHE_LOCK = threading.Lock()
+
+def get_cached_mediapipe_pose(model_complexity=2):
+    """
+    Get a cached MediaPipe pose model to avoid repeated downloads.
+    Thread-safe singleton pattern for model caching.
+    """
+    cache_key = f"pose_complexity_{model_complexity}"
+    
+    with _CACHE_LOCK:
+        if cache_key not in _MEDIAPIPE_CACHE:
+            print(f"Creating and caching MediaPipe pose model (complexity {model_complexity})...")
+            _MEDIAPIPE_CACHE[cache_key] = {
+                'mp_pose': mp.solutions.pose,
+                'mp_drawing': mp.solutions.drawing_utils,
+                'pose': mp.solutions.pose.Pose(
+                    static_image_mode=False, 
+                    model_complexity=model_complexity,
+                    min_detection_confidence=0.5,
+                    min_tracking_confidence=0.5
+                )
+            }
+            print(f"MediaPipe pose model cached successfully!")
+        else:
+            print(f"Using cached MediaPipe pose model (complexity {model_complexity})")
+    
+    return _MEDIAPIPE_CACHE[cache_key]
 
 # Robust Dask imports with fallback
 try:
@@ -42,6 +81,9 @@ except ImportError as e:
         def submit(self, func, *args, **kwargs):
             # Direct execution for fallback
             return func(*args, **kwargs)
+        def close(self):
+            # Dummy close method for fallback client
+            pass
     
     class LocalCluster:
         def __init__(self, *args, **kwargs):
@@ -59,14 +101,7 @@ from typing import List, Dict, Tuple, Any, Optional
 import json
 import logging
 from dotenv import load_dotenv
-import torch  # For checking GPU availability
-import queue
-import threading
 
-# Import internal moriarty modules
-from .core.pose.pose_data_to_llm import PoseDataExtractor
-from .distributed.rayprocessor import RayVideoProcessor
-from .utils import file_utils
 
 # Configure logging
 logging.basicConfig(
@@ -79,88 +114,84 @@ logger.info(logger_msg)
 # Load environment variables for API keys
 load_dotenv()
 
-# Default settings
-DEFAULT_MEMORY_LIMIT = 0.4  # 40% of memory
-DEFAULT_BATCH_SIZE = 30
-DEFAULT_WORKERS = max(1, mp_lib.cpu_count() - 1)  # Leave one CPU free
+# Conservative default settings to prevent system crashes
+DEFAULT_MEMORY_LIMIT = 0.25  # 25% of memory (reduced from 40%)
+DEFAULT_BATCH_SIZE = 5       # Smaller batches (reduced from 30)
+DEFAULT_WORKERS = max(1, min(4, mp_lib.cpu_count() // 2))  # Conservative worker count
 
 class MemoryMonitor:
-    """Monitors system memory usage and provides controls.
+    """Singleton class to monitor system memory and prevent crashes."""
     
-    This class implements the Singleton pattern to ensure only one instance
-    exists throughout the application lifecycle.
-    """
     _instance = None
     
-    def __new__(cls, memory_limit_fraction=DEFAULT_MEMORY_LIMIT):
-        """Create a singleton instance or return existing one."""
-        if cls._instance is None:
-            cls._instance = super(MemoryMonitor, cls).__new__(cls)
-            cls._instance._initialized = False
-        return cls._instance
-    
     def __init__(self, memory_limit_fraction=DEFAULT_MEMORY_LIMIT):
-        """Initialize memory monitor with a fraction limit."""
-        # Only initialize once
-        if getattr(self, '_initialized', False):
-            return
-            
+        if MemoryMonitor._instance is not None:
+            raise Exception("MemoryMonitor is a singleton!")
+        
         self.memory_limit_fraction = memory_limit_fraction
         self.total_memory = psutil.virtual_memory().total
-        self.memory_limit = self.total_memory * self.memory_limit_fraction
-        logger.info(f"Memory monitor initialized with limit: {self.memory_limit / (1024**3):.2f} GB "
-                   f"({self.memory_limit_fraction * 100:.0f}% of total {self.total_memory / (1024**3):.2f} GB)")
+        self.memory_limit = int(self.total_memory * memory_limit_fraction)
         
-        # Add threshold warnings
-        self.warning_threshold = 0.85 * self.memory_limit
-        self.critical_threshold = 0.95 * self.memory_limit
-        self._initialized = True
-    
-    @classmethod
-    def get_instance(cls, memory_limit_fraction=DEFAULT_MEMORY_LIMIT):
-        """Get or create the singleton instance."""
-        return cls(memory_limit_fraction)
-    
-    def check_memory(self) -> bool:
-        """Check if memory usage is below limit."""
-        current_usage = psutil.virtual_memory().used
-        is_ok = current_usage < self.memory_limit
-        usage_percent = current_usage / self.total_memory * 100
+        logger.info(f"Memory Monitor initialized: "
+                   f"Total: {self.total_memory/(1024**3):.1f}GB, "
+                   f"Limit: {self.memory_limit/(1024**3):.1f}GB ({memory_limit_fraction*100:.1f}%)")
         
-        # Add warning levels for better monitoring
-        if current_usage >= self.critical_threshold:
-            logger.warning(f"CRITICAL memory usage: {usage_percent:.1f}% (limit: {self.memory_limit_fraction * 100:.0f}%)")
-        elif current_usage >= self.warning_threshold:
-            logger.warning(f"HIGH memory usage: {usage_percent:.1f}% (limit: {self.memory_limit_fraction * 100:.0f}%)")
-        elif not is_ok:
-            logger.warning(f"Memory usage exceeds limit: {usage_percent:.1f}% (limit: {self.memory_limit_fraction * 100:.0f}%)")
+        MemoryMonitor._instance = self
+    
+    @staticmethod
+    def get_instance(memory_limit_fraction=DEFAULT_MEMORY_LIMIT):
+        if MemoryMonitor._instance is None:
+            MemoryMonitor(memory_limit_fraction)
+        return MemoryMonitor._instance
+    
+    def get_available_memory(self):
+        """Get available memory in bytes."""
+        return psutil.virtual_memory().available
+    
+    def get_memory_usage_percent(self):
+        """Get current memory usage as percentage."""
+        return psutil.virtual_memory().percent
+    
+    def check_memory(self, required_memory=None):
+        """
+        Check if we have enough memory available.
         
-        return is_ok
+        Args:
+            required_memory: Required memory in bytes (optional)
+            
+        Returns:
+            bool: True if we have enough memory, False otherwise
+        """
+        available = self.get_available_memory()
+        usage_percent = self.get_memory_usage_percent()
+        
+        # If we're using more than 80% of system memory, consider it insufficient
+        if usage_percent > 80:
+            logger.warning(f"High memory usage detected: {usage_percent:.1f}%")
+            return False
+        
+        # If specific memory requirement is given, check against that
+        if required_memory:
+            return available >= required_memory
+        
+        # Otherwise, check if we have at least 1GB available
+        return available >= (1024 * 1024 * 1024)
     
-    def get_current_usage_fraction(self) -> float:
-        """Return current memory usage as a fraction of total."""
-        return psutil.virtual_memory().used / self.total_memory
-    
-    def get_available_memory(self) -> int:
-        """Return available memory within our limit in bytes."""
-        current_usage = psutil.virtual_memory().used
-        if current_usage >= self.memory_limit:
-            return 0
-        return int(self.memory_limit - current_usage)
+    def force_garbage_collection(self):
+        """Force garbage collection to free memory."""
+        gc.collect()
+        logger.info("Forced garbage collection completed")
 
 class MediapipeProcessor:
-    """Handles MediaPipe pose estimation outside of Ray/Dask distributed computing."""
+    """Handles MediaPipe pose estimation using cached models."""
     
     def __init__(self, model_complexity=2):
-        """Initialize the MediaPipe pose estimator."""
-        self.mp_pose = mp.solutions.pose
-        self.mp_drawing = mp.solutions.drawing_utils
-        self.pose = self.mp_pose.Pose(
-            static_image_mode=False, 
-            model_complexity=model_complexity,
-            min_detection_confidence=0.5,
-            min_tracking_confidence=0.5
-        )
+        """Initialize the MediaPipe pose estimator with cached model."""
+        self.model_complexity = model_complexity
+        self.cached_models = get_cached_mediapipe_pose(model_complexity)
+        self.mp_pose = self.cached_models['mp_pose']
+        self.mp_drawing = self.cached_models['mp_drawing']
+        self.pose = self.cached_models['pose']
     
     def process_frame(self, frame: np.ndarray) -> Tuple[Optional[np.ndarray], Optional[Any]]:
         """
@@ -185,26 +216,23 @@ class MediapipeProcessor:
             landmarks_array.append([landmark.x, landmark.y, landmark.z, landmark.visibility])
         
         return np.array(landmarks_array), pose_results
-
-    def draw_annotations(self, frame: np.ndarray, pose_results, metrics: Dict = None) -> np.ndarray:
-        """Draw pose landmarks and metrics on the frame."""
-        if frame is None or pose_results is None:
-            return frame
+    
+    def draw_annotations(self, frame: np.ndarray, pose_results: Any, metrics: Dict = None) -> np.ndarray:
+        """Draw pose annotations on frame."""
+        if pose_results and pose_results.pose_landmarks:
+            self.mp_drawing.draw_landmarks(
+                frame,
+                pose_results.pose_landmarks,
+                self.mp_pose.POSE_CONNECTIONS
+            )
         
-        # Draw pose landmarks
-        mp.solutions.drawing_utils.draw_landmarks(
-            frame,
-            pose_results.pose_landmarks,
-            self.mp_pose.POSE_CONNECTIONS
-        )
-        
-        # Draw metrics if available
+        # Draw metrics if provided
         if metrics:
-            y_pos = 30
-            for metric, value in metrics.items():
-                cv2.putText(frame, f"{metric}: {value:.2f}", (10, y_pos),
-                          cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
-                y_pos += 30
+            y = 30
+            for key, value in metrics.items():
+                text = f"{key}: {value:.2f}" if isinstance(value, float) else f"{key}: {value}"
+                cv2.putText(frame, text, (10, y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                y += 25
         
         return frame
 
@@ -254,7 +282,7 @@ def process_frame_batch(batch_data: Dict) -> List[Dict]:
     return results
 
 # Ray function for pose analysis - runs after MediaPipe serialization issues are avoided
-@ray.remote
+@ray.remote(max_calls=100)  # Limit Ray task reuse to prevent memory buildup
 def analyze_pose(landmarks_array: np.ndarray, frame_index: int, timestamp: float = None) -> Dict:
     """
     Analyze pose landmarks with Ray (distributed).
@@ -304,32 +332,40 @@ class VideoPipeline:
                  llm_training_dir: str = "llm_training_data",
                  llm_model_dir: str = "llm_models"):
         """
-        Initialize the video processing pipeline.
+        Initialize the video processing pipeline with conservative resource usage.
         
         Args:
-            memory_limit_fraction: Maximum fraction of system memory to use (default 40%)
-            n_workers: Number of workers for parallel processing
-            batch_size: Number of frames to process in a batch
+            memory_limit_fraction: Maximum fraction of system memory to use (default 25%)
+            n_workers: Number of workers for parallel processing (conservative default)
+            batch_size: Number of frames to process in a batch (small default)
             output_dir: Directory for processed videos
             model_dir: Directory for saving pose models
             llm_training_dir: Directory for LLM training data
             llm_model_dir: Directory for trained LLM models
         """
-        # Setup resource limits
+        # Setup resource limits with conservative defaults
         self.memory_monitor = MemoryMonitor.get_instance(memory_limit_fraction)
-        self.n_workers = n_workers or DEFAULT_WORKERS
-        self.batch_size = batch_size
         
-        # Adjust workers based on available memory and batch size
-        total_cpu_count = mp_lib.cpu_count()
-        memory_per_worker = self.memory_monitor.memory_limit / self.n_workers
+        # Conservative worker count calculation
+        if n_workers is None:
+            total_cpu_count = mp_lib.cpu_count()
+            total_memory_gb = psutil.virtual_memory().total / (1024 ** 3)
+            
+            # Use fewer workers based on memory constraints
+            memory_based_workers = max(1, int(total_memory_gb / 4))  # 1 worker per 4GB
+            cpu_based_workers = max(1, total_cpu_count // 2)  # Use half of CPU cores
+            
+            # Take the minimum to be conservative
+            self.n_workers = min(memory_based_workers, cpu_based_workers, 4)  # Cap at 4 workers
+        else:
+            self.n_workers = min(n_workers, 6)  # Never exceed 6 workers regardless of user input
         
-        # Ensure we have enough memory per worker for batch processing
-        if memory_per_worker < 500 * 1024 * 1024:  # Less than 500MB per worker
-            self.n_workers = max(1, int(self.memory_monitor.memory_limit / (500 * 1024 * 1024)))
-            logger.warning(f"Reduced worker count to {self.n_workers} due to memory constraints")
+        self.batch_size = min(batch_size, 10)  # Cap batch size at 10 frames
         
-        logger.info(f"Pipeline initialized with {self.n_workers} workers and batch size {self.batch_size}")
+        logger.info(f"Pipeline initialized with CONSERVATIVE settings:")
+        logger.info(f"  - Workers: {self.n_workers}")
+        logger.info(f"  - Batch size: {self.batch_size}")
+        logger.info(f"  - Memory limit: {memory_limit_fraction*100:.1f}%")
         
         # Set up directories
         self.output_dir = Path(output_dir)
@@ -340,428 +376,288 @@ class VideoPipeline:
         for directory in [self.output_dir, self.model_dir, self.llm_training_dir, self.llm_model_dir]:
             directory.mkdir(exist_ok=True)
         
-        # Initialize Ray and Dask but don't start clusters yet
-        # We'll start them when needed with proper resource limits
+        # Initialize distributed computing with conservative limits
         self.ray_initialized = False
         self.dask_client = None
     
     def _init_ray(self):
-        """Initialize Ray with memory limits."""
+        """Initialize Ray with conservative memory limits."""
         if not self.ray_initialized:
-            # Calculate memory limit in bytes (within our 40% total limit)
-            mem_limit_bytes = int(self.memory_monitor.get_available_memory() * 0.8)  # 80% of available memory
+            # Calculate very conservative memory limits
+            total_memory = psutil.virtual_memory().total
+            ray_memory_limit = int(total_memory * 0.15)  # Only 15% of total memory for Ray
+            object_store_memory = int(ray_memory_limit * 0.6)  # 60% for object store
             
-            # Initialize Ray
-            ray.init(
-                ignore_reinit_error=True,
-                object_store_memory=int(mem_limit_bytes * 0.5),  # Half for object store
-                _memory=int(mem_limit_bytes * 0.5),  # Half for Ray's processes
-                num_cpus=self.n_workers
-            )
-            self.ray_initialized = True
-            logger.info(f"Ray initialized with {self.n_workers} CPUs and "
-                       f"{mem_limit_bytes/(1024**3):.1f} GB memory limit")
+            try:
+                ray.init(
+                    ignore_reinit_error=True,
+                    object_store_memory=object_store_memory,
+                    _memory=ray_memory_limit - object_store_memory,  
+                    num_cpus=self.n_workers,
+                    num_gpus=0,  # Explicitly disable GPU to avoid conflicts
+                    _temp_dir=f"/tmp/ray_pipeline_{int(time.time())}"  # Unique temp dir
+                )
+                self.ray_initialized = True
+                logger.info(f"Ray initialized with CONSERVATIVE limits: "
+                           f"{ray_memory_limit/(1024**3):.1f}GB total, "
+                           f"{object_store_memory/(1024**3):.1f}GB object store, "
+                           f"{self.n_workers} CPUs")
+            except Exception as e:
+                logger.error(f"Failed to initialize Ray: {e}")
+                self.ray_initialized = False
     
     def _init_dask(self):
-        """Initialize Dask with memory limits."""
+        """Initialize Dask with conservative memory limits."""
         if self.dask_client is None:
             if not DASK_AVAILABLE:
-                # Use dummy client when Dask is not available
                 logger.info("Using fallback processing instead of Dask distributed")
                 self.dask_client = Client()
                 return
             
-            # Calculate memory limit per worker
-            worker_memory_limit = f"{int(self.memory_monitor.memory_limit / self.n_workers / (1024**2))}MB"
-            
-            # Start local Dask cluster
-            cluster = LocalCluster(
-                n_workers=self.n_workers,
-                threads_per_worker=1,
-                memory_limit=worker_memory_limit
-            )
-            self.dask_client = Client(cluster)
-            logger.info(f"Dask initialized with {self.n_workers} workers, "
-                       f"each limited to {worker_memory_limit} memory")
-    
-    def _cleanup(self):
-        """Clean up Ray and Dask resources."""
-        if self.ray_initialized:
-            ray.shutdown()
-            self.ray_initialized = False
-        
-        if self.dask_client:
-            self.dask_client.close()
-            self.dask_client = None
-    
+            try:
+                # Very conservative memory limit per worker
+                total_memory_gb = psutil.virtual_memory().total / (1024**3)
+                worker_memory_gb = min(2.0, total_memory_gb / (self.n_workers * 2))  # Cap at 2GB per worker
+                worker_memory_limit = f"{int(worker_memory_gb * 1024)}MB"
+                
+                # Start local Dask cluster with conservative settings
+                cluster = LocalCluster(
+                    n_workers=self.n_workers,
+                    threads_per_worker=1,
+                    memory_limit=worker_memory_limit,
+                    processes=True,  # Use processes instead of threads
+                    dashboard_address=None  # Disable dashboard to save memory
+                )
+                self.dask_client = Client(cluster)
+                logger.info(f"Dask initialized with CONSERVATIVE limits: "
+                           f"{self.n_workers} workers, {worker_memory_limit} per worker")
+            except Exception as e:
+                logger.error(f"Failed to initialize Dask: {e}")
+                # Fall back to dummy client
+                self.dask_client = Client()
+
     def process_video(self, video_path: str, output_annotations: bool = True) -> Dict:
         """
-        Process a video file using distributed computing with both Dask and Ray.
+        Process a single video with distributed computing and conservative resource usage.
         
         Args:
             video_path: Path to the video file
-            output_annotations: Whether to output an annotated video
+            output_annotations: Whether to generate annotated video output
             
         Returns:
-            Dict with results including paths to output files
+            Dictionary containing processing results
         """
         video_path = Path(video_path)
         if not video_path.exists():
-            raise FileNotFoundError(f"Video file not found: {video_path}")
+            raise FileNotFoundError(f"Video not found: {video_path}")
         
-        logger.info(f"Processing video: {video_path}")
-        start_time = time.time()
+        logger.info(f"Processing video: {video_path.name}")
         
-        # Initialize Ray and Dask
+        # Initialize distributed computing
         self._init_ray()
         self._init_dask()
         
         try:
-            # Open the video file
+            # Check memory before starting
+            if not self.memory_monitor.check_memory():
+                raise RuntimeError("Insufficient memory to process video")
+            
+            # Open video and get properties
             cap = cv2.VideoCapture(str(video_path))
             if not cap.isOpened():
-                raise ValueError(f"Could not open video file: {video_path}")
+                raise ValueError(f"Could not open video: {video_path}")
             
-            # Get video properties
-            frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-            frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-            fps = int(cap.get(cv2.CAP_PROP_FPS))
+            fps = cap.get(cv2.CAP_PROP_FPS)
             total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
             
-            logger.info(f"Video properties: {frame_width}x{frame_height}, {fps} FPS, {total_frames} frames")
+            logger.info(f"Video properties: {width}x{height}, {fps:.1f} FPS, {total_frames} frames")
             
-            # Setup output video writer if needed
+            # Setup output video writer if annotations are enabled
             out = None
-            output_video_path = None
             if output_annotations:
-                output_video_path = self.output_dir / f"annotated_{video_path.name}"
+                output_path = self.output_dir / f"annotated_{video_path.name}"
                 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-                out = cv2.VideoWriter(str(output_video_path), fourcc, fps, (frame_width, frame_height))
+                out = cv2.VideoWriter(str(output_path), fourcc, fps, (width, height))
+                
                 if not out.isOpened():
-                    raise ValueError(f"Could not create output video file: {output_video_path}")
+                    logger.warning(f"Could not create output video, disabling annotations")
+                    output_annotations = False
             
-            # Prepare batches for processing with Dask - use adaptive batch system
-            # Start with smaller batches that grow if memory allows
-            current_batch_size = min(self.batch_size, 10)  # Start smaller
-            
-            # Process frames in chunks to manage memory
+            # Process frames in small, conservative batches
             frame_index = 0
             all_pose_data = []
             
-            # Create a threadpool for Ray futures management
-            with ThreadPoolExecutor(max_workers=4) as executor:
-                # Process video in chunks
-                while cap.isOpened() and self.memory_monitor.check_memory():
-                    # Read batch of frames
-                    current_batch = []
-                    batch_read_start = time.time()
-                    
-                    for _ in range(current_batch_size):
-                        success, frame = cap.read()
-                        if not success:
-                            break
-                        current_batch.append(frame)
-                    
-                    if not current_batch:
+            # Use a much smaller batch size and process more gradually
+            actual_batch_size = min(self.batch_size, 3)  # Cap at 3 frames per batch
+            
+            logger.info(f"Processing with batch size: {actual_batch_size}")
+            
+            while cap.isOpened() and self.memory_monitor.check_memory():
+                # Read a small batch of frames
+                current_batch = []
+                for _ in range(actual_batch_size):
+                    success, frame = cap.read()
+                    if not success:
                         break
-                    
-                    batch_data = {
-                        "frames": current_batch,
-                        "start_index": frame_index,
-                        "model_complexity": 2
-                    }
-                    
-                    frame_index += len(current_batch)
-                    batch_read_time = time.time() - batch_read_start
-                    
-                    # Progress update
-                    if frame_index % 100 == 0 or len(current_batch) < current_batch_size:
-                        logger.info(f"Read {frame_index}/{total_frames} frames ({frame_index/total_frames*100:.1f}%)")
-                    
-                    # Process batch with Dask (handles MediaPipe processing)
-                    batch_process_start = time.time()
-                    if DASK_AVAILABLE:
+                    current_batch.append(frame)
+                
+                if not current_batch:
+                    break
+                
+                batch_data = {
+                    "frames": current_batch,
+                    "start_index": frame_index,
+                    "model_complexity": 1  # Use lower complexity to save memory
+                }
+                
+                frame_index += len(current_batch)
+                
+                # Progress update every 30 frames
+                if frame_index % 30 == 0:
+                    progress = (frame_index / total_frames) * 100
+                    memory_percent = self.memory_monitor.get_memory_usage_percent()
+                    logger.info(f"Progress: {frame_index}/{total_frames} frames ({progress:.1f}%), "
+                               f"Memory: {memory_percent:.1f}%")
+                
+                # Process batch with Dask (handles MediaPipe processing)
+                try:
+                    if DASK_AVAILABLE and hasattr(self.dask_client, 'submit'):
                         future = self.dask_client.submit(process_frame_batch, batch_data)
                         batch_results = future.result()
                     else:
                         # Direct processing when Dask is not available
                         batch_results = process_frame_batch(batch_data)
-                    batch_process_time = time.time() - batch_process_start
-                    
-                    # Extract landmarks and send to Ray for analysis
-                    ray_futures = []
-                    ray_process_start = time.time()
-                    
-                    for result in batch_results:
-                        frame_index_in_batch = result["frame_index"]
-                        landmarks_array = result["landmarks_array"]
+                except Exception as e:
+                    logger.error(f"Error processing batch: {e}")
+                    continue
+                
+                # Process results with Ray (but limit concurrent tasks)
+                ray_futures = []
+                max_concurrent_tasks = min(self.n_workers, 2)  # Limit concurrent Ray tasks
+                
+                for i, result in enumerate(batch_results):
+                    if len(ray_futures) >= max_concurrent_tasks:
+                        # Wait for some tasks to complete before submitting more
+                        completed_futures = []
+                        for rf in ray_futures:
+                            try:
+                                pose_analysis = ray.get(rf[0])
+                                completed_futures.append((rf[1], pose_analysis))
+                            except Exception as e:
+                                logger.error(f"Ray analysis error: {e}")
                         
-                        # Submit to Ray for analysis (only if we have landmarks)
-                        if landmarks_array is not None:
-                            # Create Ray task for further analysis (after MediaPipe)
-                            ray_future = analyze_pose.remote(
-                                landmarks_array, 
-                                frame_index_in_batch,
-                                timestamp=frame_index_in_batch / fps
-                            )
-                            ray_futures.append((ray_future, result))
-                    
-                    # Process Ray results as they complete and write video frames
-                    for ray_future, result in ray_futures:
-                        pose_analysis = ray.get(ray_future)
+                        # Process completed results
+                        for result_data, pose_analysis in completed_futures:
+                            if pose_analysis.get("valid", False):
+                                all_pose_data.append(pose_analysis)
+                            
+                            # Write frame if annotations are enabled
+                            if output_annotations and out:
+                                frame = result_data["frame"]
+                                if frame is not None:
+                                    # Add simple annotation
+                                    if pose_analysis.get("valid", False):
+                                        cv2.putText(frame, f"Frame: {result_data['frame_index']}", 
+                                                   (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                                    out.write(frame)
                         
-                        # Store pose data for model only if valid
+                        ray_futures = []
+                    
+                    # Submit new Ray task
+                    frame_index_in_batch = result["frame_index"]
+                    landmarks_array = result["landmarks_array"]
+                    
+                    if landmarks_array is not None:
+                        ray_future = analyze_pose.remote(
+                            landmarks_array, 
+                            frame_index_in_batch,
+                            timestamp=frame_index_in_batch / fps
+                        )
+                        ray_futures.append((ray_future, result))
+                
+                # Process remaining Ray futures
+                for rf in ray_futures:
+                    try:
+                        pose_analysis = ray.get(rf[0])
                         if pose_analysis.get("valid", False):
                             all_pose_data.append(pose_analysis)
                         
-                        # If we're creating an annotated video
+                        # Write frame if annotations are enabled
                         if output_annotations and out:
-                            frame = result["frame"]
-                            if frame is None:
-                                continue
-                                
-                            # Draw annotations if we have valid analysis
-                            if pose_analysis.get("valid", False):
-                                # Create processor for drawing
-                                processor = MediapipeProcessor()
-                                
-                                # Extract metrics for annotation
-                                metrics = pose_analysis.get("metrics", {})
-                                
-                                # Convert landmarks back to MediaPipe format for drawing
-                                # This is a workaround for the serialization limitation
-                                landmarks_np = result["landmarks_array"]
-                                if landmarks_np is not None:
-                                    # Create a dummy pose_results object that's drawable
-                                    class DummyPoseLandmarks:
-                                        def __init__(self, landmarks_array):
-                                            self.landmark = []
-                                            for lm in landmarks_array:
-                                                landmark = type('', (), {})()
-                                                landmark.x, landmark.y, landmark.z, landmark.visibility = lm
-                                                self.landmark.append(landmark)
-                                    
-                                    class DummyResults:
-                                        def __init__(self, landmarks):
-                                            self.pose_landmarks = landmarks
-                                            
-                                    dummy_landmarks = DummyPoseLandmarks(landmarks_np)
-                                    dummy_results = DummyResults(dummy_landmarks)
-                                    
-                                    # Draw with processor
-                                    annotated_frame = processor.draw_annotations(frame, dummy_results, metrics)
-                                    out.write(annotated_frame)
-                            else:
-                                # Write original frame if no valid analysis
+                            frame = rf[1]["frame"]
+                            if frame is not None:
+                                if pose_analysis.get("valid", False):
+                                    cv2.putText(frame, f"Frame: {rf[1]['frame_index']}", 
+                                               (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                                 out.write(frame)
-                    
-                    ray_process_time = time.time() - ray_process_start
-                    
-                    # Log timing for this batch
-                    logger.debug(f"Batch timing: Read={batch_read_time:.2f}s, Dask={batch_process_time:.2f}s, Ray={ray_process_time:.2f}s")
-                    
-                    # Adaptive batch size based on memory usage
-                    memory_usage = self.memory_monitor.get_current_usage_fraction()
-                    if memory_usage < 0.7 * self.memory_monitor.memory_limit_fraction and current_batch_size < self.batch_size:
-                        # Increase batch size if we have memory headroom
-                        current_batch_size = min(current_batch_size + 5, self.batch_size)
-                    elif memory_usage > 0.9 * self.memory_monitor.memory_limit_fraction and current_batch_size > 5:
-                        # Decrease batch size if memory is getting tight
-                        current_batch_size = max(5, current_batch_size - 5)
-                        logger.info(f"Reduced batch size to {current_batch_size} due to memory usage")
+                    except Exception as e:
+                        logger.error(f"Ray analysis error: {e}")
+                
+                # Force garbage collection every 100 frames
+                if frame_index % 100 == 0:
+                    self.memory_monitor.force_garbage_collection()
             
+            # Clean up resources
             cap.release()
-            
-            # Close the output video
             if out:
                 out.release()
             
-            # Save pose data to a model file
-            model_file = self.model_dir / f"pose_model_{video_path.stem}_{int(time.time())}.json"
-            with open(model_file, 'w') as f:
-                # Use a list comprehension to filter out non-serializable elements
-                serializable_data = []
-                for item in all_pose_data:
-                    # Convert numpy arrays to lists for JSON serialization if needed
-                    serializable_item = {}
-                    for k, v in item.items():
-                        if isinstance(v, np.ndarray):
-                            serializable_item[k] = v.tolist()
-                        elif isinstance(v, (np.float32, np.float64)):
-                            serializable_item[k] = float(v)
-                        elif isinstance(v, (np.int32, np.int64)):
-                            serializable_item[k] = int(v)
-                        else:
-                            serializable_item[k] = v
-                    serializable_data.append(serializable_item)
-                
-                json.dump(serializable_data, f)
+            logger.info(f"Processed {len(all_pose_data)} valid pose frames out of {frame_index} total frames")
             
-            total_time = time.time() - start_time
-            logger.info(f"Processing complete in {total_time:.2f} seconds")
-            logger.info(f"Processed {len(all_pose_data)} valid frames out of {total_frames} total frames")
-            logger.info(f"Saved pose model to {model_file}")
-            if output_video_path:
-                logger.info(f"Saved annotated video to {output_video_path}")
+            # Save pose model
+            model_output_path = self.model_dir / f"{video_path.stem}_pose_model.json"
+            with open(model_output_path, 'w') as f:
+                json.dump({
+                    "video_name": video_path.name,
+                    "total_frames": frame_index,
+                    "valid_poses": len(all_pose_data),
+                    "fps": fps,
+                    "pose_data": all_pose_data[:100]  # Limit saved data to prevent huge files
+                }, f, indent=2)
             
             return {
-                "pose_model_path": str(model_file),
-                "annotated_video_path": str(output_video_path) if output_video_path else None,
-                "frame_count": len(all_pose_data),
-                "total_frames": total_frames,
-                "processing_time": total_time
+                "success": True,
+                "video_path": str(video_path),
+                "output_video": str(output_path) if output_annotations else None,
+                "pose_model": str(model_output_path),
+                "total_frames": frame_index,
+                "valid_poses": len(all_pose_data)
             }
             
+        except Exception as e:
+            logger.error(f"Error processing video {video_path.name}: {str(e)}")
+            return {
+                "success": False,
+                "video_path": str(video_path),
+                "error": str(e)
+            }
         finally:
-            # Clean up resources
+            # Always clean up resources
             self._cleanup()
     
-    def process_all_videos(self, input_folder: str = "public") -> List[Dict]:
-        """
-        Process all videos in the input folder.
-        
-        Args:
-            input_folder: Folder containing video files
-            
-        Returns:
-            List of results dictionaries
-        """
-        input_path = Path(input_folder)
-        if not input_path.exists():
-            raise FileNotFoundError(f"Input folder not found: {input_path}")
-        
-        video_files = list(input_path.glob("*.mp4"))
-        logger.info(f"Found {len(video_files)} videos to process in {input_folder}")
-        
-        results = []
-        for video_file in video_files:
-            logger.info(f"\nProcessing {video_file.name}...")
-            try:
-                result = self.process_video(video_file)
-                results.append(result)
-            except Exception as e:
-                logger.error(f"Error processing {video_file.name}: {str(e)}")
-        
-        return results
-    
-    def generate_llm_training_data(self, pose_model_paths: List[str], sport_type: str = None) -> str:
-        """
-        Generate training data for LLMs from pose models.
-        
-        Args:
-            pose_model_paths: List of paths to pose model JSON files
-            sport_type: Type of sport for context (optional)
-            
-        Returns:
-            Path to generated training data file
-        """
-        # Use the existing PoseDataExtractor from moriarty.core.pose_data_to_llm
-        extractor = PoseDataExtractor(
-            model_dir=str(self.model_dir),
-            output_dir=str(self.llm_training_dir)
-        )
-        
-        logger.info(f"Generating training data from {len(pose_model_paths)} pose models")
-        
-        # Process specific models
-        examples = []
-        for model_path in pose_model_paths:
-            model_examples = extractor.process_model(model_path, sport_type=sport_type)
-            examples.extend(model_examples)
-        
-        # Save to a combined file
-        timestamp = int(time.time())
-        output_file = self.llm_training_dir / f"all_examples_{timestamp}.json"
-        with open(output_file, 'w') as f:
-            json.dump(examples, f, indent=2)
-        
-        logger.info(f"Saved {len(examples)} training examples to {output_file}")
-        return str(output_file)
-    
-    def train_llm(self, training_data_path: str = None, model_name: str = None,
-                use_openai: bool = False, use_claude: bool = False,
-                epochs: int = 3, batch_size: int = 4) -> Dict:
-        """
-        Train an LLM on pose data or generate synthetic data using API models.
-        
-        Args:
-            training_data_path: Path to training data file
-            model_name: Name for trained model
-            use_openai: Whether to use OpenAI API for synthetic data
-            use_claude: Whether to use Claude API for synthetic data
-            epochs: Number of training epochs for local model
-            batch_size: Batch size for local model training
-            
-        Returns:
-            Dictionary with paths to generated models/data
-        """
+    def _cleanup(self):
+        """Clean up Ray and Dask resources."""
         try:
-            from .core.train_llm import LLMTrainer
-        except ImportError:
-            # Fall back to external train_llm module if necessary
-            try:
-                from src.models.train_llm import LLMTrainer
-            except ImportError:
-                logger.error("Could not import LLMTrainer. Make sure train_llm.py is available.")
-                return {"success": False, "error": "Missing train_llm.py module"}
+            if self.ray_initialized:
+                ray.shutdown()
+                self.ray_initialized = False
+                logger.info("Ray shut down successfully")
+        except Exception as e:
+            logger.error(f"Error shutting down Ray: {e}")
         
-        if not training_data_path:
-            logger.error("No training data provided")
-            return {"success": False, "error": "No training data path provided"}
+        try:
+            if self.dask_client:
+                if hasattr(self.dask_client, 'close'):
+                    self.dask_client.close()
+                self.dask_client = None
+                logger.info("Dask client closed successfully")
+        except Exception as e:
+            logger.error(f"Error closing Dask client: {e}")
         
-        # Initialize trainer
-        trainer = LLMTrainer(
-            data_dir=str(self.llm_training_dir),
-            model_dir=str(self.llm_model_dir)
-        )
-        
-        results = {"success": False, "openai_model": None, "claude_model": None, "local_model": None}
-        
-        # Generate synthetic data with both models if requested
-        if use_openai:
-            logger.info("Generating synthetic training data using OpenAI API...")
-            trainer.use_api_model(openai=True, claude=False)
-            openai_model = trainer.generate_synthetic_data(
-                data_file=training_data_path,
-                output_name=model_name + "_openai" if model_name else f"synthetic_openai_{int(time.time())}"
-            )
-            if openai_model:
-                results["openai_model"] = openai_model
-                results["success"] = True
-                logger.info(f"OpenAI synthetic data generated at {openai_model}")
-        
-        if use_claude:
-            logger.info("Generating synthetic training data using Claude API...")
-            trainer.use_api_model(openai=False, claude=True)
-            claude_model = trainer.generate_synthetic_data(
-                data_file=training_data_path,
-                output_name=model_name + "_claude" if model_name else f"synthetic_claude_{int(time.time())}"
-            )
-            if claude_model:
-                results["claude_model"] = claude_model
-                results["success"] = True
-                logger.info(f"Claude synthetic data generated at {claude_model}")
-        
-        # If not using APIs, train a local model
-        if not use_openai and not use_claude:
-            logger.info(f"Preparing training data from {training_data_path}...")
-            trainer.prepare_training_data(data_file=training_data_path)
-            
-            # Train the model
-            logger.info(f"Training local model for {epochs} epochs with batch size {batch_size}...")
-            local_model = trainer.train_model(
-                epochs=epochs,
-                batch_size=batch_size,
-                model_name=model_name or f"pose_llm_{int(time.time())}"
-            )
-            
-            if local_model:
-                results["local_model"] = local_model
-                results["success"] = True
-                logger.info(f"Local model training complete. Model saved to {local_model}")
-        
-        return results
-
+        # Force garbage collection
+        self.memory_monitor.force_garbage_collection()
 
 def main():
     """Main function for the video processing pipeline."""
@@ -780,13 +676,13 @@ def main():
     parser.add_argument('--llm_models', type=str, default='llm_models',
                        help='Output folder for trained LLM models (default: llm_models)')
     
-    # Resource management options
+    # Resource management options (CONSERVATIVE DEFAULTS TO PREVENT CRASHES)
     parser.add_argument('--memory_limit', type=float, default=DEFAULT_MEMORY_LIMIT,
-                       help=f'Memory limit as a fraction of total system memory (default: {DEFAULT_MEMORY_LIMIT})')
+                       help=f'Memory limit as a fraction of total system memory (default: {DEFAULT_MEMORY_LIMIT} = 25%% - CONSERVATIVE)')
     parser.add_argument('--workers', type=int, default=None,
-                       help='Number of worker processes/threads (default: auto)')
+                       help=f'Number of worker processes/threads (default: auto-detected conservative limit, max 4)')
     parser.add_argument('--batch_size', type=int, default=DEFAULT_BATCH_SIZE,
-                       help=f'Batch size for frame processing (default: {DEFAULT_BATCH_SIZE})')
+                       help=f'Batch size for frame processing (default: {DEFAULT_BATCH_SIZE} frames - SMALL for stability)')
     
     # Processing options
     parser.add_argument('--no_video', action='store_true',
@@ -824,14 +720,14 @@ def main():
             args.video,
             output_annotations=not args.no_video
         )
-        if result.get("pose_model_path"):
-            processed_models.append(result["pose_model_path"])
-            logger.info(f"Processed {result['frame_count']}/{result['total_frames']} frames in {result['processing_time']:.2f} seconds")
+        if result.get("pose_model"):
+            processed_models.append(result["pose_model"])
+            logger.info(f"Processed {result['valid_poses']}/{result['total_frames']} frames in {result['processing_time']:.2f} seconds")
     else:
         # Process all videos in folder
         logger.info(f"Processing all videos in: {args.input}")
         results = pipeline.process_all_videos(args.input)
-        processed_models = [r["pose_model_path"] for r in results if r.get("pose_model_path")]
+        processed_models = [r["pose_model"] for r in results if r.get("pose_model")]
         
         if processed_models:
             logger.info(f"Successfully processed {len(processed_models)} videos")

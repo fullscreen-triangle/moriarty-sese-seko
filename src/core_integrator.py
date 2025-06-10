@@ -26,7 +26,7 @@ from src.core.pose.pose_detector import PoseDetector
 from src.core.pose.human_detector import HumanDetector
 from src.core.pose.skeleton import SkeletonDrawer
 from src.core.pose.pose_visualizer import PoseVisualizer
-from src.core.pose.pose_data_to_llm import PoseDataConverter
+from src.core.pose.pose_data_to_llm import PoseDataExtractor
 
 # Import core modules - dynamics
 from src.core.dynamics.kinematics_analyzer import KinematicsAnalyzer
@@ -113,7 +113,7 @@ class CoreIntegrator:
             self.pose_detector = PoseDetector(model_complexity=self.model_complexity)
             self.skeleton_drawer = SkeletonDrawer()
             self.pose_visualizer = PoseVisualizer()
-            self.pose_data_converter = PoseDataConverter()
+            self.pose_data_extractor = PoseDataExtractor()
             logger.info("Pose modules initialized successfully")
         except Exception as e:
             logger.error(f"Error initializing pose modules: {e}")
@@ -158,10 +158,32 @@ class CoreIntegrator:
         """Initialize scene analysis modules."""
         try:
             logger.info("Initializing scene modules...")
-            self.scene_detector = SceneDetector()
+            # Scene detector configuration
+            scene_config = {
+                'scene_detection': {
+                    'hist_threshold': 0.5,
+                    'flow_threshold': 0.7,
+                    'edge_threshold': 0.6,
+                    'focus_threshold': 1000
+                }
+            }
+            self.scene_detector = SceneDetector(scene_config)
             self.video_manager = VideoManager()
             self.video_processor = VideoProcessor()
-            self.scene_analyzer = SceneAnalyzer()
+            
+            # Scene analyzer configuration
+            analyzer_config = {
+                'scene_detection': {
+                    'hist_threshold': 0.5,
+                    'flow_threshold': 0.7,
+                    'edge_threshold': 0.6,
+                    'focus_threshold': 1000
+                },
+                'output': {
+                    'plots_directory': 'scene_analysis_plots'
+                }
+            }
+            self.scene_analyzer = SceneAnalyzer(analyzer_config)
             self.metrics_calculator = MetricsCalculator()
             logger.info("Scene modules initialized successfully")
         except Exception as e:
@@ -588,7 +610,7 @@ class CoreIntegrator:
             List of training examples for the LLM
         """
         # Use the PoseDataConverter to convert the data
-        training_examples = self.pose_data_converter.convert_to_training_examples(analysis_results)
+        training_examples = self.pose_data_extractor.convert_to_text_descriptions(analysis_results)
         return training_examples
 
 # Example usage

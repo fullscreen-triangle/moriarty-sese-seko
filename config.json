@@ -1,0 +1,46 @@
+{
+  "system": {
+    "memory_limit_fraction": 0.25,
+    "workers": null,
+    "batch_size": 5,
+    "device": "cpu"
+  },
+  "paths": {
+    "output_dir": "output",
+    "model_dir": "models",
+    "llm_training_dir": "llm_training_data",
+    "llm_model_dir": "llm_models",
+    "cache_dir": "cache"
+  },
+  "pose": {
+    "model_complexity": 1,
+    "min_detection_confidence": 0.5,
+    "min_tracking_confidence": 0.5
+  },
+  "mediapipe": {
+    "cache_models": true,
+    "default_complexity": 1,
+    "max_cached_models": 3,
+    "model_cache_dir": "cache/mediapipe_models"
+  },
+  "video": {
+    "extract_fps": 30,
+    "output_video_fps": 30,
+    "output_width": 1280,
+    "output_height": 720
+  },
+  "pipeline": {
+    "use_ray": true,
+    "use_dask": true,
+    "enable_visualizations": true,
+    "enable_progress_bars": true,
+    "conservative_mode": true,
+    "max_workers": 4,
+    "max_batch_size": 10
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "moriarty.log",
+    "enable_console": true
+  }
+}
