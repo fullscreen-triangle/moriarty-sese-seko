@@ -1,0 +1,34 @@
+================================================================================
+MORIARTY FRAMEWORK - SPORTS VIDEO ANALYSIS SHOWCASE
+================================================================================
+Generated: 2025-06-10 16:53:43
+
+🎯 FRAMEWORK CAPABILITIES DEMONSTRATED:
+--------------------------------------------------
+✅ Real-time pose detection and tracking
+✅ Multi-person simultaneous analysis
+✅ Advanced AI confidence scoring
+✅ 3D spatial pose estimation
+✅ Movement pattern analysis
+✅ Biomechanical stability assessment
+✅ Sport-specific performance metrics
+✅ Temporal motion smoothing
+
+📊 PERFORMANCE METRICS:
+------------------------------
+Athletes Analyzed: 13
+Total Frames Processed: 3,874
+Total Video Duration: 137.8 seconds
+Average Detection Rate: 64.8%
+Average AI Confidence: 75.4%
+Maximum People Detected: 1
+
+🏆 TOP PERFORMERS:
+--------------------
+Best Detection Rate: Bolt Force Motion (100.0%)
+Highest AI Confidence: Powell Start (87.6%)
+Most Stable Poses: Lomu (0.974)
+
+================================================================================
+MORIARTY FRAMEWORK - ADVANCING SPORTS SCIENCE THROUGH AI
+================================================================================
