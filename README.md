@@ -89,7 +89,7 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-For detailed installation options, see [INSTALL.md](INSTALL.md).
+For detailed installation options, see [INSTALL.md](docs/INSTALL.md).
 
 ## Usage
 
@@ -118,6 +118,84 @@ python -m src.cli.main analyze --input path/to/video.mp4 --output results
 # Batch process multiple videos
 python -m src.cli.main batch --input-dir videos --output-dir results --pattern "*.mp4"
 ```
+
+### Turbulance DSL Integration
+
+Moriarty integrates with the **Turbulance** domain-specific language for advanced sports analysis and evidence-based reasoning. Turbulance provides structured constructs for hypothesis testing, probabilistic reasoning, and pattern analysis.
+
+#### Basic Turbulance Syntax
+
+```turbulance
+// Sprint analysis using propositions and motions
+proposition SprintAnalysis:
+    context athlete_data = load_athlete_profile("sprinter.json")
+    
+    motion OptimalTechnique("Athlete demonstrates optimal sprint technique"):
+        target_stride_frequency: 4.5..5.2
+        ground_contact_time: 0.08..0.12
+        maximum_velocity_zone: 60..80  // meters
+    
+    within video_analysis_results:
+        given stride_frequency in OptimalTechnique.target_stride_frequency:
+            support OptimalTechnique with_confidence(
+                measurement_quality * environmental_factor
+            )
+        given ground_contact_time in OptimalTechnique.ground_contact_time:
+            support OptimalTechnique with_confidence(0.85)
+
+// Bayesian network for performance analysis
+bayesian_network PerformanceNetwork:
+    nodes:
+        - technique: TechniqueEvidence(confidence_threshold: 0.8)
+        - biomechanics: BiomechanicalEvidence(precision: 0.02)
+        - performance: PerformanceEvidence(measurement_accuracy: 0.95)
+    
+    edges:
+        - technique -> performance: causal_strength(0.85, fuzziness: 0.15)
+        - biomechanics -> technique: influence_strength(0.75, fuzziness: 0.2)
+    
+    inference:
+        method: "variational_bayes"
+        convergence_threshold: 0.001
+        max_iterations: 1000
+
+// Sensor fusion for multi-modal analysis
+sensor_fusion MultiModalAnalysis:
+    sensors:
+        - video_pose: PoseDetection(confidence: 0.9, fps: 60)
+        - force_plates: ForceData(sampling_rate: 1000)
+        - emg_sensors: EMGData(channels: 8, filtering: "bandpass")
+    
+    fusion_method: "kalman_filter"
+    uncertainty_quantification: true
+    temporal_alignment: "cross_correlation"
+```
+
+#### Key Turbulance Features
+
+- **Propositions**: Structured hypothesis testing framework for sports performance analysis
+- **Motions**: Sub-hypotheses within propositions for granular biomechanical analysis
+- **Evidence Integration**: Multi-modal data validation and uncertainty quantification
+- **Bayesian Networks**: Probabilistic reasoning with causal relationships
+- **Sensor Fusion**: Multi-sensor data integration with temporal alignment
+- **Fuzzy Systems**: Handle measurement uncertainty and imprecision
+- **Real-time Analysis**: Streaming analysis pipelines for live performance monitoring
+- **Pattern Recognition**: Automated detection of movement patterns and technique markers
+
+#### Compiling Turbulance Code
+
+```bash
+# Compile Turbulance analysis to Python
+turbulance compile sprint_analysis.tbn -o analysis_output/
+
+# Validate Turbulance syntax
+turbulance validate sprint_analysis.tbn --detailed
+
+# Generate documentation from Turbulance code  
+turbulance doc sprint_analysis.tbn --format html
+```
+
+For detailed Turbulance language documentation, see [TURBULANCE_README.md](docs/TURBULANCE_README.md).
 
 ## Examples and Results
 
@@ -174,7 +252,7 @@ moriarty/
 
 Detailed documentation for specific components:
 
-- [Pipeline Documentation](pipeline.md)
+- [Pipeline Documentation](docs/pipeline.md)
 - [Distributed System](docs/README_PIPELINE.md)
 - [Biomechanical Analysis](docs/README_Graffiti.md)
 - [Orchestration System](docs/README_orchestration.md)
