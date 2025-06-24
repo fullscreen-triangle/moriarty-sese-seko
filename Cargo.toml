@@ -1,0 +1,74 @@
+[package]
+name = "turbulance-compiler"
+version = "0.1.0"
+edition = "2021"
+authors = ["Moriarty Team"]
+description = "Turbulance DSL compiler for sports analysis and evidence-based reasoning"
+license = "MIT"
+
+[dependencies]
+# Core dependencies
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+clap = { version = "4.0", features = ["derive"] }
+anyhow = "1.0"
+thiserror = "1.0"
+log = "0.4"
+env_logger = "0.10"
+
+# Parsing and lexing
+pest = "2.7"
+pest_derive = "2.7"
+nom = "7.1"
+
+# Scientific computing integration
+ndarray = "0.15"
+nalgebra = "0.32"
+statrs = "0.16"
+
+# Async runtime
+tokio = { version = "1.0", features = ["full"] }
+async-trait = "0.1"
+
+# Code generation
+codegen = "0.2"
+proc-macro2 = "1.0"
+quote = "1.0"
+syn = { version = "2.0", features = ["full"] }
+
+# Python integration
+pyo3 = { version = "0.19", features = ["extension-module"] }
+pyo3-asyncio = "0.19"
+
+# Performance
+rayon = "1.7"
+dashmap = "5.5"
+
+# File system and I/O
+walkdir = "2.3"
+tempfile = "3.8"
+fs_extra = "1.3"
+
+# Fuzzy logic and Bayesian inference
+smartcore = "0.3"
+linfa = "0.7"
+
+[dev-dependencies]
+criterion = "0.5"
+proptest = "1.2"
+tokio-test = "0.4"
+
+[[bin]]
+name = "turbulance"
+path = "src/main.rs"
+
+[lib]
+name = "turbulance_compiler"
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["python-bindings"]
+python-bindings = ["pyo3"]
+gpu-acceleration = []
+distributed = [] 

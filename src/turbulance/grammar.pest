@@ -1,0 +1,715 @@
+// Turbulance Language Grammar Definition
+// This defines the complete syntax for the Turbulance DSL
+
+WHITESPACE = _{ " " | "\t" | "\r" | "\n" }
+COMMENT = _{ line_comment | block_comment }
+line_comment = _{ "//" ~ (!("\r" | "\n") ~ ANY)* }
+block_comment = _{ "/*" ~ (!"*/" ~ ANY)* ~ "*/" }
+
+// Identifiers and literals
+identifier = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+string_literal = @{ "\"" ~ (!"\"" ~ ANY)* ~ "\"" }
+number_literal = @{ ASCII_DIGIT+ ~ ("." ~ ASCII_DIGIT+)? ~ (("e" | "E") ~ ("+" | "-")? ~ ASCII_DIGIT+)? }
+boolean_literal = { "true" | "false" }
+
+// Range expressions
+range_expr = { number_literal ~ ".." ~ number_literal }
+
+// Keywords
+// Core language keywords
+item_kw = { "item" }
+funxn_kw = { "funxn" }
+given_kw = { "given" }
+within_kw = { "within" }
+for_kw = { "for" }
+each_kw = { "each" }
+in_kw = { "in" }
+while_kw = { "while" }
+return_kw = { "return" }
+try_kw = { "try" }
+catch_kw = { "catch" }
+finally_kw = { "finally" }
+import_kw = { "import" }
+from_kw = { "from" }
+as_kw = { "as" }
+and_kw = { "and" }
+or_kw = { "or" }
+not_kw = { "not" }
+otherwise_kw = { "otherwise" }
+
+// Domain-specific keywords
+proposition_kw = { "proposition" }
+motion_kw = { "motion" }
+evidence_kw = { "evidence" }
+metacognitive_kw = { "metacognitive" }
+temporal_kw = { "temporal" }
+parallel_kw = { "parallel" }
+async_kw = { "async" }
+await_kw = { "await" }
+bayesian_network_kw = { "bayesian_network" }
+sensor_fusion_kw = { "sensor_fusion" }
+temporal_analysis_kw = { "temporal_analysis" }
+biomechanical_kw = { "biomechanical" }
+fuzzy_evaluate_kw = { "fuzzy_evaluate" }
+causal_inference_kw = { "causal_inference" }
+causal_chain_kw = { "causal_chain" }
+fuzzy_system_kw = { "fuzzy_system" }
+bayesian_update_kw = { "bayesian_update" }
+real_time_kw = { "real_time" }
+adaptive_quality_kw = { "adaptive_quality" }
+optimization_framework_kw = { "optimization_framework" }
+genetic_optimization_kw = { "genetic_optimization" }
+analysis_workflow_kw = { "analysis_workflow" }
+validation_framework_kw = { "validation_framework" }
+pattern_registry_kw = { "pattern_registry" }
+evidence_integrator_kw = { "evidence_integrator" }
+orchestration_kw = { "orchestration" }
+cross_domain_analysis_kw = { "cross_domain_analysis" }
+compose_pattern_kw = { "compose_pattern" }
+evidence_chain_kw = { "evidence_chain" }
+stream_kw = { "stream" }
+concurrent_kw = { "concurrent" }
+considering_kw = { "considering" }
+support_kw = { "support" }
+contradict_kw = { "contradict" }
+context_kw = { "context" }
+
+// Operators
+assign_op = { "=" }
+add_assign_op = { "+=" }
+sub_assign_op = { "-=" }
+mul_assign_op = { "*=" }
+div_assign_op = { "/=" }
+plus_op = { "+" }
+minus_op = { "-" }
+mult_op = { "*" }
+div_op = { "/" }
+mod_op = { "%" }
+pow_op = { "**" }
+eq_op = { "==" }
+ne_op = { "!=" }
+lt_op = { "<" }
+gt_op = { ">" }
+le_op = { "<=" }
+ge_op = { ">=" }
+arrow_op = { "->" }
+fat_arrow_op = { "=>" }
+pipe_op = { "|" }
+ampersand_op = { "&" }
+
+// Delimiters
+lparen = { "(" }
+rparen = { ")" }
+lbrace = { "{" }
+rbrace = { "}" }
+lbracket = { "[" }
+rbracket = { "]" }
+semicolon = { ";" }
+colon = { ":" }
+comma = { "," }
+dot = { "." }
+question = { "?" }
+
+// Expressions
+primary_expr = {
+    identifier |
+    string_literal |
+    number_literal |
+    boolean_literal |
+    range_expr |
+    list_literal |
+    dict_literal |
+    paren_expr |
+    function_call
+}
+
+paren_expr = { lparen ~ expression ~ rparen }
+
+list_literal = { lbracket ~ (expression ~ (comma ~ expression)*)? ~ rbracket }
+
+dict_literal = { lbrace ~ (dict_pair ~ (comma ~ dict_pair)*)? ~ rbrace }
+dict_pair = { (identifier | string_literal) ~ colon ~ expression }
+
+function_call = { identifier ~ lparen ~ (expression ~ (comma ~ expression)*)? ~ rparen }
+
+member_access = { primary_expr ~ (dot ~ identifier)+ }
+
+binary_expr = {
+    logical_or_expr
+}
+
+logical_or_expr = { logical_and_expr ~ (or_kw ~ logical_and_expr)* }
+logical_and_expr = { equality_expr ~ (and_kw ~ equality_expr)* }
+equality_expr = { relational_expr ~ ((eq_op | ne_op) ~ relational_expr)* }
+relational_expr = { additive_expr ~ ((lt_op | gt_op | le_op | ge_op) ~ additive_expr)* }
+additive_expr = { multiplicative_expr ~ ((plus_op | minus_op) ~ multiplicative_expr)* }
+multiplicative_expr = { power_expr ~ ((mult_op | div_op | mod_op) ~ power_expr)* }
+power_expr = { unary_expr ~ (pow_op ~ unary_expr)* }
+unary_expr = { (not_kw | minus_op)? ~ postfix_expr }
+postfix_expr = { primary_expr ~ (dot ~ identifier | lbracket ~ expression ~ rbracket)* }
+
+expression = { binary_expr | primary_expr }
+
+// Type annotations
+type_annotation = { colon ~ type_expr }
+type_expr = {
+    identifier ~ (lbracket ~ type_expr ~ (comma ~ type_expr)* ~ rbracket)? |
+    type_expr ~ question
+}
+
+// Statements
+statement = {
+    variable_declaration |
+    function_declaration |
+    proposition_declaration |
+    motion_declaration |
+    evidence_declaration |
+    metacognitive_declaration |
+    temporal_declaration |
+    bayesian_network_declaration |
+    sensor_fusion_declaration |
+    fuzzy_system_declaration |
+    bayesian_update_declaration |
+    real_time_declaration |
+    optimization_framework_declaration |
+    genetic_optimization_declaration |
+    analysis_workflow_declaration |
+    validation_framework_declaration |
+    pattern_registry_declaration |
+    orchestration_declaration |
+    assignment_statement |
+    expression_statement |
+    if_statement |
+    for_statement |
+    while_statement |
+    within_statement |
+    try_statement |
+    return_statement |
+    import_statement |
+    block_statement
+}
+
+variable_declaration = {
+    item_kw ~ identifier ~ type_annotation? ~ assign_op ~ expression
+}
+
+function_declaration = {
+    funxn_kw ~ identifier ~ lparen ~ parameter_list? ~ rparen ~ type_annotation? ~ colon ~ block_statement
+}
+
+parameter_list = {
+    parameter ~ (comma ~ parameter)*
+}
+
+parameter = {
+    identifier ~ type_annotation?
+}
+
+// Domain-specific declarations
+proposition_declaration = {
+    proposition_kw ~ identifier ~ colon ~ proposition_body
+}
+
+proposition_body = {
+    lbrace ~
+        (context_declaration)*~
+        (motion_declaration)* ~
+        (within_block)* ~
+    rbrace
+}
+
+context_declaration = {
+    context_kw ~ identifier ~ assign_op ~ expression
+}
+
+motion_declaration = {
+    motion_kw ~ identifier ~ lparen ~ string_literal ~ rparen ~ colon ~ motion_body?
+}
+
+motion_body = {
+    lbrace ~
+        (motion_property)*~
+    rbrace
+}
+
+motion_property = {
+    identifier ~ colon ~ expression
+}
+
+evidence_declaration = {
+    evidence_kw ~ identifier ~ colon ~ evidence_body
+}
+
+evidence_body = {
+    lbrace ~
+        (evidence_section)*~
+    rbrace
+}
+
+evidence_section = {
+    identifier ~ colon ~ (expression | evidence_subsection)
+}
+
+evidence_subsection = {
+    lbrace ~
+        (evidence_property)*~
+    rbrace
+}
+
+evidence_property = {
+    identifier ~ colon ~ expression
+}
+
+bayesian_network_declaration = {
+    bayesian_network_kw ~ identifier ~ colon ~ bayesian_network_body
+}
+
+bayesian_network_body = {
+    lbrace ~
+        (bayesian_network_section)*~
+    rbrace
+}
+
+bayesian_network_section = {
+    identifier ~ colon ~ (expression | list_literal | bayesian_network_subsection)
+}
+
+bayesian_network_subsection = {
+    lbrace ~
+        (bayesian_network_property)*~
+    rbrace
+}
+
+bayesian_network_property = {
+    identifier ~ colon ~ expression |
+    minus_op ~ identifier ~ colon ~ expression
+}
+
+sensor_fusion_declaration = {
+    sensor_fusion_kw ~ identifier ~ colon ~ sensor_fusion_body
+}
+
+sensor_fusion_body = {
+    lbrace ~
+        (sensor_fusion_section)*~
+    rbrace
+}
+
+sensor_fusion_section = {
+    identifier ~ colon ~ (expression | list_literal | sensor_fusion_subsection)
+}
+
+sensor_fusion_subsection = {
+    lbrace ~
+        (sensor_fusion_property)*~
+    rbrace
+}
+
+sensor_fusion_property = {
+    identifier ~ colon ~ expression |
+    minus_op ~ identifier ~ colon ~ expression
+}
+
+fuzzy_system_declaration = {
+    fuzzy_system_kw ~ identifier ~ colon ~ fuzzy_system_body
+}
+
+fuzzy_system_body = {
+    lbrace ~
+        (fuzzy_system_section)*~
+    rbrace
+}
+
+fuzzy_system_section = {
+    identifier ~ colon ~ (expression | fuzzy_system_subsection)
+}
+
+fuzzy_system_subsection = {
+    lbrace ~
+        (fuzzy_system_property)*~
+    rbrace
+}
+
+fuzzy_system_property = {
+    identifier ~ colon ~ expression
+}
+
+// More domain-specific declarations following similar patterns...
+metacognitive_declaration = {
+    metacognitive_kw ~ identifier ~ colon ~ metacognitive_body
+}
+
+metacognitive_body = {
+    lbrace ~
+        (metacognitive_section)*~
+    rbrace
+}
+
+metacognitive_section = {
+    identifier ~ colon ~ (expression | metacognitive_subsection)
+}
+
+metacognitive_subsection = {
+    lbrace ~
+        (metacognitive_property)*~
+    rbrace
+}
+
+metacognitive_property = {
+    identifier ~ colon ~ expression
+}
+
+temporal_declaration = {
+    temporal_kw ~ identifier ~ colon ~ temporal_body
+}
+
+temporal_body = {
+    lbrace ~
+        (temporal_section)*~
+    rbrace
+}
+
+temporal_section = {
+    identifier ~ colon ~ (expression | temporal_subsection)
+}
+
+temporal_subsection = {
+    lbrace ~
+        (temporal_property)*~
+    rbrace
+}
+
+temporal_property = {
+    identifier ~ colon ~ expression
+}
+
+bayesian_update_declaration = {
+    bayesian_update_kw ~ identifier ~ colon ~ bayesian_update_body
+}
+
+bayesian_update_body = {
+    lbrace ~
+        (bayesian_update_section)*~
+    rbrace
+}
+
+bayesian_update_section = {
+    identifier ~ colon ~ (expression | bayesian_update_subsection)
+}
+
+bayesian_update_subsection = {
+    lbrace ~
+        (bayesian_update_property)*~
+    rbrace
+}
+
+bayesian_update_property = {
+    identifier ~ colon ~ expression
+}
+
+real_time_declaration = {
+    real_time_kw ~ identifier ~ colon ~ real_time_body
+}
+
+real_time_body = {
+    lbrace ~
+        (real_time_section)*~
+    rbrace
+}
+
+real_time_section = {
+    identifier ~ colon ~ (expression | real_time_subsection)
+}
+
+real_time_subsection = {
+    lbrace ~
+        (real_time_property)*~
+    rbrace
+}
+
+real_time_property = {
+    identifier ~ colon ~ expression
+}
+
+optimization_framework_declaration = {
+    optimization_framework_kw ~ identifier ~ colon ~ optimization_framework_body
+}
+
+optimization_framework_body = {
+    lbrace ~
+        (optimization_framework_section)*~
+    rbrace
+}
+
+optimization_framework_section = {
+    identifier ~ colon ~ (expression | optimization_framework_subsection)
+}
+
+optimization_framework_subsection = {
+    lbrace ~
+        (optimization_framework_property)*~
+    rbrace
+}
+
+optimization_framework_property = {
+    identifier ~ colon ~ expression |
+    minus_op ~ identifier ~ colon ~ expression
+}
+
+genetic_optimization_declaration = {
+    genetic_optimization_kw ~ identifier ~ colon ~ genetic_optimization_body
+}
+
+genetic_optimization_body = {
+    lbrace ~
+        (genetic_optimization_section)*~
+    rbrace
+}
+
+genetic_optimization_section = {
+    identifier ~ colon ~ (expression | genetic_optimization_subsection)
+}
+
+genetic_optimization_subsection = {
+    lbrace ~
+        (genetic_optimization_property)*~
+    rbrace
+}
+
+genetic_optimization_property = {
+    identifier ~ colon ~ expression
+}
+
+analysis_workflow_declaration = {
+    analysis_workflow_kw ~ identifier ~ colon ~ analysis_workflow_body
+}
+
+analysis_workflow_body = {
+    lbrace ~
+        (analysis_workflow_section)*~
+    rbrace
+}
+
+analysis_workflow_section = {
+    identifier ~ colon ~ (expression | analysis_workflow_subsection)
+}
+
+analysis_workflow_subsection = {
+    lbrace ~
+        (analysis_workflow_property)*~
+    rbrace
+}
+
+analysis_workflow_property = {
+    identifier ~ colon ~ expression
+}
+
+validation_framework_declaration = {
+    validation_framework_kw ~ identifier ~ colon ~ validation_framework_body
+}
+
+validation_framework_body = {
+    lbrace ~
+        (validation_framework_section)*~
+    rbrace
+}
+
+validation_framework_section = {
+    identifier ~ colon ~ (expression | validation_framework_subsection)
+}
+
+validation_framework_subsection = {
+    lbrace ~
+        (validation_framework_property)*~
+    rbrace
+}
+
+validation_framework_property = {
+    identifier ~ colon ~ expression
+}
+
+pattern_registry_declaration = {
+    pattern_registry_kw ~ identifier ~ colon ~ pattern_registry_body
+}
+
+pattern_registry_body = {
+    lbrace ~
+        (pattern_registry_section)*~
+    rbrace
+}
+
+pattern_registry_section = {
+    identifier ~ colon ~ (expression | pattern_registry_subsection)
+}
+
+pattern_registry_subsection = {
+    lbrace ~
+        (pattern_registry_property)*~
+    rbrace
+}
+
+pattern_registry_property = {
+    identifier ~ colon ~ expression |
+    minus_op ~ identifier ~ colon ~ expression
+}
+
+orchestration_declaration = {
+    orchestration_kw ~ identifier ~ colon ~ orchestration_body
+}
+
+orchestration_body = {
+    lbrace ~
+        (orchestration_section)*~
+    rbrace
+}
+
+orchestration_section = {
+    identifier ~ colon ~ (expression | orchestration_subsection)
+}
+
+orchestration_subsection = {
+    lbrace ~
+        (orchestration_property)*~
+    rbrace
+}
+
+orchestration_property = {
+    identifier ~ colon ~ expression
+}
+
+// Control flow statements
+assignment_statement = {
+    identifier ~ (assign_op | add_assign_op | sub_assign_op | mul_assign_op | div_assign_op) ~ expression
+}
+
+expression_statement = { expression }
+
+if_statement = {
+    given_kw ~ expression ~ colon ~ block_statement ~
+    (given_kw ~ expression ~ colon ~ block_statement)* ~
+    (given_kw ~ otherwise_kw ~ colon ~ block_statement)?
+}
+
+for_statement = {
+    for_kw ~ each_kw ~ identifier ~ in_kw ~ expression ~ colon ~ block_statement
+}
+
+while_statement = {
+    while_kw ~ expression ~ colon ~ block_statement
+}
+
+within_statement = {
+    within_kw ~ expression ~ (as_kw ~ identifier)? ~ colon ~ within_body
+}
+
+within_body = {
+    lbrace ~
+        (within_content)*~
+    rbrace
+}
+
+within_content = {
+    fuzzy_evaluate_block |
+    biomechanical_block |
+    causal_inference_block |
+    temporal_analysis_block |
+    pattern_matching_block |
+    advanced_analysis_block |
+    statement
+}
+
+within_block = {
+    within_kw ~ expression ~ colon ~ within_body
+}
+
+fuzzy_evaluate_block = {
+    fuzzy_evaluate_kw ~ identifier ~ colon ~ block_statement
+}
+
+biomechanical_block = {
+    biomechanical_kw ~ identifier ~ colon ~ block_statement
+}
+
+causal_inference_block = {
+    causal_inference_kw ~ identifier ~ colon ~ block_statement
+}
+
+temporal_analysis_block = {
+    temporal_analysis_kw ~ identifier ~ colon ~ block_statement
+}
+
+pattern_matching_block = {
+    given_kw ~ expression ~ colon ~ block_statement
+}
+
+advanced_analysis_block = {
+    identifier ~ identifier ~ colon ~ block_statement
+}
+
+try_statement = {
+    try_kw ~ colon ~ block_statement ~
+    (catch_kw ~ identifier ~ as_kw ~ identifier ~ colon ~ block_statement)* ~
+    (finally_kw ~ colon ~ block_statement)?
+}
+
+return_statement = {
+    return_kw ~ expression?
+}
+
+import_statement = {
+    import_kw ~ identifier |
+    from_kw ~ identifier ~ import_kw ~ (identifier | mult_op) ~ (as_kw ~ identifier)?
+}
+
+block_statement = {
+    lbrace ~ statement* ~ rbrace
+}
+
+// Support methods
+support_statement = {
+    support_kw ~ identifier ~ support_modifiers?
+}
+
+support_modifiers = {
+    with_confidence_modifier |
+    with_weight_modifier |
+    with_evidence_modifier
+}
+
+with_confidence_modifier = {
+    "with_confidence" ~ lparen ~ expression ~ rparen
+}
+
+with_weight_modifier = {
+    "with_weight" ~ lparen ~ expression ~ rparen
+}
+
+with_evidence_modifier = {
+    "with_evidence" ~ lparen ~ evidence_argument_list ~ rparen
+}
+
+evidence_argument_list = {
+    identifier ~ colon ~ expression ~ (comma ~ identifier ~ colon ~ expression)*
+}
+
+// Causal chains
+causal_chain_declaration = {
+    causal_chain_kw ~ causal_chain_sequence ~ colon ~ causal_chain_body?
+}
+
+causal_chain_sequence = {
+    identifier ~ (arrow_op ~ identifier)+
+}
+
+causal_chain_body = {
+    lbrace ~
+        (causal_chain_property)*~
+    rbrace
+}
+
+causal_chain_property = {
+    identifier ~ colon ~ expression
+}
+
+// Program structure
+program = { SOI ~ statement* ~ EOI } 
