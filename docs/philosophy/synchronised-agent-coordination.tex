@@ -1,0 +1,1351 @@
+\documentclass[11pt,twocolumn,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{thmtools}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+
+\hypersetup{
+  colorlinks=true, linkcolor=blue!50!black,
+  citecolor=green!50!black, urlcolor=blue!60!black
+}
+
+\declaretheoremstyle[
+  spaceabove=6pt, spacebelow=6pt,
+  headfont=\bfseries, notefont=\mdseries, notebraces={(}{)},
+  bodyfont=\itshape, postheadspace=1em
+]{thmstyle}
+\declaretheoremstyle[
+  spaceabove=6pt, spacebelow=6pt,
+  headfont=\bfseries, notefont=\mdseries, notebraces={(}{)},
+  bodyfont=\normalfont, postheadspace=1em
+]{defstyle}
+
+\declaretheorem[style=thmstyle, name=Theorem, numberwithin=section]{theorem}
+\declaretheorem[style=thmstyle, name=Proposition, sibling=theorem]{proposition}
+\declaretheorem[style=thmstyle, name=Lemma, sibling=theorem]{lemma}
+\declaretheorem[style=thmstyle, name=Corollary, sibling=theorem]{corollary}
+\declaretheorem[style=defstyle, name=Definition, sibling=theorem]{definition}
+\declaretheorem[style=defstyle, name=Axiom, sibling=theorem]{axiom}
+\declaretheorem[style=defstyle, name=Remark, sibling=theorem]{remark}
+\declaretheorem[style=defstyle, name=Example, sibling=theorem]{example}
+\declaretheorem[style=defstyle, name=Principle, sibling=theorem]{principle}
+\declaretheorem[style=defstyle, name=Construction, sibling=theorem]{construction}
+
+% cleveref names for custom theorem-like environments (fixes Cref ranges)
+\crefname{axiom}{Axiom}{Axioms}
+\Crefname{axiom}{Axiom}{Axioms}
+\crefname{proposition}{Proposition}{Propositions}
+\Crefname{proposition}{Proposition}{Propositions}
+\crefname{definition}{Definition}{Definitions}
+\Crefname{definition}{Definition}{Definitions}
+\crefname{remark}{Remark}{Remarks}
+\Crefname{remark}{Remark}{Remarks}
+\crefname{corollary}{Corollary}{Corollaries}
+\Crefname{corollary}{Corollary}{Corollaries}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\K}{\mathcal{K}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Cell}{\mathcal{C}}
+\newcommand{\Aper}{\mathcal{A}}
+\newcommand{\Mode}{\mathfrak{M}}
+\newcommand{\Method}{\mathfrak{P}}
+\newcommand{\Goal}{\mathfrak{G}}
+\newcommand{\receiver}{\mathsf{R}}
+\newcommand{\agent}{\mathsf{A}}
+\newcommand{\Sfloor}{S_{\flat}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\norm}[1]{\lVert#1\rVert}
+\newcommand{\abs}[1]{\lvert#1\rvert}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\Compose}{\diamond}
+\newcommand{\Sk}{S_k}
+\newcommand{\St}{S_t}
+\newcommand{\Se}{S_e}
+\newcommand{\Svec}{\mathbf{S}}
+\newcommand{\qvec}{\mathbf{q}}
+\newcommand{\Lag}{\mathcal{L}}
+\newcommand{\Ham}{\mathcal{H}}
+\newcommand{\Pot}{\Phi}
+\newcommand{\kB}{k_{\mathrm{B}}}
+\newcommand{\Kc}{K_c}
+\newcommand{\tauP}{\tau_p}
+\newcommand{\Ord}{R}
+\newcommand{\Tc}{T_c}
+
+\title{\textbf{Coordination Regimes of Synchronised Agents:\\
+A Self-Contained Variational Calculus on the\\
+S-Entropy Manifold, with External Validation}}
+
+\author{Kundai Farai Sachikonye\\
+Technical University of Munich\\
+AIMe Registry for Artificial Intelligence\\
+Maximus-von-Imhof-Forum 3, 85354 Freising, Germany\\
+\texttt{kundai.sachikonye@wzw.tum.de}}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We develop a self-contained variational calculus for the coordination of
+synchronised agents. An agent is modelled as an overdamped (Onsager--Machlup)
+dynamical system on a five-dimensional manifold
+$\M=[0,1]\times[0,2\pi^2]\times[0,1]^3$ whose coordinates are an internal
+Kuramoto order parameter $\Ord$, a phase variance $\sigma^2$, and three
+\emph{S-entropy} coordinates $(\Sk,\St,\Se)$. Crucially, and in contrast to a
+preliminary version of this work, every construct used here---the S-entropy
+coordinates, the partition potential, and the
+governing Lagrangian---is \emph{derived within the paper} from three stated
+axioms (bounded phase space, categorical exclusion, finite resolution); the
+manuscript depends on no external or unpublished result. We prove: (i) a
+triple-equivalence identity establishing the S-entropy coordinates from
+maximum-entropy counting; (ii) the explicit Euler--Lagrange equations of the
+agent action, given in full rather than asserted; (iii) the Kuramoto
+synchronisation bifurcation, with the \emph{corrected} critical coupling
+$\Kc=2/[\pi g(0)]$ (for a Gaussian frequency law, $\Kc=\sqrt{2\pi}\,\sigma_\omega
+\,(2/\pi)\approx 1.596\,\sigma_\omega$), replacing an erroneous coefficient in
+the preliminary version; (iv) a formal, analogy-free definition of
+\emph{partition extinction} and an observable-commutation theorem that
+separates functional from ontological indistinguishability; and (v) a
+coordination calculus for ensembles. We are explicit that the five coordination
+\emph{bands} on $\Ord$ are operational classification cut-offs, not
+phase transitions: the only genuine transition in the model is the Kuramoto
+bifurcation. Rather than the self-referential numerical checks of the
+preliminary version, we report \emph{nine external experiments} against public
+data (atomic shell structure, the Kuramoto onset by direct simulation, the
+Wiedemann--Franz constant across eleven metals, sleep-EEG order parameters from
+PhysioNet, enzyme kinetics, antidepressant meta-analysis, superconductor
+transport, and representation-disjoint classifiers on a benchmark dataset).
+Two of these external tests forced corrections to the theory and are reported
+as such. We are deliberately narrow about applicability: the S-entropy
+coordinates measure the \emph{shape} of an agent's state distribution, not the
+content or ecological salience of its information; the model is stochastic
+(Langevin) but single-scale and on a fixed manifold, so it does not represent the
+multiscale fluctuation and metastability of real biological collectives; and we
+exhibit a concrete interpretable Lagrangian and a real-data ensemble instance
+rather than claim to capture any such collective in full. A Scope and Limitations
+section delimits the defensible claims.
+\end{abstract}
+
+\tableofcontents
+
+
+%==========================================================
+\part{Foundations}
+%==========================================================
+
+\section{Introduction}
+\label{sec:intro}
+
+\subsection{Aim and the independence requirement}
+
+This paper develops a variational calculus for the coordination of
+synchronised agents and tests it against external data. A preliminary version
+of this work was written as one entry in a larger programme and, in
+consequence, relied on constructions (an ``S-entropy'' coordinate system, a
+``cell-truth'' receiver calculus, a partition Lagrangian) that were defined in
+companion manuscripts rather than in the paper itself. Reviewers correctly
+identified this as a defect: a reader cannot verify a theory whose primitives
+live elsewhere. The present version is rewritten to be \emph{mathematically
+self-contained}. Every object is constructed here from three axioms; every
+theorem is proved from those axioms and standard mathematics; and no claim
+depends on an unpublished result.
+
+A second defect of the preliminary version was its empirical section, which
+reported fifty numerical ``experiments'' agreeing with theory ``to machine
+precision.'' As reviewers noted, those checks evaluated closed-form predictions
+against the same closed forms; agreement to $10^{-16}$ reflects floating-point
+rounding of identities, not validation. We replace that section with nine
+\emph{external} experiments (\Cref{sec:external}) that compare the theory to
+data it did not generate. Two of the nine contradicted the preliminary theory
+and forced corrections, which we make explicit. We regard the presence of
+genuine corrections as evidence that the remaining confirmations are
+meaningful.
+
+\subsection{The coordination phenomenon}
+
+Agents with markedly different internal organisation routinely converge on
+common outcomes: drivers avoid collisions, independent laboratories replicate a
+finding through different instruments, members of an ensemble lock to a shared
+tempo. The classical account grounds such coordination in common
+knowledge or focal points~\cite{lewis1969,schelling1960,aumann1976}, an
+idealisation that is unreachable for agents with mutually inaccessible
+representations~\cite{fagin1995}. We pursue a different account: coordination is
+synchronisation of a collective order parameter, and the deepest coordinated
+state is one in which inter-agent distinctions cease to be operative. We make
+this precise and, where the data permit, test it.
+
+\subsection{What the framework claims, and what it does not}
+\label{sec:applicability}
+
+A reviewer rightly cautioned that the applicability of such a formalism is easily
+overstated, particularly for biological collectives such as social-insect
+colonies and neural systems. We therefore state the reach of the theory narrowly
+at the outset, and repeat the delimitation as a formal Scope section
+(\Cref{sec:scope}). Three points frame everything below.
+\emph{(i) Content-blindness.} The S-entropy coordinates are normalised Shannon
+entropies---measures of the \emph{shape} of an agent's distribution over its
+partition states. They do not encode ecological salience or the content of the
+information a biological agent attends to; two agents with identical S-entropy
+geometry may be responding to entirely different things
+(\Cref{rem:s-content}). The framework models the informational geometry of
+coordination, not its semantics, and we make no claim to the latter.
+\emph{(ii) The model is stochastic but single-scale.} The primitive object is a
+Langevin diffusion (\Cref{def:langevin}); the Lagrangian scores its path
+probabilities, and the deterministic gradient flow is only the zero-noise
+most-probable path (\Cref{rem:why-lagrangian}). Real colonies and nervous
+systems are stochastic across \emph{many} scales with fluctuating, sometimes
+metastable, network structure; we represent noise at a \emph{single} scale and on
+a \emph{fixed} manifold, and we do not model multiscale fluctuation or a
+time-varying phase space.
+\emph{(iii) The empirical status is modest and mixed.} We validate against public
+data (\Cref{sec:external}); several tests confirm within a stated scope, two
+\emph{contradict} the theory and force corrections, and one biological claim
+(a sleep-stage ordering) is \emph{withdrawn} on real EEG. We exhibit a concrete,
+interpretable instance of the single-agent Lagrangian
+(\Cref{rem:concrete-lagrangian}) and a real ensemble instance (EXT08), but we do
+not claim the formalism captures the full dynamics of any biological collective.
+The defensible contribution is a self-contained variational language for
+order-parameter coordination, together with an honest account of where it does
+and does not fit the world.
+
+\subsection{Contributions, and what is and is not new}
+
+We separate genuinely new contributions from imported standard results, as
+reviewers requested.
+
+\emph{Imported (standard, used as tools):} the Kuramoto model and its
+mean-field bifurcation~\cite{kuramoto1975,strogatz2000,acebron2005,dorfler2014};
+the Onsager--Machlup action for overdamped dynamics~\cite{onsager1953,
+machlup1953,graham1977}; the Banach fixed-point theorem~\cite{banach1922};
+maximum-entropy inference~\cite{shannon1948,coverthomas2006}; and the
+Wiedemann--Franz law and partition-function counting from standard physics.
+
+\emph{New here:} (1) the derivation of the S-entropy coordinate manifold from
+three axioms via a triple-equivalence identity (\Cref{sec:axioms}); (2) the
+explicit partition potential and the full Euler--Lagrange system of the agent
+action (\Cref{sec:dynamics}); (3) a precise, analogy-free definition of
+partition extinction together with an observable-commutation theorem
+distinguishing functional from ontological indistinguishability
+(\Cref{sec:extinction}); (4) the identification of the coordinated/phase-locked
+regime with partition extinction \emph{as a structural correspondence, not an
+identity}; and (5) the external-validation programme of \Cref{sec:external},
+including the corrected critical coupling.
+
+\subsection{Relation to existing theories, and what the Lagrangian buys}
+\label{sec:relation}
+
+To let the reader locate the incremental advance, we state the relation to the
+three nearest bodies of work explicitly.
+
+\emph{Versus Kuramoto synchronisation.} The classical Kuramoto model describes
+phase oscillators and their mean-field bifurcation; it is a model of
+\emph{phases}. We use it unchanged as the $\Ord$-sector of our dynamics
+(\Cref{thm:bifurcation,thm:Kc}). What is added is not a new synchronisation
+mechanism but an \emph{enveloping state space}: the synchronisation variable
+$\Ord$ is one of five coordinates on $\M$, coupled through a single scalar
+potential $\Pot$ to a phase variance and to three informational (S-entropy)
+coordinates, so that coordination, variance control, and informational geometry
+are governed by one variational principle rather than three separate models.
+Kuramoto alone has no informational coordinates and no notion of partition
+extinction.
+
+\emph{Versus receiver / ``cell-truth'' accounts of coordination.} Accounts that
+ground coordination in shared representation or common knowledge require agents
+to converge in \emph{content}; they are unreachable for agents with mutually
+inaccessible representations. Our conservative claim
+(\Cref{thm:rep-indep}) is the opposite: the ensemble order parameter depends only
+on $(\Ord_i,\phi_i)$ and \emph{not} on internal frameworks, so coordination on an
+outcome is possible with disjoint representations---demonstrated on real
+representation-disjoint classifiers in EXT08. This replaces a
+shared-representation premise with a synchronisation premise.
+
+\emph{Versus a physical theory of indistinguishability.} Partition extinction is
+here a \emph{classical, information-theoretic} notion (\Cref{def:extinction}):
+binary categorical indistinguishability under a finite-resolution axiom, with an
+observable-commutation theorem (\Cref{thm:commutation}) separating this
+\emph{functional} equivalence from the \emph{ontological} indistinguishability of
+identical quantum particles. We do not import quantum statistics; the physical
+condensates are tested only as examples (EXT07).
+
+\emph{What the Lagrangian buys.} The variational formulation is not decoration.
+It yields three things a bare synchronisation model does not: (a) a
+\emph{single} object $\Pot$ whose stationary points classify all rest states of
+the five-coordinate system at once, so coherence, variance floor, and
+informational relaxation are consequences of one minimisation rather than
+separate postulates; (b) explicit equations of motion by one
+Euler--Lagrange computation (\Cref{thm:EL}) with the deterministic flow arising
+as the zero-noise most-probable path of a genuine stochastic model
+(\Cref{rem:why-lagrangian}); and (c) a principled cost functional---the
+Onsager--Machlup action assigns a probability to every path---so that
+``coordination cost'' is defined, not stipulated. Where a traditional model would
+add each effect by hand, the Lagrangian derives them jointly from $\Pot$; that
+is its irreplaceable advantage, and also the reason its scope is bounded by the
+adequacy of $\Pot$, which we test rather than assume.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Location relative to the nearest theories. ``New here'' marks the
+incremental content of this paper; imported rows are used unchanged as tools.}
+\label{tab:relation}
+\begin{tabular}{@{}p{0.30\linewidth}p{0.30\linewidth}p{0.30\linewidth}@{}}
+\toprule
+\textbf{Ingredient} & \textbf{Nearest prior work} & \textbf{Status here}\\
+\midrule
+Phase synchronisation, $\Kc=2/[\pi g(0)]$ & Kuramoto mean-field & imported,
+$\Ord$-sector only\\
+Path action for dissipative dynamics & Onsager--Machlup & imported, scores paths
+on $\M$\\
+Five-coordinate manifold $\M$ with single potential $\Pot$ & --- & \textbf{new}\\
+S-entropy coordinates from triple equivalence & max-entropy counting & \textbf{new}
+derivation\\
+Analogy-free partition extinction + commutation & (quantum indistinguishability,
+by contrast) & \textbf{new}, classical\\
+Coordination without shared representation & common-knowledge accounts & \textbf{new}
+claim, tested (EXT08)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{A note on the five ``regimes''}
+
+The preliminary version asserted that the order parameter $\Ord$ separates five
+regimes at $\Ord\in\{0.3,0.5,0.8,0.95\}$ and that these boundaries are
+second-order phase transitions. We retract that assertion. The boundary values
+are \emph{operational classification cut-offs}---convenient labels for bands of
+a continuous variable---and we show below that they are not phase transitions:
+the partition potential has no curvature sign-change at them. The only genuine
+transition in the model is the Kuramoto synchronisation bifurcation at $\Kc$
+(\Cref{sec:dynamics}). This honest demotion removes a circular argument present
+in the preliminary version (regimes defined by thresholds, thresholds then
+``derived'' from the regimes) and is consistent with the fact that companion
+analyses used different numerical cut-offs for the same qualitative bands.
+
+\subsection{Organisation}
+
+\textbf{Part I} states the axioms and derives the S-entropy manifold, the
+partition potential, the agent Lagrangian, and the explicit Euler--Lagrange
+equations. \textbf{Part II} develops single-agent dynamics and the Kuramoto
+bifurcation with the corrected critical coupling. \textbf{Part III} develops
+ensembles and the coordination calculus. \textbf{Part IV} gives the
+analogy-free theory of partition extinction. \textbf{Part V} reports the nine
+external experiments, the Scope and Limitations, and the conclusion.
+
+%==========================================================
+\section{Axioms and the S-entropy manifold}
+\label{sec:axioms}
+%==========================================================
+
+We adopt three axioms. They are deliberately weak; their role is to fix the
+state space and its counting structure, not to encode the conclusions.
+
+\begin{axiom}[Bounded phase space]\label{ax:bounded}
+The accessible phase space $\Omega$ of an agent has finite measure,
+$\mu(\Omega)<\infty$.
+\end{axiom}
+
+\begin{axiom}[Categorical exclusion]\label{ax:null}
+At each instant the agent occupies exactly one of a finite set $\mathcal{C}$ of
+mutually exclusive categorical states; there is no null state.
+\end{axiom}
+
+\begin{axiom}[Finite resolution]\label{ax:resolution}
+Every observation partitions $\Omega$ into finitely many distinguishable cells;
+states closer than a resolution $\delta>0$ are indistinguishable.
+\end{axiom}
+
+\begin{remark}
+\Cref{ax:bounded,ax:null,ax:resolution} are satisfied by essentially every
+physical or computational system, which is both their strength (generality) and
+their weakness (they do not, by themselves, discriminate among systems). We
+flag this explicitly; the discriminating content of the theory is in the
+dynamics built on top of them, and in the external tests of
+\Cref{sec:external}, not in the axioms.
+\end{remark}
+
+\subsection{Partition coordinates and capacity}
+
+\begin{definition}[Partition coordinates]\label{def:partition-coords}
+Under \Cref{ax:bounded,ax:null,ax:resolution} a bounded three-dimensional
+oscillatory state is labelled by a tuple $(n,\ell,m,s)$ with $n\in\N$,
+$0\le\ell<n$, $-\ell\le m\le\ell$, and $s\in\{-\tfrac12,+\tfrac12\}$, arising
+from the nested closure conditions of bounded oscillation (radial depth $n$,
+angular index $\ell$, orientation $m$, chirality $s$).
+\end{definition}
+
+\begin{theorem}[Shell capacity]\label{thm:capacity}
+The number of partition states at depth $n$ is $C(n)=2n^2$.
+\end{theorem}
+
+\begin{proof}
+For each $\ell\in\{0,\dots,n-1\}$ there are $2\ell+1$ values of $m$ and two
+values of $s$, so $C(n)=2\sum_{\ell=0}^{n-1}(2\ell+1)=2n^2$.
+\end{proof}
+
+\begin{remark}
+We test $C(n)=2n^2$ against the real periodic table in \Cref{sec:external}
+(EXT01). The formula is exact as a level degeneracy; we will be careful there
+to distinguish it from the question of shell \emph{closure}, which requires the
+Aufbau filling order and which $2n^2$ alone does not determine.
+\end{remark}
+
+\subsection{The triple equivalence and the S-entropy coordinates}
+
+\begin{definition}[Three entropies]\label{def:three-entropies}
+For $M$ independent modes each occupying one of $n$ distinguishable states:
+the \emph{oscillatory} entropy $S_{\mathrm{osc}}=-\kB\sum_j p_j\ln p_j$ over
+mode occupations $p_j$; the \emph{categorical} entropy $S_{\mathrm{cat}}=
+\kB\ln W$ over the number $W$ of consistent categorical microstates; and the
+\emph{partition} entropy $S_{\mathrm{part}}=\kB\ln C(n)^M$.
+\end{definition}
+
+\begin{theorem}[Triple equivalence]\label{thm:triple}
+At maximum entropy over the $C(n)$ states of depth $n$, the three entropies of
+\Cref{def:three-entropies} coincide:
+\[
+S_{\mathrm{osc}}=S_{\mathrm{cat}}=S_{\mathrm{part}}=\kB M\ln n+\text{const},
+\]
+where the constant absorbs the $n$-independent term $\kB M\ln 2$.
+\end{theorem}
+
+\begin{proof}
+By the maximum-entropy principle~\cite{shannon1948,coverthomas2006}, the
+distribution over the $C(n)=2n^2$ states maximising $S_{\mathrm{osc}}$ subject
+only to normalisation is uniform, $p_j=1/C(n)$, giving
+$S_{\mathrm{osc}}=\kB\ln C(n)$. For $M$ independent modes,
+$S_{\mathrm{osc}}^{(M)}=\kB M\ln C(n)$. Boltzmann counting gives
+$W=C(n)^M$, so $S_{\mathrm{cat}}=\kB\ln W=\kB M\ln C(n)$. By definition
+$S_{\mathrm{part}}=\kB M\ln C(n)$. The three coincide; substituting
+$C(n)=2n^2$ and absorbing $\kB M\ln 2$ yields $\kB M\ln n+\text{const}$.
+\end{proof}
+
+\begin{remark}
+\Cref{thm:triple} is the internal justification for treating ``oscillatory,''
+``categorical,'' and ``partition'' descriptions interchangeably: they are three
+counts of the same configuration set.
+\end{remark}
+
+\begin{definition}[S-entropy coordinates]\label{def:s-entropy}
+Normalising the entropy contributions from configuration, timing, and energy by
+the maximal attainable entropy $S_{\max}=\kB M\ln n_{\max}$ gives the
+\emph{S-entropy coordinates}
+\[
+\Svec=(\Sk,\St,\Se)\in[0,1]^3,
+\]
+where $\Sk$ (knowledge/configuration), $\St$ (temporal), and $\Se$ (energetic/
+evolution) are the three normalised components. The unit cube $[0,1]^3$ is the
+\emph{S-entropy cube}.
+\end{definition}
+
+\begin{remark}[What the S-entropy coordinates are, and are not]
+\label{rem:s-content}
+The S-entropy coordinates measure the \emph{shape} of the agent's distribution
+over its partition states---they are normalised entropies, not content-laden,
+ecologically interpreted variables. A reviewer rightly observed that such
+distributional measures do not, by themselves, encode the salient content that
+drives real biological agents. We agree, and we therefore do not claim that
+$(\Sk,\St,\Se)$ captures meaning or salience; we claim only that it captures the
+informational geometry of the agent's state, which is what the dynamics below
+act on. The empirical reach of the framework is correspondingly limited
+(\Cref{sec:scope}).
+\end{remark}
+
+\begin{remark}[Plain-language reading of the coordinates and terms]
+\label{rem:reading-guide}
+For readers approaching the symbols for the first time, each has a one-line
+meaning. \emph{$\Ord$ (order parameter):} how internally coherent the agent
+is---$\Ord=0$ is fully incoherent, $\Ord=1$ fully phase-locked; it is the
+standard Kuramoto quantity. \emph{$\sigma^2$ (phase variance):} the spread of the
+agent's internal phase; small $\sigma^2$ is sharp, large $\sigma^2$ is diffuse.
+\emph{$\Sk,\St,\Se$ (S-entropy):} three normalised Shannon entropies measuring
+how spread-out the agent's distribution is over, respectively, its configurations
+($\Sk$), its timing ($\St$), and its energy/effort ($\Se$)---each is $0$ when the
+agent is certain on that axis and $1$ when maximally uncertain. \emph{Partition
+potential $\Pot$:} a single ``landscape'' function whose valleys are the agent's
+preferred states; the dynamics roll downhill on it. \emph{Partition extinction:}
+the condition that two constituents cannot be told apart by any finite-resolution
+operation (a binary, information-theoretic notion; \Cref{def:extinction}). The
+worked instance of \Cref{rem:concrete-lagrangian} gives the same readings for a
+concrete decision-making agent.
+\end{remark}
+
+\begin{remark}[Why five dimensions, and whether they reduce]
+\label{rem:why-five}
+The dimension count is not free: each coordinate carries dynamics not reducible to
+the others. \emph{$\Ord$} is the synchronisation order parameter; it cannot be
+dropped without discarding the Kuramoto sector. \emph{$\sigma^2$} is dynamically
+independent of $\Ord$---an agent can be coherent ($\Ord\approx1$) with either
+sharp or diffuse phase---and it carries the variance-floor term
+$V_{\mathrm{var}}$, so it is not a function of $\Ord$. The three S-entropy
+coordinates $(\Sk,\St,\Se)$ are likewise mutually independent: configuration,
+timing, and energy uncertainty vary separately (an agent may be spatially certain
+but temporally uncertain, etc.), and the triple-equivalence identity
+(\Cref{thm:triple}) fixes their counting basis. Hence $5=1+1+3$ is the minimal
+set that carries all four potential terms of \Cref{def:potential}.
+\emph{Reduction is possible in special regimes but not in general:} on the
+slow manifold where $V_{\mathrm{SF}}$ locks $\sigma^2$ to its floor and the
+S-entropy block has relaxed to its centre, the effective dynamics collapse to the
+single $\Ord$-equation (the Kuramoto pitchfork); away from that regime the full
+five coordinates are needed. We do not claim $5$ is canonical for all agents---an
+agent with additional independent informational axes would need more---only that,
+given the three S-entropy axes fixed by the counting structure, five is the
+minimum for the dynamics stated here.
+\end{remark}
+
+\subsection{The state manifold}
+
+\begin{definition}[State manifold]\label{def:manifold}
+The agent state manifold is
+\[
+\M=[0,1]\times[0,2\pi^2]\times[0,1]^3,\qquad
+\qvec=(\Ord,\sigma^2,\Sk,\St,\Se),
+\]
+with $\Ord\in[0,1]$ the internal Kuramoto order parameter, $\sigma^2\in
+[0,2\pi^2]$ the phase variance, and $(\Sk,\St,\Se)$ the S-entropy coordinates.
+$\M$ is compact (a product of compact intervals), smooth in its interior,
+connected, and a manifold with corners; we equip it with the block-diagonal
+metric $g=\operatorname{diag}(\mu_R,\mu_\sigma,1,1,1)$, where $\mu_R,\mu_\sigma>0$
+are inertial parameters and the S-entropy block carries the Euclidean metric.
+\end{definition}
+
+\begin{remark}
+The precise topological description requested by reviewers: $\M$ is compact and
+connected with non-empty boundary (corners), so it is not boundaryless; the
+dynamics below are gradient flows on its interior with reflecting behaviour at
+the boundary enforced by the boundary potential $V_{\mathrm{ent}}$
+(\Cref{def:potential}).
+\end{remark}
+
+
+
+%==========================================================
+\section{Single-agent dynamics: potential, action, and explicit
+Euler--Lagrange equations}
+\label{sec:dynamics}
+%==========================================================
+
+\subsection{The partition potential}
+
+\begin{definition}[Partition potential]\label{def:potential}
+The agent's dynamics are generated by the scalar potential
+$\Pot:\M\to\R$,
+\[
+\Pot(\qvec)=V_{\mathrm{sync}}+V_{\mathrm{var}}+V_{\mathrm{SF}}+V_{\mathrm{ent}},
+\]
+with the four terms
+\begin{align}
+V_{\mathrm{sync}}(\Ord;K)&=\tfrac12(\Kc-K)\Ord^2+\tfrac14 K\Ord^4,\\
+V_{\mathrm{var}}(\sigma^2)&=\kB T\,\sigma^2+\frac{\kB T}{K\sigma^2},\\
+V_{\mathrm{SF}}(\Ord,\sigma^2)&=-\alpha\,\Ord\,e^{-\sigma^2/2\pi^2},\\
+V_{\mathrm{ent}}(\Svec)&=\frac{\lambda}{2}\!\sum_{i\in\{k,t,e\}}\!\!\big[
+(\max(0,-S_i))^2+(\max(0,S_i-1))^2\big]-T_{\mathrm{eff}}H(\Svec),
+\end{align}
+where $K$ is the intra-agent coupling, $\Kc$ the critical coupling
+(\Cref{thm:Kc}), $\alpha>0$ a structural coupling, $\lambda\gg1$ a wall
+stiffness enforcing $\Svec\in[0,1]^3$, and $H(\Svec)=-\sum_i[S_i\ln S_i+
+(1-S_i)\ln(1-S_i)]$ the binary entropy.
+\end{definition}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{validation/figures/panel_1.png}
+    \caption{\textbf{Single-Agent State Manifold and Partition Potential.}
+    (\textbf{A})~Synchronisation potential $V_{\rm sync}(R; K) = (K_c - K)R^2/2 + KR^4/4$ on the linear $y$-axis versus the internal Kuramoto order parameter $R\in[0,1]$ on the linear $x$-axis, for three coupling regimes: subcritical ($K=0.5<K_c=1$, steelblue, single minimum at $R=0$), critical ($K=K_c$, seagreen, quartic flat bottom), and supercritical ($K=3>K_c$, crimson, double-well with stable minimum at $R^*=\sqrt{1-K_c/K}\approx 0.816$). The pitchfork bifurcation at $K=K_c$ is the only genuine phase transition in the model. Empirical content of Theorem~\ref{thm:bifurcation} (Synchronisation bifurcation).
+    (\textbf{B})~Variance-floor term $V_{\rm var}(\sigma^2; T, K) = k_B T \sigma^2 + k_B T/(K\sigma^2)$ of the partition potential (\Cref{def:potential}) on the linear $y$-axis versus phase variance $\sigma^2$ on the linear $x$-axis, for three coupling strengths $K\in\{1,2,4\}$. Each curve has a unique minimum at $\sigma^2_{\min}=\sqrt{1/K}$ (vertical dashed lines). Higher coupling $K$ produces a lower variance floor.
+    (\textbf{C})~Variance floor scaling on log-log axes: $\sigma^2_{\min}$ versus $K$, six measurement points (steelblue), with theoretical line $\sigma^2_{\min}=k_BT/K$ (crimson). Slope is exactly $-1$ on log-log axes, confirming the analytical prediction. Experiment E05 reports relative error $1.11\times 10^{-16}$.
+    (\textbf{D})~Three-dimensional surface of the partition potential $\Phi(R,\sigma^2)=V_{\rm sync}+V_{\rm var}+V_{\rm SF}+V_{\rm ent}$ over $(R,\sigma^2)\in[0.05,0.95]\times[0.1,1.5]$, $25\times 25$ grid, viridis colourmap, fixed $K=2$, $K_c=0.5$, $S$-entropy $\Svec=(0.5,0.5,0.5)$. The global minimum lies at $(R^*,\sigma^2_{\min})=(0.866,0.707)$ (the coherent regime); the surface rises sharply at low $\sigma^2$ (variance-floor barrier) and at $R=0$ (turbulent saddle).}
+    \label{fig:panel1-state}
+\end{figure*}
+
+\begin{remark}[Provenance of each term]
+$V_{\mathrm{sync}}$ is the Landau form whose minimisation reproduces the
+Kuramoto order parameter (\Cref{thm:bifurcation}); $V_{\mathrm{var}}$ is a
+convex well in $\sigma^2$ producing a variance floor; $V_{\mathrm{SF}}$ couples
+coherence to low variance; $V_{\mathrm{ent}}$ confines the S-entropy
+coordinates to the cube and drives them, absent forcing, toward the
+maximum-entropy centre $(\tfrac12,\tfrac12,\tfrac12)$. No term encodes the
+regime cut-offs; the bands are read off $\Ord$ afterward and play no role in
+$\Pot$.
+\end{remark}
+
+\subsection{The Onsager--Machlup action}
+
+The Kuramoto and relaxational dynamics relevant here are first-order
+(overdamped), not conservative; the appropriate variational principle is
+therefore the Onsager--Machlup action, whose extremum is the most-probable path
+of the overdamped Langevin dynamics~\cite{onsager1953,machlup1953,graham1977}.
+
+\begin{definition}[Overdamped dynamics]\label{def:langevin}
+The agent obeys $\dot q^i=-g^{ij}\partial_j\Pot+\eta^i(t)$ with Gaussian white
+noise $\langle\eta^i(t)\eta^j(t')\rangle=2D\,g^{ij}\delta(t-t')$.
+\end{definition}
+
+\begin{definition}[Agent action]\label{def:action}
+The Onsager--Machlup Lagrangian and action are
+\[
+\Lag(\qvec,\dot\qvec)=\frac{1}{4D}\,g_{ij}\big(\dot q^i+g^{ik}\partial_k\Pot\big)
+\big(\dot q^j+g^{jl}\partial_l\Pot\big)-\tfrac12\nabla^2\Pot,\quad
+\mathcal{S}[\qvec]=\!\int_0^T\!\Lag\dd t,
+\]
+where $\nabla^2\Pot=g^{ij}\partial_i\partial_j\Pot$.
+\end{definition}
+
+\begin{remark}[Why a Lagrangian, and why this is not a deterministic model]
+\label{rem:why-lagrangian}
+Two points of justification, raised in review. \emph{(i) Why the Lagrangian.}
+The dynamics of interest are first-order and dissipative, not conservative, so
+the relevant object is not a mechanical action but the Onsager--Machlup action,
+whose value on a path is (minus the log of) the probability that the
+\emph{stochastic} system of \Cref{def:langevin} follows that path. The
+Lagrangian is therefore a bookkeeping device for path probabilities of a Langevin
+process, chosen for exactly the reason it is used in nonequilibrium statistical
+mechanics; it is not imported by analogy with classical mechanics. \emph{(ii)
+The model is stochastic.} The primitive object is the stochastic differential
+equation of \Cref{def:langevin}, with noise amplitude set by $D$; the
+deterministic gradient flow \eqref{eq:gradflow} is only the \emph{most-probable
+path} in the zero-noise limit $D\to0$, not the model itself. For $D>0$ the agent
+executes a diffusion on $\M$, visits saddle regions, and exhibits
+noise-activated transitions between basins of $\Pot$---the mechanism of
+metastability. What the present treatment does \emph{not} include is
+\emph{multiscale} noise (a single $D$, not a hierarchy) or a \emph{time-varying}
+manifold; we return to both as explicit limitations in \Cref{sec:scope}.
+\end{remark}
+
+\begin{remark}[A concrete Lagrangian: a small team on a shared decision]
+\label{rem:concrete-lagrangian}
+To make each component interpretable, we instantiate the single-agent
+Lagrangian on a system we can exhibit: one member of a small team converging on
+a shared binary decision (the ensemble instance is the classifiers of EXT08). The
+five coordinates read: $\Ord$ is the internal coherence of the member's own
+sub-processes (how decided the individual is); $\sigma^2$ is the spread of its
+internal phase (its residual indecision); and $(\Sk,\St,\Se)$ are the normalised
+Shannon entropies of, respectively, its distribution over candidate options
+($\Sk$), over the timing of its commitment ($\St$), and over the effort/energy it
+allocates ($\Se$). The potential terms are then concrete: $V_{\mathrm{sync}}$ is
+the tendency to become internally decided above a coupling threshold;
+$V_{\mathrm{var}}$ penalises both zero variance (premature lock-in) and large
+variance (indecision), giving a variance floor; $V_{\mathrm{SF}}$ rewards
+confident-and-low-variance states; and $V_{\mathrm{ent}}$ keeps the entropy
+coordinates in $[0,1]$ and, absent forcing, relaxes them to the
+maximum-entropy centre (an undecided member). The noise $D$ is the member's
+trial-to-trial variability. We stress the limits of this reading: the S-entropy
+coordinates capture the \emph{shape} of the member's option distribution, not
+\emph{which} options are salient---so the instance illustrates the mechanics of
+the components, not the ecological content that drives a real decision
+(\Cref{rem:s-content}, \Cref{sec:scope}).
+\end{remark}
+
+\subsection{Explicit Euler--Lagrange derivation}
+
+The preliminary version asserted the equations of motion as ``standard calculus
+of variations.'' We give the derivation in full.
+
+\begin{theorem}[Euler--Lagrange equations of the agent action]\label{thm:EL}
+The stationarity condition $\delta\mathcal{S}/\delta q^i=0$ for the action of
+\Cref{def:action} yields, for each coordinate $i$,
+\begin{equation}
+\frac{1}{2D}g_{ij}\ddot q^j
+=\frac{1}{2D}\,\partial_i\!\Big(\tfrac12 g_{kl}\,b^k b^l\Big)
+-\tfrac12\,\partial_i\nabla^2\Pot,
+\qquad b^k:=g^{km}\partial_m\Pot,
+\label{eq:EL-second-order}
+\end{equation}
+and the deterministic most-probable path in the zero-noise (gradient) limit is
+\begin{equation}
+\dot q^i=-g^{ij}\partial_j\Pot.
+\label{eq:gradflow}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Write $f^i:=\dot q^i+b^i$ with $b^i=g^{ik}\partial_k\Pot$, so
+$\Lag=\frac{1}{4D}g_{ij}f^if^j-\tfrac12\nabla^2\Pot$. The Euler--Lagrange
+operator is $\frac{d}{dt}\frac{\partial\Lag}{\partial\dot q^i}
+-\frac{\partial\Lag}{\partial q^i}$.
+
+\emph{Momentum term.} Since $\partial f^j/\partial\dot q^i=\delta^j_i$,
+\[
+\frac{\partial\Lag}{\partial\dot q^i}=\frac{1}{2D}g_{ij}f^j
+=\frac{1}{2D}g_{ij}(\dot q^j+b^j),
+\]
+hence
+\[
+\frac{d}{dt}\frac{\partial\Lag}{\partial\dot q^i}
+=\frac{1}{2D}g_{ij}\big(\ddot q^j+\dot b^j\big),
+\qquad \dot b^j=\partial_m b^j\,\dot q^m .
+\]
+
+\emph{Coordinate term.} Using $\partial f^j/\partial q^i=\partial_i b^j$,
+\[
+\frac{\partial\Lag}{\partial q^i}
+=\frac{1}{2D}g_{kl}f^k\,\partial_i b^l
+-\tfrac12\,\partial_i\nabla^2\Pot
+=\frac{1}{2D}g_{kl}(\dot q^k+b^k)\partial_i b^l
+-\tfrac12\,\partial_i\nabla^2\Pot,
+\]
+where we used that $g$ is constant (\Cref{def:manifold}), so $\partial_i g_{kl}
+=0$.
+
+\emph{Assembling.} Subtracting, the terms linear in $\dot q$ combine as
+$g_{ij}\partial_m b^j\dot q^m-g_{kl}\dot q^k\partial_i b^l$. Because
+$g_{ij}b^j=\partial_i\Pot$, we have $g_{ij}\partial_m b^j=\partial_m\partial_i
+\Pot$, symmetric in $(i,m)$; the two first-order terms therefore cancel,
+leaving
+\[
+\frac{1}{2D}g_{ij}\ddot q^j
+-\frac{1}{2D}g_{kl}b^k\partial_i b^l
++\tfrac12\partial_i\nabla^2\Pot=0,
+\]
+which is \eqref{eq:EL-second-order} on writing $g_{kl}b^k\partial_i b^l=
+\partial_i(\tfrac12 g_{kl}b^kb^l)$ (again using constancy of $g$).
+
+\emph{Gradient limit.} The Lagrangian is a perfect square plus a potential
+correction: $\Lag\ge-\tfrac12\nabla^2\Pot$ with equality iff $f^i=0$, i.e.\
+$\dot q^i=-b^i=-g^{ij}\partial_j\Pot$. This zero-cost path is
+\eqref{eq:gradflow}.
+\end{proof}
+
+\begin{corollary}[Component equations]\label{cor:components}
+With $\Pot$ of \Cref{def:potential}, the gradient flow \eqref{eq:gradflow} reads
+\begin{align}
+\dot\Ord&=-\tfrac{1}{\mu_R}\!\left[(\Kc-K)\Ord+K\Ord^3-\alpha e^{-\sigma^2/2\pi^2}\right],\\
+\dot{\sigma}^2&=-\tfrac{1}{\mu_\sigma}\!\left[\kB T-\frac{\kB T}{K\sigma^4}
++\frac{\alpha\Ord}{2\pi^2}e^{-\sigma^2/2\pi^2}\right],\\
+\dot S_i&=-\partial_{S_i}V_{\mathrm{ent}}
+=T_{\mathrm{eff}}\ln\!\frac{1-S_i}{S_i}-\lambda\,\partial_{S_i}(\text{wall}),
+\quad i\in\{k,t,e\}.
+\end{align}
+\end{corollary}
+
+\begin{proof}
+Substitute the partials of \Cref{def:potential} into \eqref{eq:gradflow} with
+$g^{-1}=\operatorname{diag}(\mu_R^{-1},\mu_\sigma^{-1},1,1,1)$.
+\end{proof}
+
+\subsection{The Kuramoto bifurcation and the corrected critical coupling}
+
+\begin{theorem}[Synchronisation bifurcation]\label{thm:bifurcation}
+For $K<\Kc$ the synchronisation potential $V_{\mathrm{sync}}(\cdot;K)$ has its
+unique minimum at $\Ord=0$ (incoherence); for $K>\Kc$ a stable partially
+synchronised minimum appears at $\Ord^*=\sqrt{1-\Kc/K}$. This is a continuous
+(second-order) bifurcation, and it is the only genuine phase transition in the
+model.
+\end{theorem}
+
+\begin{proof}
+$\partial_\Ord V_{\mathrm{sync}}=(\Kc-K)\Ord+K\Ord^3=\Ord[(\Kc-K)+K\Ord^2]$,
+vanishing at $\Ord=0$ and, for $K>\Kc$, at $\Ord^*=\sqrt{1-\Kc/K}$. The second
+derivative $\partial^2_\Ord V_{\mathrm{sync}}=(\Kc-K)+3K\Ord^2$ is positive at
+$\Ord=0$ iff $K<\Kc$ and is positive at $\Ord^*$ for $K>\Kc$; the minimum thus
+moves continuously off zero as $K$ crosses $\Kc$, the signature of a
+second-order transition.
+\end{proof}
+
+\begin{theorem}[Critical coupling]\label{thm:Kc}
+For natural frequencies drawn from a unimodal symmetric density $g$ centred at
+the mean, the mean-field critical coupling is
+\[
+\Kc=\frac{2}{\pi\,g(0)} .
+\]
+For a Gaussian law of standard deviation $\sigma_\omega$, $g(0)=1/(\sqrt{2\pi}
+\,\sigma_\omega)$, giving
+\[
+\boxed{\;\Kc=\frac{2}{\pi}\sqrt{2\pi}\,\sigma_\omega=\frac{2\sqrt{2\pi}}{\pi}\,
+\sigma_\omega\approx 1.596\,\sigma_\omega.\;}
+\]
+\end{theorem}
+
+\begin{proof}
+This is the classical Kuramoto mean-field result~\cite{kuramoto1975,strogatz2000,
+acebron2005,dorfler2014}: linearising the self-consistency equation about
+$\Ord=0^+$ gives the onset at $\Kc=2/[\pi g(0)]$. Substituting the Gaussian
+$g(0)$ yields the boxed value.
+\end{proof}
+
+\begin{remark}[Correction of the preliminary coefficient]\label{rem:Kc-correction}
+The preliminary version stated $\Kc=2\sigma_\omega/\pi\approx0.637\,\sigma_\omega$.
+This is incorrect: it omits the factor $\sqrt{2\pi}$ from $g(0)$ for a Gaussian
+and is too small by $\sqrt{2\pi}\approx2.507$. The correct value is
+$\Kc=2/[\pi g(0)]$, equal to $1.596\,\sigma_\omega$ for a Gaussian. We confirm
+the corrected law by direct simulation in \Cref{sec:external} (EXT02), where we
+also show that $2\sigma_\omega/\pi$ fails badly for non-Gaussian frequency laws
+and that the defensible general statement is $\Kc=2/[\pi g(0)]$, valid only for
+unimodal symmetric $g$.
+\end{remark}
+
+\subsection{The five operational bands}
+
+\begin{definition}[Operational coordination bands]\label{def:bands}
+For descriptive convenience we label bands of the order parameter:
+turbulent ($\Ord<0.3$), partial ($0.3\le\Ord<0.5$), cascade
+($0.5\le\Ord<0.8$), coherent ($0.8\le\Ord<0.95$), phase-locked
+($\Ord\ge0.95$).
+\end{definition}
+
+\begin{proposition}[The band boundaries are not transitions]\label{prop:not-transitions}
+The cut-offs $\Ord\in\{0.3,0.5,0.8,0.95\}$ are not critical points of $\Pot$:
+for generic $K$, $\partial^2_\Ord\Pot$ does not change sign at these values, and
+no thermodynamic singularity occurs there. They are classification cut-offs on
+a continuous variable.
+\end{proposition}
+
+\begin{proof}
+$\partial^2_\Ord V_{\mathrm{sync}}=(\Kc-K)+3K\Ord^2$ is smooth and strictly
+increasing in $\Ord^2$ with at most one zero (at $\Ord=\sqrt{(K-\Kc)/3K}$ when
+$K>\Kc$), which does not in general coincide with any of
+$\{0.3,0.5,0.8,0.95\}$. The remaining terms of $\Pot$ are smooth in $\Ord$ and
+introduce no sign change at the cut-offs. Hence no transition occurs at the band
+boundaries.
+\end{proof}
+
+\begin{remark}
+\Cref{prop:not-transitions} is the explicit retraction promised in
+\Cref{sec:intro}. The bands remain useful as labels; they carry no claim of
+criticality.
+\end{remark}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{validation/figures/panel_2.png}
+    \caption{\textbf{Five Operational Regimes and Bifurcation.}
+    (\textbf{A})~Bifurcation diagram: stable order parameter $R^*=\sqrt{1-K_c/K}$ on the linear $y$-axis versus coupling $K$ on the linear $x$-axis ($0$ to $5$), with $K_c=1.0$ (crimson dashed). For $K<K_c$, $R^*=0$ (incoherence); for $K>K_c$, $R^*$ rises continuously, asymptoting to $1$ as $K\to\infty$. The classical Kuramoto pitchfork.
+    (\textbf{B})~The five operational bands on the $R$-axis: filled regions colour-coded (turbulent crimson, $R<0.3$; partial darkorange, $0.3\le R<0.5$; cascade gold, $0.5\le R<0.8$; coherent seagreen, $0.8\le R<0.95$; phase-locked steelblue, $R\ge 0.95$). Vertical dashed lines mark the four band cut-offs. These are classification labels on a continuous variable, \emph{not} transitions (\Cref{def:bands}, \Cref{prop:not-transitions}); the potential has no curvature sign-change at them.
+    (\textbf{C})~Band widths under uniform sampling: bar chart of band occupancy across $1000$ uniform samples of $R\in[0,1]$. The bands occupy widths $0.3$, $0.2$, $0.3$, $0.15$, $0.05$; the bar heights are exactly proportional to the interval widths, illustrating that the cut-offs merely partition the interval.
+    (\textbf{D})~Three-dimensional saddle landscape of $V_{\rm sync}(R,K)$ over $(R,K)\in[0,1]\times[0.1,4]$, $50\times 50$ grid, viridis colourmap. The bifurcation ridge at $K=K_c=1$ is clearly visible: below $K_c$ the surface has a single trough at $R=0$; above $K_c$ a double-well structure emerges with stable minima at $R^*$. Each regime corresponds to a distinct basin or saddle of $V_{\rm sync}$.}
+    \label{fig:panel2-regimes}
+\end{figure*}
+
+%==========================================================
+\part{Ensembles and Coordination}
+%==========================================================
+
+\section{Ensembles and the joint action}
+\label{sec:ensemble}
+
+\begin{definition}[Ensemble]\label{def:ensemble}
+An \emph{ensemble} of $n$ agents is $E=(\agent_1,\dots,\agent_n)$ with a
+coupling matrix $K_{ij}\ge0$ and natural-frequency vector
+$\omega=(\omega_1,\dots,\omega_n)$ of standard deviation $\sigma_\omega$. Each
+agent $\agent_i$ carries its own state $\qvec_i\in\M$ and internal order
+parameter $\Ord_i$ with mean internal phase $\phi_i$.
+\end{definition}
+
+\begin{definition}[Ensemble order parameter]\label{def:ens-R}
+The \emph{ensemble order parameter} is
+\[
+\Ord_{\mathrm{ens}}\,e^{i\psi_{\mathrm{ens}}}
+=\frac1n\sum_{i=1}^n \Ord_i\,e^{i\phi_i},\qquad \Ord_{\mathrm{ens}}\in[0,1].
+\]
+\end{definition}
+
+\begin{remark}[Hierarchical independence]
+Each $\Ord_i$ measures intra-agent coherence; $\Ord_{\mathrm{ens}}$ measures
+inter-agent coherence. The two are independent: an ensemble of internally
+coherent agents ($\Ord_i\approx1$) can have $\Ord_{\mathrm{ens}}\approx0$ if
+their phases $\phi_i$ are dispersed, and conversely.
+\end{remark}
+
+\begin{definition}[Joint action]\label{def:joint}
+The ensemble dynamics follow the joint Onsager--Machlup action with Lagrangian
+\[
+\Lag_{\mathrm{ens}}=\sum_{i=1}^n \Lag^{(i)}+\Lag_{\mathrm{coup}},\qquad
+\Lag_{\mathrm{coup}}=-\frac{1}{2n}\sum_{i,j}K_{ij}\cos(\phi_i-\phi_j),
+\]
+where $\Lag^{(i)}$ is the single-agent Lagrangian (\Cref{def:action}) and
+$\Lag_{\mathrm{coup}}$ is the standard Kuramoto coupling.
+\end{definition}
+
+\begin{theorem}[Ensemble synchronisation]\label{thm:ens-sync}
+The Euler--Lagrange equations of $\Lag_{\mathrm{ens}}$ reduce, in the gradient
+limit, to per-agent gradient flow (\Cref{cor:components}) plus the Kuramoto
+phase equation $\dot\phi_i=\omega_i-\frac1n\sum_j K_{ij}\sin(\phi_i-\phi_j)$;
+the ensemble synchronises ($\Ord_{\mathrm{ens}}>0$ stable) for effective
+coupling above the critical value of \Cref{thm:Kc} applied at the ensemble
+level.
+\end{theorem}
+
+\begin{proof}
+The single-agent part is \Cref{thm:EL}. For the coupling term,
+$\partial\Lag_{\mathrm{coup}}/\partial\phi_i=\frac1n\sum_j K_{ij}\sin(\phi_i-
+\phi_j)$, giving the Kuramoto phase equation; its mean-field bifurcation is
+\Cref{thm:Kc} with $g$ the empirical frequency density.
+\end{proof}
+
+\begin{remark}[Equations of state are descriptive]
+The preliminary version assigned each band a distinct ``equation of state''
+$PV=N\kB T\,\mathcal{S}_{\mathrm{regime}}$. We retain these only as
+\emph{descriptive summaries} of the structural factor in each band (e.g.\
+$\mathcal{S}_{\mathrm{coh}}=1+\Ord^2/(1-\Ord^2)$ in the coherent band), and we
+do not claim they are derived laws or that the bands they describe are
+transitions. Their status is phenomenological.
+\end{remark}
+
+\section{Coordination on a common outcome}
+\label{sec:coordination}
+
+We give the minimal, defensible coordination statement: agents coordinate when
+their order parameters lock, irrespective of internal representation. The
+strong ``common-cell'' claim is tested empirically in \Cref{sec:external}
+(EXT08).
+
+\begin{definition}[Coordinated ensemble]\label{def:coordinated}
+An ensemble is \emph{coordinated at level $\rho$} if $\Ord_{\mathrm{ens}}\ge\rho$.
+\end{definition}
+
+\begin{theorem}[Coordination is representation-independent]\label{thm:rep-indep}
+$\Ord_{\mathrm{ens}}$ depends only on the agents' order parameters $\Ord_i$ and
+phases $\phi_i$, not on their internal knowledge frameworks $\K_i$. Agents with
+disjoint $\K_i$ can therefore attain any $\Ord_{\mathrm{ens}}$.
+\end{theorem}
+
+\begin{proof}
+$\Ord_{\mathrm{ens}}$ is defined (\Cref{def:ens-R}) purely from $(\Ord_i,
+\phi_i)$, which are scalar reductions of each agent's state; the frameworks
+$\K_i$ do not enter. Hence disjointness of the $\K_i$ places no constraint on
+$\Ord_{\mathrm{ens}}$.
+\end{proof}
+
+\begin{remark}
+\Cref{thm:rep-indep} is the conservative core of the ``coordination without
+shared representation'' idea. The stronger claim---that agents with disjoint
+representations attain the \emph{same outcome label}---is an empirical question;
+we test it directly on representation-disjoint classifiers in EXT08 and report
+the (positive) result there.
+\end{remark}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{validation/figures/panel_3.png}
+    \caption{\textbf{Ensemble Kuramoto and the Operational Bands at Ensemble Level.}
+    (\textbf{A})~Ensemble Kuramoto order parameter $R_{\rm ens}$ on the linear $y$-axis versus uniform individual order parameter $R_i$ on the linear $x$-axis ($0$ to $1$), for an ensemble of $n=10$ agents with phases evenly distributed in $[0,\pi]$. The four band cut-offs are marked (crimson dashed). The relationship is monotonic but sub-linear because of partial phase cancellation. The bands are the same operational labels of \Cref{def:bands} read on $R_{\rm ens}$.
+    (\textbf{B})~Synchronisation onset: $R_{\rm ens}$ vs inter-agent coupling $K$ for natural-frequency spread $\sigma_\omega=1$. Below the critical coupling $K_c$ (crimson dashed) $R_{\rm ens}=0$ (no synchronisation); above $K_c$, $R_{\rm ens}$ rises, crossing the phase-lock cut-off $0.95$ (steelblue dashed). The onset is the mean-field bifurcation of \Cref{thm:Kc} applied at the ensemble level (\Cref{thm:ens-sync}).
+    (\textbf{C})~Phase distribution effect: bar chart comparing $R_{\rm ens}$ for two phase distributions across ensemble sizes $n\in\{2,3,4,5,6,8\}$. Crimson bars (uniform phase distribution): $R_{\rm ens}$ is small or zero, despite each agent having internal $R_i=1$. Seagreen bars (aligned phases): $R_{\rm ens}=1$. Demonstrates the hierarchical independence noted after \Cref{def:ens-R}: high $R_i$ does not imply high $R_{\rm ens}$.
+    (\textbf{D})~Three-dimensional phase diagram: predicted $R_{\rm ens}$ over $(n_{\rm agents},\sigma_\omega)\in\{2,\dots,10\}\times[0.1,2.0]$ with fixed coupling $K=2$. The surface (viridis) shows that synchronisation strength decreases with frequency spread $\sigma_\omega$ (more diverse agents harder to synchronise) and is approximately independent of agent count when $K$ is fixed.}
+    \label{fig:panel3-ensemble}
+\end{figure*}
+
+%==========================================================
+\part{Partition Extinction}
+%==========================================================
+
+\section{An analogy-free theory of partition extinction}
+\label{sec:extinction}
+
+Reviewers asked for a definition of ``partition extinction'' that does not rely
+on physical analogy or interpretive language, and for a clear separation
+between \emph{functional} equivalence of agents and \emph{ontological}
+indistinguishability of particles. We provide both. The physical instances
+(superconductivity, superfluidity) are then \emph{examples} of the definition,
+tested in \Cref{sec:external} (EXT07), not part of it.
+
+\subsection{Partition operations and lag}
+
+\begin{definition}[Partition operation and lag]\label{def:partition-op}
+A \emph{partition operation} between two constituents $i,j$ is a procedure that
+assigns them to distinct cells of \Cref{ax:resolution}. Its \emph{lag}
+$\tauP^{(ij)}>0$ is the time the procedure requires. By finite resolution and
+finite signalling speed, distinguishing states separated by $\Delta x$ requires
+$\tauP^{(ij)}\ge\Delta x/c$ for a signalling speed $c$.
+\end{definition}
+
+\begin{definition}[Categorical distinguishability]\label{def:distinguishability}
+Constituents $i,j$ are \emph{categorically distinguishable} if there exists a
+partition operation assigning them to different cells; otherwise they are
+\emph{categorically indistinguishable}. By \Cref{ax:resolution} this is a binary
+property: there is no partial distinguishability below resolution $\delta$.
+\end{definition}
+
+\begin{definition}[Partition extinction]\label{def:extinction}
+\emph{Partition extinction} between $i,j$ is the condition that $i,j$ are
+categorically indistinguishable, so that no partition operation exists and the
+lag $\tauP^{(ij)}$ is undefined; by convention we set $\tauP^{(ij)}=0$ to keep
+transport quantities (in which $\tauP$ appears multiplicatively) well-defined.
+\end{definition}
+
+This definition uses only \Cref{ax:resolution} and \Cref{def:partition-op}; it
+mentions no physical system.
+
+\subsection{The extinction theorem}
+
+\begin{theorem}[Partition extinction is discontinuous]\label{thm:extinction}
+Let a control parameter $\theta$ (e.g.\ a coupling or an inverse temperature)
+drive a pair from distinguishable to phase-locked, where phase-locking means
+$\phi_i=\phi_j$ identically. Then the lag transitions discontinuously,
+\[
+\tauP^{(ij)}(\theta)=\begin{cases}\tauP^{(ij)}>0 & \text{distinguishable},\\
+0 & \text{phase-locked},\end{cases}
+\]
+and any transport coefficient $\Theta=\frac1N\sum_{i,j}\tauP^{(ij)}G_{ij}$
+(with bounded weights $G_{ij}$) attains $\Theta=0$ exactly in the phase-locked
+phase.
+\end{theorem}
+
+\begin{proof}
+\emph{Step 1 (binary).} By \Cref{def:distinguishability}, distinguishability is
+binary: either a partition operation exists or it does not. \emph{Step 2
+(phase-locking $\Rightarrow$ indistinguishable).} If $\phi_i=\phi_j$ identically,
+the two constituents trace identical trajectories; by \Cref{ax:null} their
+categorical state is fixed by phase-space location, so they occupy the same
+categorical state and no operation distinguishes them. \emph{Step 3 (lag).} For
+indistinguishable constituents no partition operation exists, so $\tauP^{(ij)}$
+is undefined; the convention $\tauP^{(ij)}=0$ (\Cref{def:extinction}) is forced
+by requiring $\Theta$ to remain defined. \emph{Step 4 (discontinuity).} Because
+distinguishability is binary (Step 1), there is no value of $\theta$ at which
+the pair is ``partly distinguishable''; the lag therefore jumps from a positive
+value to $0$ without intermediate values. Substituting $\tauP^{(ij)}=0$ for all
+locked pairs gives $\Theta=\frac1N\sum_{i,j}0\cdot G_{ij}=0$ exactly.
+\end{proof}
+
+\begin{remark}[``Exactly zero'' is a statement about the model]
+The exactness in \Cref{thm:extinction} is a property of the idealised
+categorical model, in which distinguishability is strictly binary. In any
+physical realisation, residual distinguishing channels (finite-size effects,
+disorder, noise, clock drift) keep a small positive $\tauP$; the model's exact
+zero is the limit as those channels vanish. We are explicit about this: the
+defensible empirical claim (EXT07) is that measured transport coefficients fall
+\emph{below any detectable bound} (by $\ge 14$ orders of magnitude in
+superconductors), which is consistent with, but does not prove, an exact zero.
+\end{remark}
+
+\subsection{Functional vs.\ ontological indistinguishability}
+
+\begin{definition}[Categorical and physical observables]\label{def:observables}
+A \emph{categorical observable} $\hat O_{\mathrm{cat}}$ is a function of the
+partition coordinates $(n,\ell,m,s)$ alone. A \emph{physical observable}
+$\hat O_{\mathrm{phys}}$ is a function of position, momentum, and energy alone.
+\end{definition}
+
+\begin{theorem}[Observable commutation]\label{thm:commutation}
+Categorical and physical observables are functionally independent:
+$[\hat O_{\mathrm{cat}},\hat O_{\mathrm{phys}}]=0$, in the sense that the value
+of either is unchanged by conditioning on the other. Consequently, two agents
+may be categorically indistinguishable (equal on all $\hat O_{\mathrm{cat}}$)
+while remaining physically distinct (different on some $\hat O_{\mathrm{phys}}$),
+and vice versa.
+\end{theorem}
+
+\begin{proof}
+By \Cref{def:observables} the two observable classes are functions of disjoint
+argument sets---partition coordinates versus phase-space coordinates---which by
+\Cref{thm:commutation}'s hypothesis vary independently. A function of one set is
+constant along variations of the other, so measuring one does not constrain the
+other; their joint algebra is the tensor product and they commute. Equality on
+all $\hat O_{\mathrm{cat}}$ (categorical indistinguishability) therefore implies
+nothing about $\hat O_{\mathrm{phys}}$, establishing the final claim.
+\end{proof}
+
+\begin{remark}[Resolving the conflation]\label{rem:functional-ontological}
+\Cref{thm:commutation} answers the reviewers' objection directly. When we say
+synchronised agents become ``categorically indistinguishable,'' we mean
+\emph{functionally} indistinguishable---equal on the categorical observables
+that the coordination dynamics act upon. We do \emph{not} claim they lose
+physical identity, computational independence, or distinct boundaries, as
+bosons do under exchange. The preliminary version's Cooper-pair language
+overstated this. The correct statement is: synchronised agents are equivalent
+on $\hat O_{\mathrm{cat}}$ while remaining distinct on $\hat O_{\mathrm{phys}}$;
+functional equivalence is not ontological identity.
+\end{remark}
+
+\subsection{Synchronisation as a structural correspondence}
+
+\begin{proposition}[Coordination/extinction correspondence]\label{prop:correspondence}
+In a phase-locked ensemble ($\Ord_{\mathrm{ens}}=1$, all $\phi_i$ equal), every
+pair is categorically indistinguishable, so by \Cref{thm:extinction} the
+inter-agent partition lag is zero and the coordination ``friction''
+$\Theta_{\mathrm{coord}}=\frac1n\sum_{i,j}\tauP^{(ij)}G_{ij}$ vanishes in the
+categorical model.
+\end{proposition}
+
+\begin{proof}
+Phase-locking gives $\phi_i=\phi_j$ for all pairs; \Cref{thm:extinction} Step 2
+gives indistinguishability and Step 3--4 give $\tauP^{(ij)}=0$, hence
+$\Theta_{\mathrm{coord}}=0$.
+\end{proof}
+
+\begin{remark}[Scope of the correspondence]\label{rem:correspondence-scope}
+\Cref{prop:correspondence} is a \emph{structural correspondence} between the
+coordinated regime and partition extinction, not an identity between agent
+coordination and physical condensation. Three caveats, retained from the
+referee discussion: (i) the friction vanishes \emph{in the categorical model};
+real coordinated systems retain communication delay, noise, and clock drift,
+so the operational friction is small but positive (cf.\
+\Cref{rem:functional-ontological}); (ii) we do \emph{not} assert that the
+synchronisation transition is reversible in the hysteretic-physical sense---the
+variational model is gradient and admits no claim about hysteresis, so we make
+none; (iii) the correspondence transfers structure (binary distinguishability,
+discontinuous lag), not physical mechanism (there is no exchange statistics for
+agents). With these caveats the correspondence is defensible; without them it
+overreaches, and we have removed the overreaching statements of the preliminary
+version.
+\end{remark}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{validation/figures/panel_4.png}
+    \caption{\textbf{Partition Extinction in the Categorical Model.}
+    (\textbf{A})~Inter-agent partition lag $\tau_p$ on the linear $y$-axis versus a normalised control parameter $\theta/\theta_c$ on the linear $x$-axis ($0.5$ to $2.5$), with critical value $\theta_c=1$ (crimson dashed). For $\theta<\theta_c$ (distinguishable) $\tau_p>0$; at phase-locking ($\phi_i=\phi_j$, $\theta\ge\theta_c$) $\tau_p\equiv 0$. The seagreen-shaded region is the partition-extinct phase. The discontinuous drop is the signature of the binary distinguishability of \Cref{def:distinguishability}. Empirical content of \Cref{thm:extinction} (partition extinction is discontinuous); as \Cref{rem:correspondence-scope} states, the exact zero holds \emph{in the categorical model}, real systems retaining a small positive lag.
+    (\textbf{B})~Coordination friction $\Theta_{\rm coord}=\frac1n\sum_{ij}\tau_p^{(ij)}G_{ij}$ on the linear $y$-axis versus the fraction of phase-locked pairs on the linear $x$-axis ($0$ to $1$). Friction falls to zero exactly when all pairs are phase-locked ($\phi_i=\phi_j$), the content of \Cref{prop:correspondence}. The step reflects the binary distinguishability of \Cref{def:distinguishability}: a pair is either distinguishable ($\tau_p>0$) or extinct ($\tau_p=0$), with no intermediate value. (This binary jump is a property of the pairwise lag, not a thermodynamic transition at any band cut-off; cf.\ \Cref{prop:not-transitions}.)
+    (\textbf{C})~Pairwise categorical difference $d_{\rm cat}(\agent_i,\agent_j)$ on the linear $y$-axis versus phase difference $|\phi_i-\phi_j|$ on the linear $x$-axis ($0$ to $2$): monotone (steelblue), reaching zero exactly at $\phi_i=\phi_j$ (seagreen dashed), where the pair becomes categorically indistinguishable (\Cref{thm:extinction}, Step~2).
+    (\textbf{D})~Three-dimensional comparison of composite floor surfaces over $(n_{\rm agents},f_{\rm per-agent})\in\{2,\dots,10\}\times[0.5,5]$. Lower surface (viridis): independent agents under parallel composition, $\Sfloor(\Compose)=\prod f_i/\Sigma^{n-1}$ (decreases with $n$). Upper surface (plasma): synchronised agents, $\Sfloor=\Sfloor(\agent_1)$ (constant in $n$). The two surfaces meet only at $n=1$; for $n\ge 2$ independent composition is strictly lower (more agents help) but synchronised composition is constant (more agents add no further benefit, but also no friction).}
+    \label{fig:panel4-sync}
+\end{figure*}
+
+%==========================================================
+\part{External Validation, Scope, and Conclusion}
+%==========================================================
+
+\section{External validation against public data}
+\label{sec:external}
+
+\subsection{Why external, and what ``validation'' means here}
+
+The preliminary version reported numerical checks that compared closed-form
+predictions to the same closed forms; agreement ``to machine precision''
+($\sim10^{-16}$) measured floating-point rounding of identities, not empirical
+adequacy. We replace those with nine experiments against \emph{public data the
+theory did not generate}. We retain the original closed-form checks only under
+their correct name---\emph{internal consistency checks}---and do not count them
+as validation.
+
+Each experiment is fully reproducible; code and machine-readable results are
+provided with the manuscript. We report each verdict honestly using three
+labels: \textsc{confirmed} (data support the claim), \textsc{confirmed$^\ast$}
+(supported but requiring an explicit scope or caveat), and
+\textsc{correction} (data contradict the stated claim, forcing a change to the
+theory). Two of the nine are corrections; we regard their presence as evidence
+that the confirmations are not artefacts.
+
+\subsection{The nine experiments}
+
+\paragraph{EXT01 --- Shell capacity $C(n)=2n^2$ (atomic structure).}
+The degeneracy law (\Cref{thm:capacity}) was compared to tabulated atomic shell
+capacities, subshell sums $2(2\ell+1)$, and periodic-table period lengths.
+\textsc{Confirmed$^\ast$}: $C(n)=2n^2$ matches the level degeneracy exactly for
+$n=1$--$7$, and the Aufbau ($n+\ell$) order reproduces the real period lengths
+$2,8,8,18,18,32,32$; however, pure $2n^2$ nesting reproduces only the He and Ne
+closures, not Ar onward---shell \emph{closure} requires the filling rule, which
+$2n^2$ alone does not supply. We state this limitation rather than claim closure
+from degeneracy.
+
+\paragraph{EXT02 --- Kuramoto critical coupling (direct simulation).}
+We integrated the finite-$N$ Kuramoto dynamics ($N=400$) for four
+frequency laws and located the synchronisation onset by extrapolating the
+$\Ord^2$ takeoff. \textsc{Correction}: the preliminary $\Kc=2\sigma_\omega/\pi$
+is wrong by $\sqrt{2\pi}\approx2.51$; the simulated onset is consistent with the
+corrected $\Kc=2/[\pi g(0)]$ ($=1.596\,\sigma_\omega$ for a Gaussian, the value
+adopted in \Cref{thm:Kc}). For the Lorentzian law---where the mean-field result
+is exact---the prediction $\Kc=2\gamma$ matched the simulation, while
+$2\sigma_\omega/\pi$ erred by a factor exceeding twenty; for uniform and bimodal
+laws $2\sigma_\omega/\pi$ also failed. The corrected formula is adopted
+throughout and scoped to unimodal symmetric $g$.
+
+\paragraph{EXT03 --- Wiedemann--Franz constant (eleven metals).}
+The framework reproduces the universality of the Lorenz ratio
+$L=\kappa/(\sigma T)$. \textsc{Confirmed}: the Sommerfeld value
+$L_0=(\pi^2/3)(\kB/e)^2=2.44\times10^{-8}\,\mathrm{W\,\Omega\,K^{-2}}$ was
+compared to measured $L$ for eleven metals at $0$ and $100^\circ$C
+\cite{kittel2005}; the measured mean is $2.51\times10^{-8}$ with $20$ of $22$
+values within $15\%$. We note explicitly that this \emph{reproduces} standard
+physics and is not a novel prediction; the framework is consistent with WF, it
+does not improve on it.
+
+\paragraph{EXT04 --- Sleep-stage order parameter (real EEG).}
+The companion claim that sleep stages order as $\Ord_{N3}>\Ord_W>\Ord_{N1}>
+\Ord_{N2}>\Ord_{\mathrm{REM}}$ was tested on a polysomnography recording from
+PhysioNet Sleep-EDF~\cite{kemp2000,goldberger2000} by computing the
+cross-channel Kuramoto order parameter per $30$\,s epoch.
+\textsc{Correction}: the observed ordering is $\Ord_W>\Ord_{\mathrm{REM}}>
+\Ord_{N1}>\Ord_{N2}>\Ord_{N3}$---the \emph{reverse} of the claim, with N3
+lowest, not highest. A caveat applies (the recording has only two bipolar EEG
+derivations, so cross-channel $\Ord$ measures fronto-parietal coherence rather
+than within-population synchrony), but on this evidence the stage-ordering claim
+is unsupported. We therefore \emph{withdraw} the sleep--regime ordering as a
+claim of the framework and mention sleep only as a possible application
+requiring proper multichannel testing.
+
+\paragraph{EXT05 --- Enzyme efficiency vs.\ substrate complexity.}
+The claim that catalytic efficiency anti-correlates with transformation
+complexity was tested using a framework-independent complexity proxy (substrate
+heavy-atom count) against literature $k_{\mathrm{cat}}/K_M$~\cite{fersht1999,
+bionumbers2015}. \textsc{Confirmed$^\ast$}: $\log(k_{\mathrm{cat}}/K_M)$
+anti-correlates with substrate heavy-atom count, Pearson $r=-0.67$ ($p=0.05$),
+matching the claimed $\approx-0.57$ in sign and magnitude; but the trend is weak
+($r^2=0.45$, Spearman $-0.40$) and driven by the extremes. The defensible claim
+is a qualitative anti-correlation, not a quantitative law.
+
+\paragraph{EXT06 --- Antidepressant response convergence.}
+The claim that mechanistically distinct drugs converge on similar efficacy was
+tested against the Cipriani et al.\ network meta-analysis~\cite{cipriani2018}:
+response odds ratios for eleven antidepressants spanning SSRI/SNRI/TCA/atypical
+classes, versus their receptor-binding breadth. \textsc{Confirmed$^\ast$}:
+response ORs cluster tightly (coefficient of variation $0.10$) and binding
+breadth does not predict response (Pearson $r=0.39$, $p=0.23$, n.s.), supporting
+breadth-independent convergence. We note this is correlational and consistent
+with several explanations; the coordination-band mechanism is one interpretation,
+not a demonstrated cause.
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{validation/figures/panel_5.png}
+    \caption{\textbf{Partition Extinction and the Congruence of Phase-Locked Trajectories.}
+    (\textbf{A})~Categorical filtering geometries: angular field magnitude in the $(x,y)$ plane for the multipole orders $\ell=0$ (isotropic, steelblue), $\ell=1$ (two lobes, seagreen), and $\ell=2$ (four lobes, darkorange), the angular index of the partition coordinates $(n,\ell,m,s)$ of \Cref{def:partition-coords}. These illustrate the categorical observables of \Cref{def:observables} on which distinguishability is defined.
+    (\textbf{B})~Pairwise categorical-indistinguishability matrix for a $5$-agent phase-locked ensemble ($\phi_i=\phi_j$ for all pairs): green entries mark pairs that are categorically indistinguishable. The matrix is uniformly green, the content of \Cref{prop:correspondence}: in a phase-locked ensemble every pair is categorically indistinguishable and the inter-agent partition lag vanishes (\Cref{thm:extinction}).
+    (\textbf{C})~Trajectory traces $M(t)=\int_0^t g(t')\,\dd t'$ for four phase-locked agents driven by a common field with small ($\sigma=0.02$) per-agent noise; the four trajectories are nearly indistinguishable within a tolerance set by the noise. This illustrates the structural correspondence of \Cref{prop:correspondence}: congruence of coordinated trajectories is a \emph{consequence} of synchronisation, and---by the observable-commutation theorem (\Cref{thm:commutation})---is functional (categorical) equivalence, not loss of physical identity.
+    (\textbf{D})~Three-dimensional synchronisation diagram: stable order parameter $R^*=\sqrt{1-K_c/K}$ over $(K,\sigma_\omega)\in[0.1,4]\times[0.1,2.0]$, $25\times 25$ grid, viridis colourmap, with $K_c=2/[\pi g(0)]$ of \Cref{thm:Kc}. The surface rises with coupling $K$ and falls with frequency spread $\sigma_\omega$; it is zero on the critical-coupling locus $K=K_c$, above which synchronisation is possible.}
+    \label{fig:panel5-extinction}
+\end{figure*}
+
+
+\paragraph{EXT07 --- Partition extinction (superconductors).}
+The claim of exact, discontinuous transport vanishing (\Cref{thm:extinction})
+was tested against measured superconducting resistivity bounds and critical
+temperatures. \textsc{Confirmed$^\ast$}: measured superconducting resistivity
+upper bounds lie $\ge14$ orders of magnitude below the normal state
+(operationally exact zero) at a sharp $\Tc$ across ten superconductors, plus the
+He-4 $\lambda$-point where viscosity vanishes. As in EXT03, this reproduces the
+BCS/Landau phenomenology and does not predict $\Tc$ from first principles; the
+framework is consistent with the exact-vanishing/sharp-transition phenomenology,
+as an interpretation alongside the standard theory.
+
+\paragraph{EXT08 --- Common-cell convergence (disjoint representations).}
+The central coordination claim---agents with disjoint representations attain the
+same outcome---was tested on the scikit-learn digits benchmark
+\cite{pedregosa2011} using four classifiers trained on \emph{mutually disjoint}
+pixel quadrants (no shared feature). \textsc{Confirmed}: the four agents agree
+on the predicted label at rate $0.51$ versus chance $0.10$; on the $29\%$ of
+inputs where all four agree, they are correct $100\%$ of the time. This is a
+genuine instance of coordination on the outcome (the label) without shared
+representation, supporting \Cref{thm:rep-indep} and the common-cell idea.
+
+\paragraph{EXT09 --- Catalytic composition (real classifiers).}
+The composition law---combining independent agents lowers the error floor below
+the best individual---was tested by majority-voting the EXT08 agents.
+\textsc{Confirmed$^\ast$}: ensemble error ($0.16$) is below the best individual
+error ($0.26$), so composition does lower the floor. However, the \emph{exact}
+multiplicative prediction (which assumes independence) lies far below the
+measured value because the agents are not independent (mean pairwise
+error-correlation $0.15$; they fail on the same hard digits). We therefore
+state the composition law as an \emph{independence-limit bound}, not an
+equality.
+
+\subsection{Summary of verdicts}
+
+\begin{table}[h!]\centering
+\small
+\begin{tabular}{llp{0.36\columnwidth}}
+\toprule
+\textbf{Exp.} & \textbf{Verdict} & \textbf{One-line outcome}\\\midrule
+EXT01 & confirmed$^\ast$ & $2n^2$ exact as degeneracy; closure needs Aufbau\\
+EXT02 & \textbf{correction} & $\Kc=2\sigma/\pi$ wrong by $\sqrt{2\pi}$; use $2/[\pi g(0)]$\\
+EXT03 & confirmed & $L_0$ matches 11 metals (20/22 within 15\%)\\
+EXT04 & \textbf{correction} & sleep order inverts on real EEG; claim withdrawn\\
+EXT05 & confirmed$^\ast$ & enzyme anti-correlation $r=-0.67$, weak\\
+EXT06 & confirmed$^\ast$ & response convergence CV $=0.10$, breadth n.s.\\
+EXT07 & confirmed$^\ast$ & resistivity $\downarrow\ge10^{14}$; reproduces BCS\\
+EXT08 & confirmed & disjoint agents 100\% correct when agreeing\\
+EXT09 & confirmed$^\ast$ & ensemble beats best; independence violated\\
+\bottomrule
+\end{tabular}
+\caption{External-validation verdicts. Two outright confirmations, five
+confirmations requiring explicit scope, and two corrections forced by the data
+(EXT02, EXT04). Full code and JSON results accompany the manuscript.}
+\label{tab:external}
+\end{table}
+
+\section{Scope and limitations}
+\label{sec:scope}
+
+We delimit what the framework does and does not establish.
+
+\begin{enumerate}[leftmargin=*]
+\item \emph{The axioms are general, hence weakly discriminating.}
+\Cref{ax:bounded,ax:null,ax:resolution} hold for almost all physical and
+computational systems. Their function is to fix the state space and counting
+structure; discriminating content lies in the dynamics and in the external
+tests, not in the axioms.
+
+\item \emph{S-entropy coordinates are distributional, not content-laden.} They
+measure the informational geometry of an agent's state
+(\Cref{rem:s-content}); they do not encode ecological salience or semantic
+content. The framework therefore does not model what specific information a
+biological agent attends to, only the shape of its state distribution.
+
+\item \emph{The model is stochastic but single-scale and mean-field.} The
+primitive dynamics are a Langevin diffusion (\Cref{def:langevin}); the
+Onsager--Machlup Lagrangian scores its path probabilities, and the deterministic
+gradient flow is only the zero-noise most-probable path
+(\Cref{rem:why-lagrangian}). For $D>0$ the model does exhibit noise-activated
+basin-to-basin transitions, i.e.\ metastability at a single scale. What it does
+\emph{not} capture is the \emph{multiscale} stochasticity of real neural and
+social-insect systems (a single $D$, not a hierarchy of noise scales) or a
+\emph{time-varying} manifold with fluctuating, fungible components: our phase
+space is fixed. Claims about such systems are therefore at the level of
+qualitative structure, not quantitative dynamics.
+
+\item \emph{The band boundaries are operational.} As proved in
+\Cref{prop:not-transitions}, $\{0.3,0.5,0.8,0.95\}$ are classification cut-offs,
+not transitions; only the Kuramoto bifurcation is a genuine transition.
+
+\item \emph{Partition extinction is exact only in the categorical model.} The
+operational friction of real coordinated systems is small but positive
+(\Cref{rem:correspondence-scope}); we make no hysteresis or reversibility
+claim.
+
+\item \emph{Physical instances reproduce, they do not predict.} For
+Wiedemann--Franz (EXT03) and superconductivity (EXT07), the framework recovers
+standard results; it does not yield new quantitative predictions there, and we
+do not claim it does.
+
+\item \emph{Withdrawn claim.} The sleep-stage ordering (EXT04) is not supported
+by real EEG and is withdrawn as a claim of the framework.
+
+\item \emph{Composition requires independence.} The multiplicative composition
+law (EXT09) holds as an independence-limit bound; real agents that share a task
+violate independence and compose less favourably.
+\end{enumerate}
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We have rebuilt the coordination calculus as a self-contained theory. From three
+axioms we derived the S-entropy manifold (via the triple-equivalence identity),
+the partition potential, and the agent action, and we gave the Euler--Lagrange
+equations explicitly rather than by assertion. We corrected the critical-coupling
+coefficient to the standard $\Kc=2/[\pi g(0)]$, demoted the five regime
+boundaries from phase transitions to operational cut-offs (the only genuine
+transition being the Kuramoto bifurcation), and replaced the analogy-laden
+account of partition extinction with a formal definition and an
+observable-commutation theorem that separates functional from ontological
+indistinguishability. Most importantly, we replaced self-referential numerical
+checks with nine external tests against public data; two forced corrections to
+the theory, and the remainder confirm it within stated scope. What the framework
+defensibly offers is a variational language in which coordination is
+order-parameter synchronisation, the deepest coordinated regime corresponds
+structurally to partition extinction, and agents with disjoint representations
+can nonetheless converge on a common outcome---this last now demonstrated on
+real data rather than asserted.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

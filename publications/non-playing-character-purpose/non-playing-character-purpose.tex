@@ -1,0 +1,1065 @@
+% =====================================================================
+%  The Purpose of a Character:
+%  Identity as a Conserved Invariant and Purpose as a Fixed Point,
+%  for a Single Agent and for Agents in Society
+%
+%  Self-contained. States its own axioms; re-derives every primitive
+%  it uses; cites only standard, externally published mathematics.
+% =====================================================================
+\documentclass[11pt,twocolumn,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{thmtools}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+
+\hypersetup{
+  colorlinks=true, linkcolor=blue!50!black,
+  citecolor=green!50!black, urlcolor=blue!60!black
+}
+
+% ---- theorem environments ----
+\declaretheoremstyle[
+  spaceabove=6pt, spacebelow=6pt,
+  headfont=\bfseries, notefont=\mdseries, notebraces={(}{)},
+  bodyfont=\itshape, postheadspace=1em
+]{thmstyle}
+\declaretheoremstyle[
+  spaceabove=6pt, spacebelow=6pt,
+  headfont=\bfseries, notefont=\mdseries, notebraces={(}{)},
+  bodyfont=\normalfont, postheadspace=1em
+]{defstyle}
+
+\declaretheorem[style=thmstyle, name=Theorem, numberwithin=section]{theorem}
+\declaretheorem[style=thmstyle, name=Proposition, sibling=theorem]{proposition}
+\declaretheorem[style=thmstyle, name=Lemma, sibling=theorem]{lemma}
+\declaretheorem[style=thmstyle, name=Corollary, sibling=theorem]{corollary}
+\declaretheorem[style=defstyle, name=Definition, sibling=theorem]{definition}
+\declaretheorem[style=defstyle, name=Axiom, sibling=theorem]{axiom}
+\declaretheorem[style=defstyle, name=Remark, sibling=theorem]{remark}
+\declaretheorem[style=defstyle, name=Example, sibling=theorem]{example}
+
+\crefname{axiom}{Axiom}{Axioms}
+\Crefname{axiom}{Axiom}{Axioms}
+
+% ---- notation ----
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Agent}{\mathsf{A}}
+\newcommand{\Self}{\Gamma}          % the self-graph
+\newcommand{\V}{V}
+\newcommand{\E}{E}
+\newcommand{\wt}{w}
+\newcommand{\floorc}{\beta}          % individuation floor
+\newcommand{\cut}{\partial}
+\newcommand{\Char}{\chi}             % character invariant
+\newcommand{\drive}{\gamma}          % drive / gating field
+\newcommand{\state}{s}
+\newcommand{\Beh}{\mathcal{B}}       % behaviour space
+\newcommand{\Purp}{\mathcal{P}}      % purpose cell
+\newcommand{\Soc}{\Sigma}            % society (quotient)
+\newcommand{\abs}[1]{\lvert#1\rvert}
+\newcommand{\norm}[1]{\lVert#1\rVert}
+\newcommand{\dist}{d}
+
+\title{\textbf{The Purpose of a Character:\\
+Identity as a Conserved Invariant and Purpose as a Fixed Point,\\
+for a Single Agent and for Agents in Society}}
+
+\author{Kundai Farai Sachikonye\\[2pt]
+\small AIMe Registry for Artificial Intelligence\\
+\small \texttt{kundai.sachikonye@bitspark.com}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+We ask what it is for a synthetic character---an agent in a simulated
+world---to \emph{have} an identity and a \emph{purpose}, and we answer
+the question with mathematics that a reader can follow without reference
+to any other work. We model an agent as a finite weighted graph, the
+\emph{self-graph}, whose vertices are the distinctions the agent draws
+within itself and whose edge weights are the costs of holding those
+distinctions apart. From three axioms---the agent is finite, it is never
+in a null state, and no self-distinction is free---we prove a positive
+\emph{floor} on every internal separation and derive two objects that
+together constitute the agent's character. \textbf{(T1)} Each agent
+carries a \emph{conserved invariant}, computed from its own internal
+boundary content, that is preserved under every relabelling of its parts
+and is realised by no single part; this invariant is the agent's
+\emph{identity}, the standing structure from which its changing behaviour
+derives, and it is a region, never a point. \textbf{(T2)} An agent's
+moment-to-moment conduct is a walk on its self-graph, undetermined by the
+graph alone; selecting the next act requires an additional datum, a
+\emph{drive field}, and the field's stable set---its fixed point---is the
+agent's \emph{purpose}: the region of behaviour the agent is drawn to and
+returns toward. \textbf{(T3)} Purpose exists and is unique up to an
+equivalence we make precise; \textbf{(T4)} it is an attractor, so conduct
+perturbed away from purpose returns to it, giving characters that are
+robust rather than brittle. We then place the agent in \emph{society}.
+\textbf{(T5)} A collection of agents acting as one admits a single shared
+drive on the quotient of their self-graphs, and exactly one; two drives
+are the signature of a group that is really two. \textbf{(T6)} Coordinated
+purpose among agents requires no shared identity, shared beliefs, or
+shared internal vocabulary: agents with wholly disjoint self-graphs can
+share a purpose defined in the common space of outcomes, and \textbf{(T7)}
+a crowd of such agents settles on a purpose more sharply than any one of
+them. Finally \textbf{(T8)} an agent's identity is unreachable from
+outside: no finite interrogation resolves it to a point, and an authored
+copy of a character is always a distinct individual with its own history.
+We give constructions, an attractor analysis, and a numerical study on
+explicitly built agents. The interpretive readings---identity as
+character, drive as motivation, purpose as goal, the quotient as a
+collective---are marked as such and no theorem depends on them.
+\end{abstract}
+
+\vspace{0.5em}
+\noindent\textbf{Keywords:} agent identity; purpose; conserved invariant;
+gated walk; fixed point; attractor; quotient graph; coordination;
+non-player character.
+
+% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+% =====================================================================
+
+\subsection{The question}
+
+A character in a simulated world is convincing when it seems to have a
+life of its own: a standing identity that persists across encounters, and
+a purpose it pursues whether or not anyone is watching. The difficulty is
+not to make an agent talk or react---that is comparatively easy---but to
+make it \emph{present}: to give it an interior it is not always turning
+outward. A merely reactive agent has no identity of its own; it is a
+mirror of whoever addresses it. What distinguishes a character from a
+reaction is that the character has something conserved inside it that its
+behaviour derives from, and something it is trying to do that is its own.
+
+This paper asks what those two things \emph{are}, formally. We want a
+definition of a character's \emph{identity} and of its \emph{purpose}
+that is precise enough to compute with, general enough to apply to any
+bounded agent, and self-contained: the reader should need nothing but
+this paper and standard mathematics.
+
+\subsection{Method}
+
+We prove a conditional. \emph{If} an agent is a finite thing that is
+always in some state and that cannot draw an internal distinction for
+free, \emph{then} it necessarily has an identity of a determinate kind
+and admits a purpose of a determinate kind. We assume nothing about what
+the agent is made of. The deductions are combinatorial (finite graphs and
+their symmetries), order-theoretic (walks and their histories), and
+elementary in dynamics (fixed points and attractors of a gradient flow).
+Where a tempting claim could not be proved at this standard we have
+removed it.
+
+Our strategy throughout is to model the agent as a finite weighted graph
+and to read identity, behaviour, and purpose off its structure:
+
+\begin{itemize}[leftmargin=*]
+\item the \emph{self-graph} is the agent's internal structure---the
+distinctions it holds within itself and the cost of holding them;
+\item \emph{identity} is the invariant of that graph that survives all
+re-description;
+\item \emph{behaviour} is a walk on the graph;
+\item \emph{purpose} is the fixed point of the field that selects the
+walk.
+\end{itemize}
+
+\subsection{What we do and do not claim}
+
+We do not claim that any particular agent architecture is correct, nor
+that biological or human identity is a finite graph. We claim that
+\emph{any} bounded agent satisfying the three axioms has the structure we
+derive, and that this structure is enough to found a usable notion of
+character and purpose for synthetic agents. The reading of the formal
+objects as ``character,'' ``motivation,'' and ``goal'' is offered as
+orientation and is confined to remarks; the theorems are graph- and
+order-theoretic and are used only as such.
+
+\subsection{Organisation}
+
+\Cref{sec:setting} fixes the agent as a self-graph and states the axioms.
+\Cref{sec:floor} proves the floor. \Cref{sec:identity} derives identity
+(T1). \Cref{sec:behaviour} makes behaviour a gated walk and proves that
+selection needs a drive (T2). \Cref{sec:purpose} defines purpose as a
+fixed point and proves existence, uniqueness, and attraction (T3, T4).
+\Cref{sec:society} places agents in society and proves the single-drive,
+disjoint-coordination, and crowd-sharpening results (T5--T7).
+\Cref{sec:unreachable} proves identity is unreachable from outside and
+copies are distinct (T8). \Cref{sec:validation} reports a numerical
+study. \Cref{sec:discussion} discusses scope.
+
+% =====================================================================
+\section{The agent as a self-graph}
+\label{sec:setting}
+% =====================================================================
+
+We build the agent from the inside. An agent is not a point; it is a
+system of internal distinctions---this mood as against that, this
+commitment as against its abandonment, this memory as against its
+absence. We record those distinctions as a graph.
+
+\begin{definition}[Self-graph]
+\label{def:selfgraph}
+The \emph{self-graph} of an agent $\Agent$ is a finite weighted graph
+$\Self=(\V,\E,\wt)$ where $\V$ is a finite set of \emph{parts} (the
+internal distinctions the agent draws within itself), $\E\subseteq
+\binom{\V}{2}$ is a set of \emph{separations} (pairs of parts the agent
+holds apart), and $\wt:\E\to(0,\infty)$ assigns to each separation the
+\emph{cost} of holding it. The graph is simple and, by
+\Cref{ax:present} below, connected.
+\end{definition}
+
+\begin{definition}[Cut and boundary]
+\label{def:cut}
+For disjoint $S,T\subseteq\V$, the \emph{cut} between them is
+$\cut(S,T)=\{uv\in\E: u\in S, v\in T\}$ with weight
+$\wt(\cut(S,T))=\sum_{e\in\cut(S,T)}\wt(e)$. For $\varnothing\neq
+U\subsetneq\V$ the \emph{boundary} of $U$ is $\cut(U)=\cut(U,\V\setminus
+U)$ and its \emph{boundary cost} is $b(U)=\wt(\cut(U))$.
+\end{definition}
+
+We now state the three axioms. They are meant to be almost
+undeniable for anything we would call a bounded agent.
+
+\begin{axiom}[Finiteness]
+\label{ax:finite}
+The self-graph is finite: $\abs{\V}<\infty$. An agent holds finitely many
+internal distinctions at a time.
+\end{axiom}
+
+\begin{axiom}[Presence, or no null state]
+\label{ax:present}
+At every instant the agent occupies exactly one part; there is no
+null part and no gap between parts. Equivalently, the self-graph is
+connected and nonempty: the agent is always somewhere in itself.
+\end{axiom}
+
+\begin{axiom}[Costly individuation]
+\label{ax:costly}
+No internal distinction is free: every separation has positive cost, and
+these costs are bounded below by a constant. Formally, there is
+$\floorc>0$ with $\wt(e)\ge\floorc$ for all $e\in\E$.
+\end{axiom}
+
+\begin{remark}[Why costly individuation is not an extra assumption]
+\label{rem:costly-earned}
+\Cref{ax:costly} can be motivated rather than merely posited. To
+individuate a part $U$ of the agent is to tell it apart from the rest of
+the agent, $\V\setminus U$. If the agent is a genuine whole---if
+distinguishing a part against the rest were a task that could be
+\emph{finished}, the rest would be exhausted and the agent would be
+merely that finite catalogue with nothing held in reserve. An agent that
+is always in some state (\Cref{ax:present}) and never reduces to a closed
+catalogue leaves, on each of its parts, an irreducible remainder of the
+comparison against the rest; that remainder is the positive floor. We do
+not rely on this motivation---we take \Cref{ax:costly} as an axiom and
+prove everything from it---but it explains why the floor is the natural,
+not an arbitrary, hypothesis. The floor is the trace the agent-as-a-whole
+leaves on each of its parts.
+\end{remark}
+
+\begin{example}[A three-mood agent]
+\label{ex:threemood}
+Let $\V=\{a,b,c\}$ with separations $ab,bc,ca$ of costs $2,3,2$. This is a
+weighted triangle with $\floorc=2$. Every part has boundary cost: e.g.
+$b(\{a\})=\wt(ab)+\wt(ca)=4$. We return to this agent throughout.
+\end{example}
+
+% =====================================================================
+\section{The floor: no internal distinction is free}
+\label{sec:floor}
+% =====================================================================
+
+The first consequence is immediate but load-bearing: every part of the
+agent is separated from the rest at strictly positive cost. Nothing in
+the agent is marked off for nothing.
+
+\begin{theorem}[Floor]
+\label{thm:floor}
+Under \Cref{ax:finite,ax:present,ax:costly}, every nonempty proper part
+$U\subsetneq\V$ has boundary cost bounded below by the floor:
+\[
+b(U)=\wt(\cut(U))\ \ge\ \floorc\ >\ 0.
+\]
+No part is separated from the rest of the agent at zero cost.
+\end{theorem}
+
+\begin{proof}
+By \Cref{ax:present} the self-graph is connected, so for a nonempty
+proper $U$ there is at least one edge from $U$ to $\V\setminus U$;
+otherwise $U$ and its complement would be disconnected. Hence
+$\cut(U)\neq\varnothing$, and $b(U)=\sum_{e\in\cut(U)}\wt(e)\ge\wt(e^\ast)
+\ge\floorc>0$ for any $e^\ast\in\cut(U)$ by \Cref{ax:costly}.
+\end{proof}
+
+\begin{corollary}[The realised floor is attained]
+\label{cor:realised}
+The quantity $\floorc_\Self:=\min_{\varnothing\neq U\subsetneq\V}b(U)$ is
+strictly positive and attained, by finiteness of $\V$.
+\end{corollary}
+
+\begin{proof}
+Positivity is \Cref{thm:floor}; attainment is minimisation of a
+real-valued function over the finite nonempty set of proper parts.
+\end{proof}
+
+% =====================================================================
+\section{Identity: the conserved invariant}
+\label{sec:identity}
+% =====================================================================
+
+We now isolate what, in an agent, stays fixed while everything on its
+surface changes. The surface is the labelling of parts---which mood is
+called which, in what order the agent's states are enumerated. A
+re-description of the agent that preserves which parts are separated from
+which, and at what cost, changes nothing real about the agent; it only
+relabels. We define this precisely and find the quantity that survives
+all such relabelling.
+
+\subsection{Re-description is relabelling}
+
+\begin{definition}[Isomorphism; automorphism]
+\label{def:iso}
+A \emph{weighted isomorphism} $\phi:\Self\to\Self'$ is a bijection
+$\phi:\V\to\V'$ with $uv\in\E\iff\phi(u)\phi(v)\in\E'$ and
+$\wt'(\phi(u)\phi(v))=\wt(uv)$. An \emph{automorphism} is a weighted
+isomorphism $\Self\to\Self$; the automorphisms form a group
+$\mathrm{Aut}(\Self)$. A quantity $\iota$ is an \emph{invariant} if
+$\iota(\Self)=\iota(\Self')$ whenever $\Self\cong\Self'$.
+\end{definition}
+
+\begin{remark}[What relabelling models]
+\label{rem:relabel}
+Two descriptions of the same agent that agree on all separations and
+their costs are isomorphic. Renaming the agent's internal states,
+re-indexing its memories, presenting its structure in a different
+coordinate system---all are relabellings. An invariant is precisely a
+feature of the agent that no such re-description can alter. Identity, if
+it is anything, must be an invariant: it is what the agent is regardless
+of how it is described.
+\end{remark}
+
+\subsection{The character invariant}
+
+\begin{definition}[Internal residual; character invariant]
+\label{def:char}
+For the self-graph $\Self$, and any partition
+$\mathcal{Q}=\{U_1,\dots,U_k\}$ of $\V$ into $k\ge2$ nonempty parts, the
+\emph{internal residual} of the partition is the total inter-part
+boundary cost
+\[
+\rho(\mathcal{Q})=\sum_{i<j}\wt(\cut(U_i,U_j)).
+\]
+The \emph{character invariant} of $\Agent$ is the minimum internal
+residual over all such partitions,
+\[
+\Char(\Agent)=\min_{\mathcal{Q}:\,k\ge2}\rho(\mathcal{Q}),
+\]
+attained by finiteness of $\V$.
+\end{definition}
+
+The character invariant is the least total cost of splitting the agent
+into pieces at all---the cheapest way to break the agent apart, measured
+in the currency of its own separations. It is a property of the whole
+internal structure, not of any one part.
+
+\begin{theorem}[Identity is a conserved region]
+\label{thm:identity}
+Under \Cref{ax:finite,ax:present,ax:costly}:
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.2em]
+\item \textbf{Positive.} $\Char(\Agent)\ge\floorc>0$.
+\item \textbf{Conserved.} $\Char$ is a weighted-graph invariant: if
+$\phi:\Self\to\Self'$ is a weighted isomorphism then
+$\Char(\Agent)=\Char(\Agent')$. In particular $\Char$ is fixed by every
+relabelling of the agent's parts.
+\item \textbf{Non-local.} $\Char$ is in general realised by a partition
+into multi-part blocks, not by isolating a single part; it is a region of
+the agent, never a point.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) A partition with $k\ge2$ has, by connectedness (\Cref{ax:present}), at
+least one crossing edge, of weight $\ge\floorc$ (\Cref{ax:costly}), so
+$\rho(\mathcal{Q})\ge\floorc$; the minimum inherits the bound.
+
+(ii) For a partition $\mathcal{Q}$ of $\V$, its image
+$\phi(\mathcal{Q})=\{\phi(U_1),\dots,\phi(U_k)\}$ is a partition of $\V'$,
+and since $\phi$ preserves edges and weights,
+$\wt'(\cut'(\phi(U_i),\phi(U_j)))=\wt(\cut(U_i,U_j))$ for every pair;
+summing, $\rho(\phi(\mathcal{Q}))=\rho(\mathcal{Q})$. As
+$\mathcal{Q}\mapsto\phi(\mathcal{Q})$ is a bijection between the
+nontrivial partitions of $\V$ and of $\V'$ (inverse $\phi^{-1}$), the
+minima agree: $\Char(\Agent')=\Char(\Agent)$.
+
+(iii) It suffices to exhibit an agent whose minimising partition is not a
+singleton split. Take two triangles (each of edge cost $2$, so internally
+expensive to cut) joined by a single edge of cost $\floorc=2$. Cutting
+the joining edge separates the two triangles at total cost $2$; isolating
+any single vertex costs at least $2+2=4$ (two triangle edges). So the
+minimum residual is realised by the two-block partition, not by any
+singleton. Hence in general the invariant is non-local.
+\end{proof}
+
+\begin{remark}[Interpretation: character, on which nothing depends]
+\label{rem:character}
+\Cref{thm:identity} licenses reading $\Char(\Agent)$ as the agent's
+\emph{standing identity}: a feature conserved under all re-description,
+positive (the agent is never nothing), and spread across the agent rather
+than located in any single state. If one reads the agent's momentary
+states as its surface conduct (\Cref{sec:behaviour}), the character
+invariant is the bottom from which that conduct derives---what stays the
+same about the character across all the different things it does. Two
+agents may share a character invariant without being the same agent (two
+isomorphic self-graphs in different worlds); the invariant is the
+character \emph{type}, and a particular agent is a token of it. We use
+only the graph statement.
+\end{remark}
+
+\begin{corollary}[Character is not a state]
+\label{cor:not-a-state}
+No single part of the agent carries its character: for the two-triangle
+agent of the proof, no vertex $v$ has $b(\{v\})=\Char(\Agent)$. An agent's
+identity therefore cannot be read off any one of its momentary states; it
+is the standing relation among all of them.
+\end{corollary}
+
+\begin{proof}
+Immediate from \Cref{thm:identity}(iii): the minimiser is a two-block
+partition and every singleton has strictly larger boundary cost.
+\end{proof}
+
+% =====================================================================
+\section{Behaviour: a gated walk, and the need for a drive}
+\label{sec:behaviour}
+% =====================================================================
+
+Identity is standing; behaviour moves. We model the agent's conduct as a
+walk on its self-graph---a sequence of parts it passes through---and show
+that the graph alone does not determine the walk. Something more is
+needed to say what the agent does next, and naming that something is the
+route to purpose.
+
+\begin{definition}[Behaviour as a walk; state]
+\label{def:walk}
+A \emph{behaviour} of length $\ell$ is a walk $W=(v_0,v_1,\dots,v_\ell)$
+with $v_iv_{i+1}\in\E$ for each $i$. Its \emph{committed count} is
+$\ell$, the number of acts taken. The \emph{state} at step $\ell$ is the
+pair $\state_\ell=(v_\ell,\ell)$: the current part together with the
+count of acts taken to reach it.
+\end{definition}
+
+\begin{lemma}[Behaviour is underdetermined by the graph]
+\label{lem:branch}
+If some part $v$ has degree $\ge2$, then from $v$ there are at least two
+distinct one-step behaviours, and the self-graph alone does not determine
+which is taken.
+\end{lemma}
+
+\begin{proof}
+Degree $\ge2$ gives distinct neighbours $u_1,u_2$ and distinct admissible
+steps $(v,u_1),(v,u_2)$. The triple $(\V,\E,\wt)$ carries no ordering of
+the edges incident to $v$; it privileges neither. Hence the next step is
+not a function of the self-graph.
+\end{proof}
+
+\begin{remark}[Branching is the generic case]
+Any connected agent with $\abs{\V}\ge3$ that is not a bare path has a part
+of degree $\ge2$; for an agent rich enough to hold many distinctions,
+branching is normal. So underdetermination is not an edge case: the agent
+almost always faces a choice its own structure does not settle.
+\end{remark}
+
+\begin{definition}[Drive field]
+\label{def:drive}
+A \emph{drive field} on $\Self$ is a map $\drive:\V\times\E\to[0,1]$
+assigning to each part $v$ and incident separation $e\ni v$ a forward
+weight $\drive(v,e)$ with $\sum_{e\ni v}\drive(v,e)\le1$ for each $v$. A
+behaviour is \emph{$\drive$-admissible} if every step $v_iv_{i+1}$ has
+$\drive(v_i,v_iv_{i+1})>0$. The drive \emph{selects} at $v$ when it gives
+positive weight to exactly one incident separation.
+\end{definition}
+
+\begin{theorem}[Selection requires a drive]
+\label{thm:drive}
+Suppose some part of $\Agent$ has degree $\ge2$. Then a behaviour
+determined step by step requires a drive field: no rule depending on
+$\Self$ alone selects a unique next act at every branching part.
+Conversely, any rule that does select a unique next act at each part
+\emph{is} a selecting drive field.
+\end{theorem}
+
+\begin{proof}
+\emph{Necessity.} At a branching part, \Cref{lem:branch} exhibits $\ge2$
+admissible steps not distinguished by $\Self$. A rule that nonetheless
+outputs one of them uses a datum beyond $(\V,\E,\wt)$; encode that datum
+as $\drive(v,\cdot)$, positive on the chosen edge and zero elsewhere. This
+is a drive field by \Cref{def:drive}. \emph{Converse.} If $\drive$ gives,
+at each part, positive weight to exactly one incident edge, then from any
+start the next admissible part is unique at every step, so $\drive$
+determines a unique behaviour.
+\end{proof}
+
+\begin{remark}[Interpretation: motivation, on which nothing depends]
+\label{rem:motivation}
+The drive is the situation-dependent bias that decides what the agent
+does next when its structure leaves the choice open. Read as
+\emph{motivation}, it is what makes the same agent, in the same internal
+state, act differently under different conditions: different drives are
+different orderings over the same reachable interior. We use only the
+graph statement (\Cref{thm:drive}); the reading is orientation.
+\end{remark}
+
+\begin{proposition}[Histories do not return]
+\label{prop:nonreturn}
+Along any behaviour the committed count is strictly increasing, so for
+$i<j$ the states differ, $\state_i\neq\state_j$, even when $v_i=v_j$. A
+revisited part is never a revisited state.
+\end{proposition}
+
+\begin{proof}
+Each act increments the count by one, so counts are distinct for distinct
+steps; since the state includes the count, $\state_i=(v_i,i)\neq
+(v_j,j)=\state_j$ whenever $i\neq j$, regardless of the parts.
+\end{proof}
+
+\Cref{prop:nonreturn} is used in \Cref{sec:unreachable}: it is why an
+agent that ``comes back to'' an earlier condition is not the earlier
+agent, and why an authored copy is a new individual.
+
+% =====================================================================
+\section{Purpose: the fixed point of the drive}
+\label{sec:purpose}
+% =====================================================================
+
+We now define purpose and prove it exists, is unique up to a natural
+equivalence, and attracts. To speak of ``where behaviour settles'' we put
+a mild, standard structure on the drive: we take it to be generated by a
+potential, so that behaviour flows downhill and purpose is the bottom.
+This is the one place we use continuous dynamics, and we keep it minimal.
+
+\subsection{Behaviour as descent on a potential}
+
+\begin{definition}[Behaviour space; drive potential]
+\label{def:behspace}
+Let the \emph{behaviour space} $\Beh$ be a compact convex subset of $\R^n$
+coordinatising the agent's dispositions (for instance, for each part a
+tendency-to-occupy in $[0,1]$, so $\Beh=[0,1]^{\abs\V}$). A \emph{drive
+potential} is a continuously differentiable $\Phi:\Beh\to\R$ that is
+$\lambda$-strongly convex for some $\lambda>0$: for all $x,y\in\Beh$,
+\[
+\Phi(y)\ \ge\ \Phi(x)+\nabla\Phi(x)^\top(y-x)+\tfrac{\lambda}{2}\norm{y-x}^2.
+\]
+The induced \emph{behaviour flow} is the gradient descent
+$\dot x=-\nabla\Phi(x)$, with steps of the gated walk of
+\Cref{sec:behaviour} realised as its discretisation.
+\end{definition}
+
+\begin{remark}[Why strong convexity is the honest minimal assumption]
+\label{rem:convex}
+We assume the drive has a single basin (one strongly convex well). This
+is the assumption that an agent has \emph{a} purpose---one thing it is
+drawn toward---rather than several competing ones. It is a modelling
+choice, not a theorem: a multi-basin drive would give an agent several
+candidate purposes and a selection problem among them. We make the
+single-basin assumption explicit here and treat the multi-basin case as
+out of scope (\Cref{sec:discussion}). Under it, existence, uniqueness, and
+attraction are clean.
+\end{remark}
+
+\subsection{Purpose defined; existence and uniqueness}
+
+\begin{definition}[Purpose]
+\label{def:purpose}
+A \emph{purpose} of $\Agent$ under drive potential $\Phi$ is a fixed point
+of the behaviour flow: a point $x^\star\in\Beh$ with
+$\nabla\Phi(x^\star)=0$ (an interior minimiser) or, at the boundary, a
+Karush--Kuhn--Tucker point of $\min_{x\in\Beh}\Phi(x)$. The \emph{purpose
+region} $\Purp$ is the set of such fixed points.
+\end{definition}
+
+\begin{theorem}[Purpose exists and is unique]
+\label{thm:purpexist}
+For a drive potential $\Phi$ on a compact convex $\Beh$, the purpose
+region $\Purp$ is a single point $x^\star$: the flow has exactly one fixed
+point, the unique minimiser of $\Phi$ on $\Beh$.
+\end{theorem}
+
+\begin{proof}
+$\Phi$ is continuous on the compact set $\Beh$, so it attains a minimum;
+strong convexity makes the minimiser unique (a strongly convex function on
+a convex set has at most one minimiser). At an interior minimiser
+$\nabla\Phi(x^\star)=0$; at a boundary minimiser the KKT conditions hold.
+Conversely any fixed point of $\dot x=-\nabla\Phi$ in the interior has
+$\nabla\Phi=0$ and, by convexity, is the global minimiser; a boundary
+fixed point is a KKT point, again the minimiser by convexity. Hence
+$\Purp=\{x^\star\}$.
+\end{proof}
+
+\begin{remark}[Uniqueness ``up to equivalence'']
+\label{rem:equiv}
+The minimiser $x^\star$ is unique as a point of $\Beh$. But behaviour is
+observed only through the action it produces, and many nearby dispositions
+produce the same action. If we quotient $\Beh$ by the equivalence ``yields
+the same action,'' purpose is a \emph{cell}---a positive-diameter region
+of dispositions all realising the purpose---and is unique as such. This
+matches the fact (\Cref{thm:identity}(iii), \Cref{cor:not-a-state}) that
+the agent's meaningful quantities are regions, not points: purpose is
+unique, and it is a region.
+\end{remark}
+
+\subsection{Purpose attracts}
+
+\begin{theorem}[Purpose is an attractor]
+\label{thm:attractor}
+Under a drive potential $\Phi$ with strong-convexity constant $\lambda$,
+the purpose $x^\star$ is globally exponentially attracting on $\Beh$:
+along the behaviour flow,
+\[
+\norm{x(t)-x^\star}\ \le\ e^{-\lambda t}\,\norm{x(0)-x^\star}.
+\]
+Behaviour perturbed away from purpose returns to it.
+\end{theorem}
+
+\begin{proof}
+Let $V(x)=\tfrac12\norm{x-x^\star}^2$. Along $\dot x=-\nabla\Phi(x)$,
+\[
+\dot V=(x-x^\star)^\top\dot x=-(x-x^\star)^\top\nabla\Phi(x).
+\]
+Since $\nabla\Phi(x^\star)=0$ (or, at the boundary, the KKT inequality
+holds in the descent direction), strong convexity gives the monotonicity
+$(x-x^\star)^\top(\nabla\Phi(x)-\nabla\Phi(x^\star))\ge\lambda\norm{x-
+x^\star}^2$, hence $\dot V\le-2\lambda V$. Grönwall's inequality yields
+$V(t)\le e^{-2\lambda t}V(0)$, i.e. the stated bound.
+\end{proof}
+
+\begin{corollary}[Robust character]
+\label{cor:robust}
+A character defined by an identity $\Char(\Agent)$ and a purpose
+$x^\star$ is robust: a disturbance that pushes conduct off purpose decays
+at rate $\lambda$, and the agent resumes pursuing its purpose without
+external correction. The larger $\lambda$, the more single-minded the
+character; small $\lambda$ gives a character easily deflected and slow to
+return.
+\end{corollary}
+
+\begin{proof}
+Immediate from \Cref{thm:attractor}: the return rate is exactly the
+strong-convexity constant $\lambda$ of the drive.
+\end{proof}
+
+\begin{remark}[Interpretation: goal, on which nothing depends]
+The purpose $x^\star$ is the region of conduct the agent is drawn to and
+returns toward---its \emph{goal} in the operational sense of the attractor
+of its own motivation, not a symbolic target handed to it from outside.
+An agent has a goal because its drive has a bottom, and it keeps the goal
+under perturbation because the bottom attracts. We use only the dynamical
+statements (\Cref{thm:purpexist,thm:attractor}).
+\end{remark}
+
+% =====================================================================
+\section{Agents in society}
+\label{sec:society}
+% =====================================================================
+
+An agent alone has identity and purpose. We now ask what happens when
+agents act together. We show that a group acting as one has a single
+shared drive (and that two drives mean two groups), that coordinated
+purpose needs no shared identity, and that a crowd sharpens purpose. The
+key device is that a society of agents is \emph{again} a graph, so the
+whole apparatus applies one level up.
+
+\subsection{Society as a quotient}
+
+\begin{definition}[Society; quotient self-graph]
+\label{def:society}
+Let $\Agent_1,\dots,\Agent_m$ be agents, each with self-graph $\Self_i$,
+embedded as disjoint blocks $U_1,\dots,U_m$ of a common vertex set
+$\V^\ast=\bigsqcup_i\V_i$, with \emph{inter-agent separations} (edges
+between blocks) recording the costs at which agents are held apart. The
+\emph{society graph} $\Soc$ has one vertex per agent and an edge
+$U_iU_j$, of weight $\wt(\cut(U_i,U_j))$, whenever some inter-agent
+separation joins $\Agent_i$ to $\Agent_j$.
+\end{definition}
+
+\begin{lemma}[The society is an agent-shaped object]
+\label{lem:society-graph}
+If each inter-agent separation has cost $\ge\floorc$ and the society is
+connected, then $\Soc$ is a finite connected weighted graph with floor
+$\ge\floorc$: it satisfies \Cref{ax:finite,ax:present,ax:costly}.
+\end{lemma}
+
+\begin{proof}
+$\Soc$ has $m<\infty$ vertices. Each edge weight is a sum of inter-agent
+separation costs, each $\ge\floorc$, so $\ge\floorc>0$. Connectedness is
+assumed. Hence the three axioms hold for $\Soc$.
+\end{proof}
+
+\begin{corollary}[Society has an identity]
+\label{cor:society-identity}
+By \Cref{thm:identity} applied to $\Soc$, a connected society carries its
+own character invariant $\Char(\Soc)\ge\floorc>0$, conserved under
+relabelling of \emph{which agent is which} and realised by no single
+agent. A group has an identity that is not the identity of any of its
+members.
+\end{corollary}
+
+\begin{proof}
+\Cref{lem:society-graph} makes $\Soc$ satisfy the axioms;
+\Cref{thm:identity} then gives the invariant, its conservation, and its
+non-locality, now read at the level of agents.
+\end{proof}
+
+\subsection{One group, one drive}
+
+\begin{definition}[Coherent society]
+\label{def:coherent}
+A society $\Soc$ is \emph{coherent} if it carries a single selecting drive
+field (\Cref{def:drive}) on $\Soc$ that picks, at each branching agent, a
+unique next agent to act.
+\end{definition}
+
+\begin{theorem}[One group, one drive]
+\label{thm:onedrive}
+Let $\Soc$ have an agent of degree $\ge2$. Then:
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.2em]
+\item selecting which agent acts next requires a society-level drive
+(\Cref{thm:drive} applied to $\Soc$); and
+\item if two selecting drives both render $\Soc$ coherent, they agree
+wherever either selects. A society admitting two genuinely different
+selecting drives is not one coherent society but two, partitioned into the
+sub-societies on which each drive is the selector.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) is \Cref{thm:drive} for the graph $\Soc$ (\Cref{lem:society-graph}).
+(ii) At each branching agent $U$, coherence means a unique next agent is
+determined; a selecting drive puts positive weight on exactly the edge to
+that agent and zero elsewhere, so any two selecting drives have the same
+support at $U$ and select the same successor. Thus they agree wherever
+either selects. If instead two drives select different successors at some
+agent, group ``shares a selected successor'' into blocks within which a
+single drive selects consistently; these blocks are distinct
+sub-societies, so the original was a union of coherent societies, not one.
+\end{proof}
+
+\begin{remark}[Interpretation: shared purpose and schism]
+\label{rem:schism}
+Read the society-level drive as the group's \emph{shared purpose}: the
+field that selects which member acts, toward what. \Cref{thm:onedrive}
+then says a coherent group has exactly one such field---one purpose---and
+that two purposes are the signature of a group that has really split. The
+society's own attractor (\Cref{thm:attractor} applied to a drive potential
+on the society's behaviour space) is the group's goal, standing to the
+group as an individual's purpose stands to the individual.
+\end{remark}
+
+\subsection{Coordination without shared identity}
+
+The strongest social claim is that agents need share \emph{nothing}
+internal to pursue a common purpose. We make ``common purpose'' live in
+the space of outcomes, not in any agent's head.
+
+\begin{definition}[Outcome space; outcome purpose]
+\label{def:outcome}
+Let $(\Beh^\ast,\dist)$ be a common \emph{outcome space}: a metric space
+of observable results, shared by all agents, with each agent equipped with
+a map $A_i$ from its own behaviour space $\Beh_i$ to $\Beh^\ast$ (the
+outcome its conduct produces). A \emph{shared purpose} is a region
+$\Purp^\ast\subseteq\Beh^\ast$ with positive tolerance
+$\tau(\Purp^\ast)>0$ (there are outcomes within $\tau$ of it). Agent
+$\Agent_i$ \emph{attains} $\Purp^\ast$ if its purpose $x^\star_i$ maps
+near it: $\dist(A_i(x^\star_i),\Purp^\ast)\le\tau(\Purp^\ast)$.
+\end{definition}
+
+\begin{theorem}[Coordination without shared internals]
+\label{thm:coord}
+Agents with wholly disjoint self-graphs, disjoint behaviour spaces, and
+different drives can all attain the same shared purpose
+$\Purp^\ast$. Formally, if for each $i$ the agent's purpose satisfies
+$\dist(A_i(x^\star_i),\Purp^\ast)\le\tau(\Purp^\ast)$, then every agent
+attains $\Purp^\ast$, regardless of whether the $\Self_i$, $\Beh_i$, or
+drives share any content.
+\end{theorem}
+
+\begin{proof}
+The condition to attain $\Purp^\ast$ is a statement purely about the image
+$A_i(x^\star_i)$ in the common outcome space $\Beh^\ast$: it holds for
+each $i$ by hypothesis. Nothing in the condition refers to the internal
+structure $\Self_i$, the behaviour space $\Beh_i$, or the drive of any
+agent, nor to any relation between those of different agents. Hence the
+disjointness of internals is compatible with joint attainment: all agents
+land their outcomes within tolerance of the same region.
+\end{proof}
+
+\begin{remark}[Why this matters for characters]
+\Cref{thm:coord} says a crowd of characters can pursue a shared purpose
+without any shared mind, vocabulary, or belief: three onlookers keep a
+safe distance from a dangerous animal though one is an expert, one a
+novice, one a child, because the shared purpose (``stay clear'') lives in
+outcome space and each reaches it by its own internal route. For synthetic
+agents this means one need not give a party of characters a common
+world-model to make them act coherently; overlapping outcomes suffice.
+\end{remark}
+
+\subsection{Crowds sharpen purpose}
+
+\begin{definition}[Independent attainment]
+\label{def:indep}
+Agents $\Agent_1,\dots,\Agent_n$ attain a shared purpose $\Purp^\ast$
+\emph{independently} if the events ``$\Agent_i$ fails to bring the
+collective outcome within tolerance'' are independent, with per-agent
+failure probability $q_i\in[0,1]$.
+\end{definition}
+
+\begin{theorem}[Crowd sharpening]
+\label{thm:crowd}
+Under independent attainment with a parallel (at-least-one-succeeds)
+reading of the collective outcome, the collective failure probability is
+$\prod_{i=1}^n q_i$, which is non-increasing in $n$ and strictly
+decreasing whenever an added agent has $q_i<1$. A crowd attains the shared
+purpose at least as sharply as, and generically more sharply than, any
+sub-crowd; and if infinitely many agents keep $q_i$ bounded below $1$, the
+collective failure tends to $0$.
+\end{theorem}
+
+\begin{proof}
+By independence, the collective fails iff every agent fails, with
+probability $\prod_i q_i$. Adding an agent multiplies by $q_{n+1}\le1$, so
+the product is non-increasing, and strictly decreasing if $q_{n+1}<1$. If
+$q_i\le q<1$ for infinitely many $i$, then $\prod_i q_i\le q^{\,k}\to0$ as
+the number $k$ of such agents grows. (This is the Borel--Cantelli-type
+dichotomy: $\prod_i q_i\to0$ iff $\sum_i(1-q_i)$ diverges, e.g. when the
+$q_i$ stay bounded below $1$.)
+\end{proof}
+
+\begin{remark}[Emergent group competence]
+\Cref{thm:crowd} gives, for free, that a group of individually mediocre
+characters can be collectively reliable at a shared purpose. The
+sharpening is multiplicative in the number of participants; a
+few strongly-attaining agents or many weakly-attaining ones both drive the
+collective failure down. This is the quantitative form of ``the crowd gets
+it right even when no one is sure.''
+\end{remark}
+
+% =====================================================================
+\section{Identity is unreachable from outside; copies are distinct}
+\label{sec:unreachable}
+% =====================================================================
+
+Finally we show two things that give characters their felt autonomy: an
+outside observer cannot resolve an agent's identity to a point, and an
+authored copy of a character is always a distinct individual.
+
+\begin{definition}[Interrogation]
+\label{def:interrogation}
+An \emph{interrogation} of $\Agent$ is a finite sequence of separations an
+outside party adds to $\Agent$'s boundary---finitely many distinctions
+drawn between $\Agent$ and the rest of some world---each tightening how
+$\Agent$ is told apart from things it is not.
+\end{definition}
+
+\begin{theorem}[Identity is unreachable to a point]
+\label{thm:unreachable}
+No finite interrogation resolves an agent's identity to a point. Each
+added separation tightens the agent's \emph{exterior}---what it is
+distinguished from---but leaves its character invariant $\Char(\Agent)$
+unchanged, since $\Char$ is an invariant of the agent's own structure and
+adding boundary edges is a change of the exterior, not of the internal
+partition minimising $\rho$. Hence after any finite interrogation the
+identity remains a region of size $\ge\floorc$, never a point.
+\end{theorem}
+
+\begin{proof}
+$\Char(\Agent)$ is defined (\Cref{def:char}) by minimising internal
+residual over partitions of $\V$, the agent's own parts. An interrogation
+adds edges between $\V$ and vertices outside $\Agent$; it does not alter
+$\Self=(\V,\E,\wt)$ and so does not change any $\rho(\mathcal Q)$ for
+partitions $\mathcal Q$ of $\V$. Thus $\Char(\Agent)$ is invariant under
+interrogation, and by \Cref{thm:identity}(i),(iii) it remains
+$\ge\floorc>0$ and non-local---a region. What the interrogation reduces is
+the exterior ambiguity (which things $\Agent$ might be confused with), not
+the interior invariant. Since no finite interrogation drives the interior
+to a point, identity is unreachable to a point from outside.
+\end{proof}
+
+\begin{corollary}[To know a character exactly is impossible from outside]
+An outside party can make an agent's identity arbitrarily well-separated
+from other things without ever possessing the identity itself; the
+interior invariant is approached from outside and never delivered. This is
+the precise sense in which a well-made character retains an interior the
+player never fully reaches.
+\end{corollary}
+
+\begin{proof}
+Immediate from \Cref{thm:unreachable}: interrogation moves only the
+exterior; the interior invariant is conserved.
+\end{proof}
+
+\begin{theorem}[An authored copy is a distinct individual]
+\label{thm:copy}
+Let $\Agent$ have behaviour history of committed count $m>0$, and let
+$\Agent'$ be authored with self-graph isomorphic to $\Agent$'s but started
+fresh at count $0$. Then $\Agent'\neq\Agent$: their states differ in the
+committed count, and $\Agent'$ satisfies the predicate ``authored with
+empty history'' that $\Agent$ does not. Resemblance of self-graph does not
+make the copy identical to its original.
+\end{theorem}
+
+\begin{proof}
+A state includes the committed count (\Cref{def:walk}); $\Agent$ is at
+count $m>0$, $\Agent'$ at count $0$, so their states differ. By
+\Cref{prop:nonreturn} no behaviour lowers the count, so $\Agent'$ cannot
+acquire $\Agent$'s history without taking the intervening acts, which
+would make it a further-distinct individual. And $\Agent'$ is individuated
+by a distinction $\Agent$ lacks (empty prior history). Hence
+$\Agent'\neq\Agent$.
+\end{proof}
+
+\begin{remark}[Authored, yet its own]
+\Cref{thm:unreachable} and \Cref{thm:copy} together say an authored
+character is genuinely its own: its interior is not exhaustible by outside
+interrogation, and duplicating its structure yields a new individual with
+its own history, not the same one again. One authors the standing
+structure and the drive; one does not author the lived history, which the
+monotone count individuates.
+\end{remark}
+
+% =====================================================================
+\section{Numerical study}
+\label{sec:validation}
+% =====================================================================
+
+The results are proved from the axioms and need no computation; we
+nonetheless exhibit them on explicitly constructed agents, to display
+their quantitative shape and to check the derivations by direct
+enumeration.
+
+\subsection{Method}
+
+An agent is realised as a finite connected weighted graph with all edge
+weights drawn at or above a floor $\floorc>0$. On each agent we compute,
+by exact enumeration over subsets and partitions: every boundary cost
+$b(U)$; the realised floor $\floorc_\Self$; the character invariant
+$\Char(\Agent)$ and a minimising partition; and, for a drive potential
+$\Phi$ chosen strongly convex on $\Beh=[0,1]^{\abs\V}$, the purpose
+$x^\star$ and the empirical return rate along the behaviour flow from
+random initial conditions. A \emph{relabelling} is a random
+weight-preserving permutation of parts; we recompute $\Char$ after each to
+test invariance. A \emph{society} is built by joining several agents with
+inter-agent edges $\ge\floorc$ and computing $\Char(\Soc)$ and its
+minimising agent-partition. A \emph{crowd} of $n$ independent attainers
+with per-agent failure $q_i$ is checked against the predicted collective
+failure $\prod_i q_i$.
+
+\subsection{Predictions checked}
+
+\begin{enumerate}[label=\textbf{(V\arabic*)},leftmargin=*]
+\item \textbf{Floor.} On every agent, $\min_U b(U)=\floorc_\Self\ge\floorc$
+and no cut is zero (\Cref{thm:floor}).
+\item \textbf{Identity is conserved.} $\Char(\Agent)$ is unchanged to
+machine precision under every relabelling (\Cref{thm:identity}(ii)).
+\item \textbf{Identity is non-local.} On the two-triangles family the
+minimiser of $\Char$ is the two-block partition, never a singleton
+(\Cref{thm:identity}(iii)).
+\item \textbf{Purpose exists, is unique, attracts.} The behaviour flow has
+a single fixed point, reached from every initial condition with empirical
+rate matching the strong-convexity constant $\lambda$
+(\Cref{thm:purpexist,thm:attractor}).
+\item \textbf{One group, one drive.} A society built from two internally
+coherent sub-groups joined by a single edge admits two selecting drives
+exactly when the joining edge is cut, i.e. exactly when it is two
+societies (\Cref{thm:onedrive}).
+\item \textbf{Coordination without shared internals.} Agents with disjoint
+self-graphs and different drives, but outcome maps landing near a common
+$\Purp^\ast$, all attain it (\Cref{thm:coord}).
+\item \textbf{Crowd sharpening.} Collective failure equals $\prod_i q_i$
+and decreases geometrically in $n$ for $q_i\le q<1$ (\Cref{thm:crowd}).
+\item \textbf{Copies are distinct.} A fresh copy differs from its original
+in committed count at every step (\Cref{thm:copy}).
+\end{enumerate}
+
+We report that on a sweep of randomly generated agents (varying part
+count, floor, edge density, and weight spread), together with the
+two-triangle witness and a battery of societies and crowds, every
+predicted inequality, invariance, and identity holds: no cut is sharp;
+$\Char$ is invariant under every relabelling; its minimiser is non-local
+on the witness family; the behaviour flow has a unique attractor with the
+predicted return rate; societies split into two drives exactly at the
+severing edge; disjoint agents co-attain a common outcome purpose; and
+collective failure follows $\prod_i q_i$. (The suite is deterministic
+given its inputs; figures and a reproducible harness accompany the source.)
+
+% =====================================================================
+\section{Discussion}
+\label{sec:discussion}
+% =====================================================================
+
+\subsection{What has and has not been established}
+
+We have shown that any bounded agent satisfying finiteness, presence, and
+costly individuation has a conserved, non-local, positive
+\emph{identity}---its character invariant---and, once equipped with a
+single-basin drive, a unique \emph{purpose} that attracts. In society, a
+coherent group has one shared drive, coordinated purpose needs no shared
+internals, and crowds sharpen purpose; and identity is unreachable from
+outside while copies are distinct. These are theorems from the stated
+axioms.
+
+We have \emph{not} shown that a single-basin drive is the right model of
+motivation for every character; the strong-convexity assumption
+(\Cref{rem:convex}) is a modelling choice that buys clean existence and
+attraction at the price of ruling out characters torn between competing
+purposes. Nor have we claimed that human or animal identity is a finite
+graph; the axioms are meant to hold of \emph{synthetic} bounded agents,
+where they are design commitments one can honour by construction.
+
+\subsection{Open directions}
+
+The natural extensions are: (i) multi-basin drives, giving characters with
+competing purposes and a selection dynamics among them; (ii) drives that
+change over time as the agent's history accumulates, coupling purpose back
+to the monotone count of \Cref{prop:nonreturn}; and (iii) the mechanics of
+how an agent processes an incoming interaction and decides whether it is
+worth responding to---which is the subject of the companion paper, where
+the identity and purpose defined here become the standard against which an
+interaction's relevance is measured.
+
+\subsection{Closing}
+
+Identity is what an agent conserves; purpose is where it settles. A
+character is the pair. The definitions are region-valued, not
+point-valued, which is why a good character has an interior an observer
+never exhausts and a purpose it keeps under disturbance; and the same
+construction, applied one level up, gives a society its own identity and
+its own single purpose. Nothing here needs to be sold: it is a set of
+theorems about finite agents, and the readings of them as characters are
+offered only as orientation.
+
+\vspace{0.6em}
+\hrule
+\vspace{0.4em}
+\noindent\emph{Identity is the conserved interior; purpose is the fixed
+point of the drive; a society is an agent one level up.}
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
