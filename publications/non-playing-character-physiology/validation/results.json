@@ -1,0 +1,75 @@
+{
+  "paper": "The Physiology of Response",
+  "seed": 20260719,
+  "response_floor_beta_c": 1.0,
+  "n_result_groups": 8,
+  "total_individual_checks": 790,
+  "total_passed": 790,
+  "all_groups_ok": true,
+  "results": [
+    {
+      "id": "V1",
+      "theorem": "T1 Two-factor relevance (thm:conjunction)",
+      "claim": "relevant iff purpose-gain AND coherence-preserved; neither alone suffices",
+      "checks": 200,
+      "passed": 200,
+      "ok": true
+    },
+    {
+      "id": "V2",
+      "theorem": "T2 Inattention forced (thm:inattention)",
+      "claim": "committed responses <= floor(alpha/beta_c); excess relevant interactions unanswered",
+      "checks": 80,
+      "passed": 80,
+      "ok": true
+    },
+    {
+      "id": "V3",
+      "theorem": "T3 Threshold policy (thm:threshold)",
+      "claim": "optimal selection is gain-density threshold with a single price p*; greedy within one boundary item of optimum",
+      "checks": 80,
+      "passed": 80,
+      "ok": true
+    },
+    {
+      "id": "V4",
+      "theorem": "cor:token Token boundary",
+      "claim": "small residual budget affords only floor-cost tokens",
+      "checks": 60,
+      "passed": 60,
+      "ok": true
+    },
+    {
+      "id": "V5",
+      "theorem": "T4 Coherence pre-test (thm:cohtest)",
+      "claim": "advance holonomy test predicts post-response coherence margin sign exactly",
+      "checks": 150,
+      "passed": 150,
+      "ok": true
+    },
+    {
+      "id": "V6",
+      "theorem": "cor:refuse Integrity over opportunity",
+      "claim": "purpose-advancing but coherence-breaking responses are declined in advance",
+      "checks": 100,
+      "passed": 100,
+      "ok": true
+    },
+    {
+      "id": "V7",
+      "theorem": "T5 Irreversible response (thm:irreversible)",
+      "claim": "committed count strictly increases; revisited disposition is a new state; undo does not restore",
+      "checks": 60,
+      "passed": 60,
+      "ok": true
+    },
+    {
+      "id": "V8",
+      "theorem": "T6 Construction-commitment alternation (thm:alternation)",
+      "claim": "phases disjoint; no response emitted during construction",
+      "checks": 60,
+      "passed": 60,
+      "ok": true
+    }
+  ]
+}

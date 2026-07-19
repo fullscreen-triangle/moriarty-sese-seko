@@ -1,0 +1,99 @@
+{
+  "paper": "The Purpose of a Character",
+  "seed": 20260719,
+  "floor_beta": 1.0,
+  "n_result_groups": 10,
+  "total_individual_checks": 3255,
+  "total_passed": 3255,
+  "all_groups_ok": true,
+  "results": [
+    {
+      "id": "V1",
+      "theorem": "T0 Floor (thm:floor)",
+      "claim": "every nonempty proper part has boundary cost >= floor > 0",
+      "checks": 2664,
+      "passed": 2664,
+      "min_boundary_over_floor": 1.0104495621636267,
+      "ok": true
+    },
+    {
+      "id": "V2",
+      "theorem": "T1(ii) Identity conserved (thm:identity)",
+      "claim": "chi(A) is unchanged under weight-preserving relabelling",
+      "checks": 200,
+      "passed": 200,
+      "max_deviation": 1.7763568394002505e-15,
+      "ok": true
+    },
+    {
+      "id": "V3",
+      "theorem": "T1(iii) Identity non-local (thm:identity)",
+      "claim": "minimiser of chi is a multi-vertex region, not a singleton",
+      "chi": 1.0,
+      "minimising_block_sizes": [
+        3,
+        3
+      ],
+      "min_singleton_boundary": 4.0,
+      "ok": true
+    },
+    {
+      "id": "V4",
+      "theorem": "T3/T4 Purpose unique & attracting (thm:purpexist, thm:attractor)",
+      "claim": "flow converges to the unique purpose within the exp(-lam t) bound from every start",
+      "checks": 160,
+      "passed": 160,
+      "worst_bound_violation": 0.0,
+      "ok": true
+    },
+    {
+      "id": "V5",
+      "theorem": "T5 / cor:society-identity",
+      "claim": "the quotient society is a self-graph with floor>=beta and its own positive character invariant",
+      "checks": 30,
+      "passed": 30,
+      "ok": true
+    },
+    {
+      "id": "V6",
+      "theorem": "T5 One group one drive (thm:onedrive)",
+      "claim": "coherent society splits into exactly two sub-collectives precisely at the severing edge",
+      "checks": 30,
+      "passed": 30,
+      "ok": true
+    },
+    {
+      "id": "V7",
+      "theorem": "T6 Coordination without shared internals (thm:coord)",
+      "claim": "disjoint agents whose outcomes land within tolerance of a common cell all attain it",
+      "checks": 40,
+      "passed": 40,
+      "ok": true
+    },
+    {
+      "id": "V8",
+      "theorem": "T7 Crowd sharpening (thm:crowd)",
+      "claim": "collective failure = prod q_i, non-increasing in n",
+      "checks": 50,
+      "passed": 50,
+      "max_abs_error": 0.0,
+      "ok": true
+    },
+    {
+      "id": "V9",
+      "theorem": "T8 Copies distinct (thm:copy)",
+      "claim": "fresh copy differs from original in committed count; count is strictly monotone",
+      "checks": 50,
+      "passed": 50,
+      "ok": true
+    },
+    {
+      "id": "V10",
+      "theorem": "T8 Identity unreachable (thm:unreachable)",
+      "claim": "interrogation (exterior edges) leaves the interior invariant chi unchanged and >= floor",
+      "checks": 30,
+      "passed": 30,
+      "ok": true
+    }
+  ]
+}

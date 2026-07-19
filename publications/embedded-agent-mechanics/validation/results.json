@@ -1,0 +1,94 @@
+{
+  "paper": "Propagation Mechanics of an Embedded Agent",
+  "seed": 20260719,
+  "floor_beta": 1.0,
+  "backend": "exact Edmonds-Karp max-flow / min-cut (self-contained)",
+  "n_result_groups": 9,
+  "total_individual_checks": 740,
+  "total_passed": 740,
+  "all_groups_ok": true,
+  "results": [
+    {
+      "id": "V1",
+      "theorem": "Floor forced (thm:floorforced)",
+      "claim": "every item has separation cost sigma(v) >= floor > 0",
+      "checks": 259,
+      "passed": 259,
+      "min_sigma_over_floor": 1.0921231351053957,
+      "ok": true
+    },
+    {
+      "id": "V2",
+      "theorem": "T1 Recall is search (thm:recsearch)",
+      "claim": "every report is a search terminus (>=1 committed act); no zero-act fetch",
+      "checks": 80,
+      "passed": 80,
+      "ok": true
+    },
+    {
+      "id": "V3",
+      "theorem": "T2 Path opacity (thm:opacity)",
+      "claim": "same-seed same-terminus searches have differing interiors; endpoints do not determine interior",
+      "checks": 60,
+      "passed": 60,
+      "witness_graphs_with_multiple_interiors": 60,
+      "ok": true
+    },
+    {
+      "id": "V4",
+      "theorem": "cor:noreconstruct Monotone record",
+      "claim": "committed record strictly increases; undo is a further step, never a return",
+      "checks": 60,
+      "passed": 60,
+      "ok": true
+    },
+    {
+      "id": "V5",
+      "theorem": "T3 Receiver-relative report (thm:receiverrel)",
+      "claim": "same event registers correct-but-different resting cuts across agents; no privileged value",
+      "checks": 60,
+      "passed": 60,
+      "graphs_with_divergent_registration": 60,
+      "ok": true
+    },
+    {
+      "id": "V6",
+      "theorem": "T4 Falsity is a relation (thm:falsityundefined/relation, cor:noliar)",
+      "claim": "falsity undefined inside producer; decidable on account pairs; true/false accounts share producing state",
+      "checks": 60,
+      "passed": 60,
+      "ok": true
+    },
+    {
+      "id": "V7",
+      "theorem": "T5 Catalytic drift (thm:drift)",
+      "claim": "surviving fraction = prod g_i, non-increasing; strictly decreasing when some g_i < 1",
+      "checks": 80,
+      "passed": 80,
+      "max_abs_error": 0.0,
+      "ok": true
+    },
+    {
+      "id": "V8",
+      "theorem": "T6 Forced inquiry (thm:forcedact/gapselects)",
+      "claim": "exchange cannot close while D>0; forced act targets the unmatched contrast (argmax gap)",
+      "checks": 80,
+      "passed": 80,
+      "ok": true
+    },
+    {
+      "id": "V9",
+      "theorem": "T7 Locus of vocabulary (thm:locus)",
+      "claim": "lie/rumour/question are relations off outputs; only 'testimony' names an output; none is agent-internal",
+      "loci": {
+        "testimony": "agent-output (a search terminus)",
+        "lie": "relation on (account, standard) pair -- observer-side",
+        "rumour": "multiplicative drift 1 - prod g_i over a relay chain",
+        "question": "gap-forced act, observer's reading -- no represented intent"
+      },
+      "checks": 1,
+      "passed": 1,
+      "ok": true
+    }
+  ]
+}
