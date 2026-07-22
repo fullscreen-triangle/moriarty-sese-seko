@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: propagation-mechanics-embedded-agent.aux
+Reallocating 'name_of_file' (item size: 1) to 6 items.
+The style file: plain.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+Database file #1: references.bib
+You've used 20 entries,
+            2118 wiz_defined-function locations,
+            615 strings with 6072 characters,
+and the built_in function-call counts, 5804 in all, are:
+= -- 570
+> -- 210
+< -- 5
++ -- 88
+- -- 63
+* -- 351
+:= -- 972
+add.period$ -- 63
+call.type$ -- 20
+change.case$ -- 84
+chr.to.int$ -- 0
+cite$ -- 20
+duplicate$ -- 259
+empty$ -- 515
+format.name$ -- 63
+if$ -- 1229
+int.to.chr$ -- 0
+int.to.str$ -- 20
+missing$ -- 32
+newline$ -- 104
+num.names$ -- 44
+pop$ -- 122
+preamble$ -- 1
+purify$ -- 70
+quote$ -- 0
+skip$ -- 154
+stack$ -- 0
+substring$ -- 336
+swap$ -- 42
+text.length$ -- 5
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 56
+warning$ -- 0
+while$ -- 61
+width$ -- 22
+write$ -- 223

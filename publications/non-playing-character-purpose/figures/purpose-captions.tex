@@ -1,0 +1,139 @@
+% =====================================================================
+%  Figure captions for "The Purpose of a Character".
+%  Four panels, each four data-driven charts (A--D), from the theorem
+%  computations of validate_purpose.py / make_panels.py (seed 20260719,
+%  floor beta = 1). Palette: steel-blue #2563eb, sea-green #16a34a,
+%  amber #ea9a09, violet #7c3aed, crimson #dc2626.
+%  \input this file where the figures should appear, or copy each block in.
+% =====================================================================
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_1.png}
+    \caption{\textbf{The Floor and the Conserved, Non-Local Identity:
+    Nothing in the Agent Is Marked Off for Nothing.}
+    (\textbf{A})~Boundary cost $b(U)$ on the linear $y$-axis versus the
+    floor coordinate $\floorc$ on the linear $x$-axis ($0.4$ to $1.6$),
+    every nonempty proper part of $120$ random self-graphs plotted
+    (steel-blue), with the floor line $b=\floorc$ marked (crimson). Not one
+    of the several thousand cuts falls below the line: the empirical content
+    of \Cref{thm:floor}, that every internal separation costs at least
+    $\floorc>0$.
+    (\textbf{B})~Histogram of the normalised boundary cost $b(U)/\floorc$ on
+    the linear $x$-axis with the unit line marked (crimson), counts on the
+    linear $y$-axis (sea-green). The support begins exactly at $1$ and the
+    smallest observed value is $1.010$---the floor is not merely respected
+    but essentially tight, so the bound of \Cref{thm:floor} is best possible.
+    (\textbf{C})~Character invariant after a weight-preserving relabelling
+    versus before, both axes the invariant $\Char$ (violet), with the
+    identity diagonal marked (crimson). Every point lies on the diagonal to
+    machine precision (deviation $\le1.8\times10^{-15}$), the empirical form
+    of \Cref{thm:identity}(ii): $\Char$ is fixed by every re-description of
+    the agent's parts.
+    (\textbf{D})~Three-dimensional surface of the character invariant
+    $\Char$ over the join weight ($x$-axis, $\floorc$ to $6$) and triangle
+    weight ($y$-axis, $2$ to $6$) of the two-triangle agent (viridis
+    colourmap), viewing angle elevation $22^{\circ}$ azimuth $-60^{\circ}$.
+    The surface tracks the \emph{join} weight and is flat in the triangle
+    weight: identity lives at the cheap cut, the geometric statement of
+    \Cref{thm:identity}(iii)---the invariant is realised by a multi-block
+    partition, a region of the agent and never a single point.}
+    \label{fig:purpose-1}
+\end{figure*}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_2.png}
+    \caption{\textbf{Behaviour as Descent, Purpose as the Unique Attractor:
+    A Character Keeps Its Goal Under Disturbance.}
+    (\textbf{A})~Distance to purpose $\lVert x-x^\star\rVert$ on a
+    logarithmic $y$-axis versus time $t$ on the linear $x$-axis ($0$ to
+    $4$), eight trajectories from random starts (steel-blue) beneath the
+    theoretical envelope $e^{-\lambda t}$ (crimson, dashed). Every
+    trajectory stays under the envelope, the empirical content of
+    \Cref{thm:attractor}: the drive's minimiser attracts at rate exactly
+    the strong-convexity constant $\lambda$.
+    (\textbf{B})~Empirical return rate on the linear $y$-axis versus the
+    strong-convexity constant $\lambda$ on the linear $x$-axis, fifty random
+    drives (sea-green), with the identity diagonal marked (crimson, dashed).
+    The measured contraction rate matches $\lambda$ across the sweep,
+    confirming the rate of \Cref{thm:attractor} is realised and not merely
+    bounded.
+    (\textbf{C})~Phase portrait of the two-dimensional behaviour flow
+    $\dot x=-\nabla\Phi$ over the disposition box $[0,1]^2$ (streamlines
+    steel-blue), with the single fixed point---the purpose---marked
+    (crimson). All streamlines converge on the one point, the picture of
+    \Cref{thm:purpexist}: existence and uniqueness of purpose.
+    (\textbf{D})~Three-dimensional strongly convex drive surface $\Phi$ over
+    the disposition box $[0,1]^2$ (viridis colourmap) with its unique
+    minimiser marked (crimson), viewing angle elevation $30^{\circ}$ azimuth
+    $-55^{\circ}$. The single basin is the geometric form of the
+    single-purpose assumption: one well, one bottom, one goal the agent is
+    drawn back toward.}
+    \label{fig:purpose-2}
+\end{figure*}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_3.png}
+    \caption{\textbf{Society Is an Agent One Level Up: A Group Has an
+    Identity and a Single Shared Purpose.}
+    (\textbf{A})~Society realised floor on the linear $y$-axis versus number
+    of agents $m$ on the linear $x$-axis ($3$ to $8$), $120$ random
+    societies (steel-blue), with the floor line marked (crimson). The
+    quotient of the members' self-graphs keeps a strictly positive floor at
+    every size, the empirical content of \Cref{cor:society-identity}: a
+    society carries its own positive character invariant.
+    (\textbf{B})~Cost on the linear $y$-axis versus join weight on the
+    linear $x$-axis ($\floorc$ to $8$), for the two-cluster society: the
+    character invariant realised by the two-group split (sea-green) and the
+    cheapest singleton cut (amber, dashed). The two-group split is dearer
+    only past the crossing, so the group's identity is the block cut, the
+    quantitative form of \Cref{thm:onedrive}---one coherent group, split
+    exactly at the severing edge.
+    (\textbf{C})~Collective failure $\prod_i q_i$ on the linear $y$-axis
+    versus crowd size $n$ on the linear $x$-axis ($1$ to $14$), for four
+    per-agent failure levels $q_i\in\{0.3,0.5,0.7,0.9\}$ (steel-blue,
+    sea-green, amber, violet). Each curve decays geometrically in $n$, the
+    empirical content of \Cref{thm:crowd}: a crowd attains a shared purpose
+    more sharply than any sub-crowd.
+    (\textbf{D})~Three-dimensional collective-failure surface $\prod_i q_i$
+    over crowd size $n$ ($x$-axis, $1$ to $14$) and per-agent failure $q_i$
+    ($y$-axis, $0.1$ to $0.95$) (viridis colourmap), viewing angle elevation
+    $26^{\circ}$ azimuth $-58^{\circ}$. The surface collapses toward zero as
+    either axis grows, the geometric picture of crowd sharpening.}
+    \label{fig:purpose-3}
+\end{figure*}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_4.png}
+    \caption{\textbf{Coordination Without Shared Internals, and Copies That
+    Stay Distinct: Authored, Yet Its Own.}
+    (\textbf{A})~Outcomes of disjoint agents in the common outcome space,
+    coordinate $y_2$ versus $y_1$ (both axes $[-0.7,0.7]$, aspect equal),
+    $120$ agents' outcomes (steel-blue) inside the shared tolerance cell
+    (sea-green disc and boundary) about the shared purpose (crimson star).
+    Every outcome lands within tolerance though the agents share no internal
+    structure, the empirical content of \Cref{thm:coord}: coordination needs
+    no shared mind, only overlapping outcomes.
+    (\textbf{B})~Reachable fraction $1-(1-\tau)^n$ on the linear $y$-axis
+    versus crowd size $n$ on the linear $x$-axis ($1$ to $11$), for three
+    tolerances $\tau\in\{0.3,0.5,0.7\}$ (steel-blue, sea-green, amber). The
+    fraction rises toward one as the crowd grows, the coordination
+    counterpart of crowd sharpening.
+    (\textbf{C})~Three-dimensional committed-count trajectories in
+    (disposition, committed count, state index), each axis linear, for a
+    fresh copy and two originals at starting counts $0$, $12$, $25$
+    (steel-blue, sea-green, amber), viewing angle elevation $22^{\circ}$
+    azimuth $-62^{\circ}$. The trajectories share a disposition coordinate
+    but never meet in state: the empirical content of \Cref{thm:copy}, an
+    authored copy is a distinct individual.
+    (\textbf{D})~Committed record: position on the linear $y$-axis versus the
+    strictly increasing record $M$ on the linear $x$-axis ($1$ to $45$),
+    points coloured by record (plasma), with the revisits of the initial
+    position ringed (crimson). A position is revisited but the record never
+    returns, the picture of \Cref{prop:nonreturn}: a revisited part is never
+    a revisited state.}
+    \label{fig:purpose-4}
+\end{figure*}

@@ -1,3 +1,118 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{10}
+
+\bibitem{aumann1976}
+Robert~J. Aumann.
+\newblock Agreeing to disagree.
+\newblock {\em The Annals of Statistics}, 4(6):1236--1239, 1976.
+
+\bibitem{banach1922}
+Stefan Banach.
+\newblock Sur les op\'erations dans les ensembles abstraits et leur application
+  aux \'equations int\'egrales.
+\newblock {\em Fundamenta Mathematicae}, 3:133--181, 1922.
+
+\bibitem{borelcantelli}
+Patrick Billingsley.
+\newblock {\em Probability and Measure}.
+\newblock Wiley, 3 edition, 1995.
+
+\bibitem{bondymurty2008}
+J.~A. Bondy and U.~S.~R. Murty.
+\newblock {\em Graph Theory}, volume 244 of {\em Graduate Texts in
+  Mathematics}.
+\newblock Springer, 2008.
+
+\bibitem{boydvandenberghe2004}
+Stephen Boyd and Lieven Vandenberghe.
+\newblock {\em Convex Optimization}.
+\newblock Cambridge University Press, 2004.
+
+\bibitem{coverthomas2006}
+Thomas~M. Cover and Joy~A. Thomas.
+\newblock {\em Elements of Information Theory}.
+\newblock Wiley-Interscience, 2 edition, 2006.
+
+\bibitem{daveypriestley2002}
+B.~A. Davey and H.~A. Priestley.
+\newblock {\em Introduction to Lattices and Order}.
+\newblock Cambridge University Press, 2 edition, 2002.
+
+\bibitem{diestel2017}
+Reinhard Diestel.
+\newblock {\em Graph Theory}, volume 173 of {\em Graduate Texts in
+  Mathematics}.
+\newblock Springer, 5 edition, 2017.
+
+\bibitem{fiedler1973}
+Miroslav Fiedler.
+\newblock Algebraic connectivity of graphs.
+\newblock {\em Czechoslovak Mathematical Journal}, 23(2):298--305, 1973.
+
+\bibitem{godsilroyle2001}
+Chris Godsil and Gordon Royle.
+\newblock {\em Algebraic Graph Theory}, volume 207 of {\em Graduate Texts in
+  Mathematics}.
+\newblock Springer, 2001.
+
+\bibitem{hirschsmaledevaney2013}
+Morris~W. Hirsch, Stephen Smale, and Robert~L. Devaney.
+\newblock {\em Differential Equations, Dynamical Systems, and an Introduction
+  to Chaos}.
+\newblock Academic Press, 3 edition, 2013.
+
+\bibitem{khalil2002}
+Hassan~K. Khalil.
+\newblock {\em Nonlinear Systems}.
+\newblock Prentice Hall, 3 edition, 2002.
+
+\bibitem{levinperes2017}
+David~A. Levin and Yuval Peres.
+\newblock {\em Markov Chains and Mixing Times}.
+\newblock American Mathematical Society, 2 edition, 2017.
+
+\bibitem{lewis1969}
+David Lewis.
+\newblock {\em Convention: A Philosophical Study}.
+\newblock Harvard University Press, 1969.
+
+\bibitem{lovasz1993}
+L\'aszl\'o Lov\'asz.
+\newblock {\em Combinatorial Problems and Exercises}.
+\newblock North-Holland, 2 edition, 1993.
+
+\bibitem{rockafellar1970}
+R.~Tyrrell Rockafellar.
+\newblock {\em Convex Analysis}.
+\newblock Princeton University Press, 1970.
+
+\bibitem{russellnorvig2020}
+Stuart Russell and Peter Norvig.
+\newblock {\em Artificial Intelligence: A Modern Approach}.
+\newblock Pearson, 4 edition, 2020.
+
+\bibitem{schelling1960}
+Thomas~C. Schelling.
+\newblock {\em The Strategy of Conflict}.
+\newblock Harvard University Press, 1960.
+
+\bibitem{shannon1948}
+Claude~E. Shannon.
+\newblock A mathematical theory of communication.
+\newblock {\em Bell System Technical Journal}, 27:379--423, 623--656, 1948.
+
+\bibitem{simon1996}
+Herbert~A. Simon.
+\newblock {\em The Sciences of the Artificial}.
+\newblock MIT Press, 3 edition, 1996.
+
+\bibitem{tarski1955}
+Alfred Tarski.
+\newblock A lattice-theoretical fixpoint theorem and its applications.
+\newblock {\em Pacific Journal of Mathematics}, 5(2):285--309, 1955.
+
+\bibitem{west2001}
+Douglas~B. West.
+\newblock {\em Introduction to Graph Theory}.
+\newblock Prentice Hall, 2 edition, 2001.
 
 \end{thebibliography}

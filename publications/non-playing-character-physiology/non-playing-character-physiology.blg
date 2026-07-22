@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99e
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: non-playing-character-physiology.aux
+Reallocating 'name_of_file' (item size: 1) to 6 items.
+The style file: plain.bst
+Reallocating 'name_of_file' (item size: 1) to 11 items.
+Database file #1: references.bib
+You've used 18 entries,
+            2118 wiz_defined-function locations,
+            586 strings with 5784 characters,
+and the built_in function-call counts, 4752 in all, are:
+= -- 439
+> -- 206
+< -- 3
++ -- 85
+- -- 64
+* -- 278
+:= -- 822
+add.period$ -- 54
+call.type$ -- 18
+change.case$ -- 79
+chr.to.int$ -- 0
+cite$ -- 18
+duplicate$ -- 217
+empty$ -- 417
+format.name$ -- 64
+if$ -- 993
+int.to.chr$ -- 0
+int.to.str$ -- 18
+missing$ -- 34
+newline$ -- 93
+num.names$ -- 36
+pop$ -- 134
+preamble$ -- 1
+purify$ -- 68
+quote$ -- 0
+skip$ -- 116
+stack$ -- 0
+substring$ -- 171
+swap$ -- 24
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 40
+warning$ -- 0
+while$ -- 41
+width$ -- 20
+write$ -- 196

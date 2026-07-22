@@ -1,0 +1,110 @@
+\begin{thebibliography}{10}
+
+\bibitem{bondymurty2008}
+J.~A. Bondy and U.~S.~R. Murty.
+\newblock {\em Graph Theory}, volume 244 of {\em Graduate Texts in
+  Mathematics}.
+\newblock Springer, 2008.
+
+\bibitem{boydvandenberghe2004}
+Stephen Boyd and Lieven Vandenberghe.
+\newblock {\em Convex Optimization}.
+\newblock Cambridge University Press, 2004.
+
+\bibitem{coady1992}
+C.~A.~J. Coady.
+\newblock {\em Testimony: A Philosophical Study}.
+\newblock Oxford University Press, 1992.
+
+\bibitem{cormen2009}
+Thomas~H. Cormen, Charles~E. Leiserson, Ronald~L. Rivest, and Clifford Stein.
+\newblock {\em Introduction to Algorithms}.
+\newblock MIT Press, 3 edition, 2009.
+
+\bibitem{coverthomas2006}
+Thomas~M. Cover and Joy~A. Thomas.
+\newblock {\em Elements of Information Theory}.
+\newblock Wiley-Interscience, 2 edition, 2006.
+
+\bibitem{davidson1973}
+Donald Davidson.
+\newblock Radical interpretation.
+\newblock {\em Dialectica}, 27(3--4):313--328, 1973.
+
+\bibitem{diestel2017}
+Reinhard Diestel.
+\newblock {\em Graph Theory}, volume 173 of {\em Graduate Texts in
+  Mathematics}.
+\newblock Springer, 5 edition, 2017.
+
+\bibitem{edmondskarp1972}
+Jack Edmonds and Richard~M. Karp.
+\newblock Theoretical improvements in algorithmic efficiency for network flow
+  problems.
+\newblock {\em Journal of the ACM}, 19(2):248--264, 1972.
+
+\bibitem{fordfulkerson1956}
+L.~R. Ford and D.~R. Fulkerson.
+\newblock Maximal flow through a network.
+\newblock {\em Canadian Journal of Mathematics}, 8:399--404, 1956.
+
+\bibitem{grice1975}
+H.~Paul Grice.
+\newblock Logic and conversation.
+\newblock In Peter Cole and Jerry~L. Morgan, editors, {\em Syntax and
+  Semantics, Vol. 3: Speech Acts}, pages 41--58. Academic Press, 1975.
+
+\bibitem{khalil2002}
+Hassan~K. Khalil.
+\newblock {\em Nonlinear Systems}.
+\newblock Prentice Hall, 3 edition, 2002.
+
+\bibitem{mahon2016}
+James~Edwin Mahon.
+\newblock {\em The Definition of Lying and Deception}.
+\newblock Stanford Encyclopedia of Philosophy, 2016.
+\newblock E. N. Zalta (ed.).
+
+\bibitem{menger1927}
+Karl Menger.
+\newblock Zur allgemeinen kurventheorie.
+\newblock {\em Fundamenta Mathematicae}, 10:96--115, 1927.
+
+\bibitem{putnam1975}
+Hilary Putnam.
+\newblock The meaning of `meaning'.
+\newblock In Keith Gunderson, editor, {\em Language, Mind, and Knowledge},
+  volume~7 of {\em Minnesota Studies in the Philosophy of Science}, pages
+  131--193. University of Minnesota Press, 1975.
+
+\bibitem{quine1960}
+Willard Van~Orman Quine.
+\newblock {\em Word and Object}.
+\newblock MIT Press, 1960.
+
+\bibitem{russellnorvig2020}
+Stuart Russell and Peter Norvig.
+\newblock {\em Artificial Intelligence: A Modern Approach}.
+\newblock Pearson, 4 edition, 2020.
+
+\bibitem{shannon1948}
+Claude~E. Shannon.
+\newblock A mathematical theory of communication.
+\newblock {\em Bell System Technical Journal}, 27:379--423, 623--656, 1948.
+
+\bibitem{simon1955}
+Herbert~A. Simon.
+\newblock A behavioral model of rational choice.
+\newblock {\em The Quarterly Journal of Economics}, 69(1):99--118, 1955.
+
+\bibitem{simon1996}
+Herbert~A. Simon.
+\newblock {\em The Sciences of the Artificial}.
+\newblock MIT Press, 3 edition, 1996.
+
+\bibitem{sperberwilson1986}
+Dan Sperber and Deirdre Wilson.
+\newblock {\em Relevance: Communication and Cognition}.
+\newblock Blackwell, 1986.
+
+\end{thebibliography}

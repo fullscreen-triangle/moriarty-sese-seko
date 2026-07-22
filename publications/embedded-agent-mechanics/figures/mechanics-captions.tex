@@ -1,0 +1,128 @@
+% =====================================================================
+%  Figure captions for "Propagation Mechanics of an Embedded Agent".
+%  Four panels, each four data-driven charts (A--D), from the theorem
+%  computations of validate_propagation.py / make_panels.py (seed
+%  20260719, floor beta = 1, exact Edmonds--Karp max-flow / min-cut).
+%  Palette: steel-blue #2563eb, sea-green #16a34a, amber #ea9a09,
+%  violet #7c3aed, crimson #dc2626.
+%  \input this file where the figures should appear, or copy each block in.
+% =====================================================================
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_1.png}
+    \caption{\textbf{The Floor and Recall-Is-Search: No Item Is Individuated
+    for Free, and No Report Is Fetched.}
+    (\textbf{A})~Separation cost $\sigma(v)$ on the linear $y$-axis versus
+    world size in items on the linear $x$-axis ($3$ to $9$), every item of
+    $80$ random worlds (steel-blue), with the floor line marked (crimson).
+    Every separation cost, computed as an exact minimum cut, sits on or
+    above the floor: the empirical content of \Cref{thm:floorforced}, that
+    identifying an item carries an irreducible residual $\sigma(v)\ge\flo>0$.
+    (\textbf{B})~Histogram of the normalised separation cost $\sigma(v)/\flo$
+    on the linear $x$-axis with the unit line marked (crimson), counts on the
+    linear $y$-axis (sea-green). The support begins at $1$ and the smallest
+    observed value is $1.092$---the floor is close to tight, so the residual
+    the whole paper turns on is real and small.
+    (\textbf{C})~Report produced (none / yes) on the $y$-axis versus
+    committed acts in the search on the linear $x$-axis ($0$ to $12$)
+    (steel-blue step, positive region shaded sea-green), with the zero-act
+    case ringed (crimson). A report appears only after at least one committed
+    act, the empirical content of \Cref{thm:recsearch}: recalling is
+    searching and a zero-act fetch returns nothing.
+    (\textbf{D})~Three-dimensional realised-floor surface over world size in
+    items ($x$-axis, $3$ to $9$) and graph density ($y$-axis, $0.2$ to
+    $0.9$) (viridis colourmap), viewing angle elevation $24^{\circ}$ azimuth
+    $-58^{\circ}$. The realised floor stays strictly positive across the
+    grid: no configuration individuates any item for free.}
+    \label{fig:mechanics-1}
+\end{figure*}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_2.png}
+    \caption{\textbf{Path Opacity and the Monotone Record: An Agent Cannot
+    Reconstruct the Route to Its Own Account.}
+    (\textbf{A})~Distinct interiors between the same endpoints on the linear
+    $y$-axis versus world density on the linear $x$-axis ($0.3$ to $0.95$)
+    (steel-blue), with the single-interior line marked (crimson, dashed).
+    The count of distinct routes to one terminus rises above one as density
+    grows, the empirical content of \Cref{thm:opacity}(i): same-endpoint
+    searches generically differ in interior.
+    (\textbf{B})~Number of searches on the linear $y$-axis versus interior
+    length for a fixed seed and terminus on the linear $x$-axis (sea-green).
+    Many interior lengths reach the same endpoints, the empirical content of
+    \Cref{thm:opacity}(ii): the report does not determine the interior.
+    (\textbf{C})~Three-dimensional bundle of up to four same-endpoint search
+    walks, items placed on a ring in $(x,y)$ with search step on the
+    $z$-axis (steel-blue, sea-green, amber, violet) from the common seed
+    (crimson), viewing angle elevation $22^{\circ}$ azimuth $-60^{\circ}$.
+    The walks share endpoints but trace different interiors, the geometric
+    picture of path opacity.
+    (\textbf{D})~Position on the linear $y$-axis versus the strictly
+    increasing committed record $M$ on the linear $x$-axis ($1$ to $45$),
+    points coloured by record (plasma), with the revisits of the initial
+    position ringed (crimson). A position recurs but the record never
+    returns, the empirical content of \Cref{cor:noreconstruct}: the
+    committed record is monotone and the interior is a past state the agent
+    does not re-occupy.}
+    \label{fig:mechanics-2}
+\end{figure*}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_3.png}
+    \caption{\textbf{Receiver-Relative Divergence and Falsity as a Relation:
+    The Same Event, Two Correct Accounts.}
+    (\textbf{A})~Dense-agent separation cost $\sigma(v)$ on the linear
+    $y$-axis versus sparse-agent $\sigma(v)$ on the linear $x$-axis for the
+    same event, $150$ agent pairs (steel-blue), with the identity diagonal
+    marked (crimson, dashed). The points sit off the diagonal: the same event
+    registers a different---yet, as an exact min-cut, correct---resting cut
+    in each agent, the empirical content of \Cref{thm:receiverrel}.
+    (\textbf{B})~Histogram of the registration difference across agents on
+    the linear $x$-axis with zero marked (crimson), counts on the linear
+    $y$-axis (amber). The mass sits away from zero: divergence is broad and
+    is not error in either agent (\Cref{cor:divergence}).
+    (\textbf{C})~Agreement matrix of resting-cut sides, account agent
+    ($y$-axis) against elected standard agent ($x$-axis), eight agents, cells
+    equal (green) or unequal (pale). Whether two accounts ``agree'' depends
+    on which is taken as standard, the empirical content of
+    \Cref{thm:falsityrelation}: falsity is a relation on a pair, not a state
+    of the producer.
+    (\textbf{D})~Three-dimensional surface of an event's separation cost over
+    two agents' densities (both density axes $0.2$ to $0.9$) (viridis
+    colourmap), viewing angle elevation $24^{\circ}$ azimuth $-58^{\circ}$.
+    The cost varies smoothly with the receiving graph: there is no privileged
+    shared value of which the registrations are approximations.}
+    \label{fig:mechanics-3}
+\end{figure*}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_4.png}
+    \caption{\textbf{Catalytic Drift and Forced Inquiry: Rumour Without an
+    Author, a Question Without Intent.}
+    (\textbf{A})~Surviving fraction $\prod_i g_i$ on the linear $y$-axis
+    versus number of relays $n$ on the linear $x$-axis ($1$ to $14$), for
+    three per-relay gains $g_i\in\{0.6,0.75,0.9\}$ (steel-blue, sea-green,
+    amber). Each curve decays geometrically, the empirical content of
+    \Cref{thm:drift}: a relayed account drifts multiplicatively along a
+    chain.
+    (\textbf{B})~Histogram of account drift $1-\prod_i g_i$ on the linear
+    $x$-axis over $400$ random relay chains, counts on the linear $y$-axis
+    (violet). Drift accumulates across the population, the empirical content
+    of \Cref{cor:rumour}: rumour is composed drift, authored by no relay.
+    (\textbf{C})~Residual gap $D$ on the linear $y$-axis versus exchange turn
+    on the linear $x$-axis ($0$ to $30$) (steel-blue, positive region shaded
+    amber), each forced act marked (crimson) and the closing line $D=0$
+    marked (sea-green, dashed). A further act is committed exactly while
+    $D>0$ and the exchange closes only at $D=0$, the empirical content of
+    \Cref{thm:forcedact}: inquiry is forced by the gap.
+    (\textbf{D})~Three-dimensional drift surface $1-\prod_i g_i$ over number
+    of relays $n$ ($x$-axis, $1$ to $14$) and per-relay gain $g$ ($y$-axis,
+    $0.4$ to $0.98$) (viridis colourmap), viewing angle elevation
+    $26^{\circ}$ azimuth $-60^{\circ}$. Drift grows with chain length and
+    with per-relay reshaping, the geometric picture of catalytic drift.}
+    \label{fig:mechanics-4}
+\end{figure*}

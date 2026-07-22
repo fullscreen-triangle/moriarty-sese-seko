@@ -148,6 +148,8 @@ outward. A merely reactive agent has no identity of its own; it is a
 mirror of whoever addresses it. What distinguishes a character from a
 reaction is that the character has something conserved inside it that its
 behaviour derives from, and something it is trying to do that is its own.
+The question is a foundational one for synthetic agents and non-player
+characters~\cite{russellnorvig2020,simon1996}.
 
 This paper asks what those two things \emph{are}, formally. We want a
 definition of a character's \emph{identity} and of its \emph{purpose}
@@ -212,7 +214,9 @@ study. \Cref{sec:discussion} discusses scope.
 We build the agent from the inside. An agent is not a point; it is a
 system of internal distinctions---this mood as against that, this
 commitment as against its abandonment, this memory as against its
-absence. We record those distinctions as a graph.
+absence. We record those distinctions as a graph, using standard notions
+of finite weighted graphs and their cuts throughout~\cite{bondymurty2008,%
+diestel2017,west2001}.
 
 \begin{definition}[Self-graph]
 \label{def:selfgraph}
@@ -306,6 +310,17 @@ proper $U$ there is at least one edge from $U$ to $\V\setminus U$;
 otherwise $U$ and its complement would be disconnected. Hence
 $\cut(U)\neq\varnothing$, and $b(U)=\sum_{e\in\cut(U)}\wt(e)\ge\wt(e^\ast)
 \ge\floorc>0$ for any $e^\ast\in\cut(U)$ by \Cref{ax:costly}.
+
+The floor $\floorc>0$ is, moreover, constitutive of what a separation
+\emph{is}, not merely posited by \Cref{ax:costly}. A separation of zero
+cost is a boundary of zero thickness, and a zero-thickness boundary is not
+a boundary---it fails to separate: the two sides it would divide are, at
+zero cost of telling them apart, not told apart at all, hence not two.
+Every boundary that actually separates therefore has positive thickness,
+so every present edge carries positive weight and every nonempty proper
+part is bounded away from the rest by a strictly positive cost. The floor
+is the trace of distinction itself: to hold a part apart at all is to hold
+it apart at a cost.
 \end{proof}
 
 \begin{corollary}[The realised floor is attained]
@@ -340,8 +355,9 @@ A \emph{weighted isomorphism} $\phi:\Self\to\Self'$ is a bijection
 $\phi:\V\to\V'$ with $uv\in\E\iff\phi(u)\phi(v)\in\E'$ and
 $\wt'(\phi(u)\phi(v))=\wt(uv)$. An \emph{automorphism} is a weighted
 isomorphism $\Self\to\Self$; the automorphisms form a group
-$\mathrm{Aut}(\Self)$. A quantity $\iota$ is an \emph{invariant} if
-$\iota(\Self)=\iota(\Self')$ whenever $\Self\cong\Self'$.
+$\mathrm{Aut}(\Self)$~\cite{godsilroyle2001}. A quantity $\iota$ is an
+\emph{invariant} if $\iota(\Self)=\iota(\Self')$ whenever
+$\Self\cong\Self'$.
 \end{definition}
 
 \begin{remark}[What relabelling models]
@@ -377,7 +393,9 @@ attained by finiteness of $\V$.
 The character invariant is the least total cost of splitting the agent
 into pieces at all---the cheapest way to break the agent apart, measured
 in the currency of its own separations. It is a property of the whole
-internal structure, not of any one part.
+internal structure, not of any one part, and is a graph-partition quantity
+in the sense of the minimum-cut and algebraic-connectivity
+literature~\cite{fiedler1973,lovasz1993}.
 
 \begin{theorem}[Identity is a conserved region]
 \label{thm:identity}
@@ -388,9 +406,13 @@ Under \Cref{ax:finite,ax:present,ax:costly}:
 $\phi:\Self\to\Self'$ is a weighted isomorphism then
 $\Char(\Agent)=\Char(\Agent')$. In particular $\Char$ is fixed by every
 relabelling of the agent's parts.
-\item \textbf{Non-local.} $\Char$ is in general realised by a partition
-into multi-part blocks, not by isolating a single part; it is a region of
-the agent, never a point.
+\item \textbf{Non-local when a multi-block cut is cheapest.} Whenever the
+minimising partition of $\Char$ is not a singleton split---which occurs
+precisely when the graph admits a multi-block cut cheaper than every
+singleton cut---the invariant is realised by multi-part blocks, not by
+isolating a single part; it is then a region of the agent, never a point.
+Such graphs exist (the construction below), so non-locality is not an
+artefact of any one agent but a stable feature of a characterisable class.
 \end{enumerate}
 \end{theorem}
 
@@ -408,13 +430,20 @@ $\mathcal{Q}\mapsto\phi(\mathcal{Q})$ is a bijection between the
 nontrivial partitions of $\V$ and of $\V'$ (inverse $\phi^{-1}$), the
 minima agree: $\Char(\Agent')=\Char(\Agent)$.
 
-(iii) It suffices to exhibit an agent whose minimising partition is not a
-singleton split. Take two triangles (each of edge cost $2$, so internally
-expensive to cut) joined by a single edge of cost $\floorc=2$. Cutting
-the joining edge separates the two triangles at total cost $2$; isolating
-any single vertex costs at least $2+2=4$ (two triangle edges). So the
-minimum residual is realised by the two-block partition, not by any
-singleton. Hence in general the invariant is non-local.
+(iii) The stated condition is definitional: the minimiser of $\rho$ is a
+non-singleton split exactly when some multi-block partition has residual
+strictly below $\min_v b(\{v\})$, the cheapest singleton boundary. It
+remains to show the condition is not vacuous---that graphs meeting it
+exist. Take two triangles (each of edge cost $2$, so internally expensive
+to cut) joined by a single edge of cost $\floorc=2$. Cutting the joining
+edge separates the two triangles at total cost $2$; isolating any single
+vertex costs at least $2+2=4$ (two triangle edges). So the minimum residual
+is realised by the two-block partition, of cost $2<4$, not by any
+singleton, and the condition of (iii) holds. Non-locality is therefore a
+property of a nonempty, explicitly constructible class of agents---those
+whose cheapest cut is a block cut---rather than a necessary consequence of
+the three axioms for \emph{every} agent (a bare path, for instance, is
+minimised by a singleton split).
 \end{proof}
 
 \begin{remark}[Interpretation: character, on which nothing depends]
@@ -428,22 +457,103 @@ invariant is the bottom from which that conduct derives---what stays the
 same about the character across all the different things it does. Two
 agents may share a character invariant without being the same agent (two
 isomorphic self-graphs in different worlds); the invariant is the
-character \emph{type}, and a particular agent is a token of it. We use
-only the graph statement.
+character \emph{type}, and a particular agent is a token of it. Read as
+boundary content held against the rest of the agent, the invariant is
+information-like in the sense of~\cite{shannon1948,coverthomas2006}, though
+we use only the graph statement.
 \end{remark}
 
-\begin{corollary}[Character is not a state]
+\begin{corollary}[Character is not a state, when the cut is a block cut]
 \label{cor:not-a-state}
-No single part of the agent carries its character: for the two-triangle
-agent of the proof, no vertex $v$ has $b(\{v\})=\Char(\Agent)$. An agent's
-identity therefore cannot be read off any one of its momentary states; it
-is the standing relation among all of them.
+For any agent whose cheapest cut is a multi-block cut---the class of
+\Cref{thm:identity}(iii)---no single part carries its character: no vertex
+$v$ has $b(\{v\})=\Char(\Agent)$. For the two-triangle agent of the proof,
+every singleton boundary costs $4$ while $\Char=2$. An agent's identity in
+this class therefore cannot be read off any one of its momentary states; it
+is the standing relation among all of them. (For agents whose cheapest cut
+\emph{is} a singleton---bare paths and the like---identity is carried by
+that singleton, and the region collapses to the pair of blocks it induces.)
 \end{corollary}
 
 \begin{proof}
-Immediate from \Cref{thm:identity}(iii): the minimiser is a two-block
-partition and every singleton has strictly larger boundary cost.
+When the minimiser of \Cref{thm:identity}(iii) is a non-singleton block
+cut, its residual is strictly below every singleton boundary cost by the
+condition of (iii), so no singleton attains $\Char(\Agent)$; the
+two-triangle witness realises this with singleton cost $4>\Char=2$.
 \end{proof}
+
+\subsection{Identity and character: two faces of one cut}
+\label{sec:idchar}
+
+The invariant $\Char$ so far plays two roles at once: it names \emph{where}
+the agent divides most cheaply (a partition of its own parts, defined from
+inside) and \emph{what} an outside party finds conserved (a boundary
+structure, read from outside). These are two orientations of a single
+object, and it clarifies the theory to separate them.
+
+\begin{definition}[Identity; character]
+\label{def:idchar}
+Let $\mathcal{Q}^\star$ attain the minimum in \Cref{def:char}. The
+\emph{identity} of $\Agent$ is the minimising partition itself,
+\[
+\Self(\Agent)\ =\ \arg\min_{\mathcal{Q}:\,k\ge2}\rho(\mathcal{Q}),
+\]
+the interior datum saying \emph{where} the agent's cheapest cut lives---the
+cut as the agent is constituted from inside. The \emph{character} of
+$\Agent$ is the boundary structure carried at that partition, the family of
+crossing edges and their weights,
+\[
+\Char(\Agent)\ =\ \bigl(\textstyle\bigcup_{i<j}\cut(U^\star_i,U^\star_j),\,
+\wt\bigr),\quad\text{of total cost }\rho(\mathcal{Q}^\star),
+\]
+the cut as it presents to the outside---what another agent finds invariant
+about $\Agent$ across all re-description. We write $\Char(\Agent)$ also for
+its total cost $\rho(\mathcal{Q}^\star)$ where only the scalar is needed,
+as in the results above.
+\end{definition}
+
+\begin{theorem}[Identity and character are two orientations of the same cut]
+\label{thm:idchar}
+The identity $\Self(\Agent)$ and the character $\Char(\Agent)$ are
+determined by one another and by the same minimising cut: $\Self(\Agent)$
+is the partition whose inter-block boundary is $\Char(\Agent)$, and
+$\Char(\Agent)$ is the boundary of $\Self(\Agent)$. Both are conserved
+under every relabelling, and each is recoverable from the other. They are
+the inside and outside descriptions of a single structure---the cheapest
+internal separation---and neither is prior.
+\end{theorem}
+
+\begin{proof}
+By \Cref{def:idchar} the character is exactly the cut $\bigcup_{i<j}
+\cut(U^\star_i,U^\star_j)$ induced by the identity partition
+$\mathcal{Q}^\star=\{U^\star_i\}$, so $\Char$ is the boundary of $\Self$.
+Conversely, deleting the character edges from $\Self$ disconnects the graph
+into the blocks $U^\star_i$, so the partition $\mathcal{Q}^\star=\Self$ is
+recovered from $\Char$; the two are mutually determined. Conservation of
+both under isomorphism is \Cref{thm:identity}(ii) applied to the residual
+$\rho$, which a weighted isomorphism preserves together with the crossing
+edge set it sums; hence a relabelling carries $\Self$ to the image
+partition and $\Char$ to the image boundary, preserving each. Neither is
+prior: the same cut, oriented inward, is the identity; oriented outward, is
+the character.
+\end{proof}
+
+\begin{remark}[Why the two must be distinguished]
+\label{rem:idchar}
+The distinction resolves a structural tension. Character is what other
+agents find invariant about $\Agent$ (\Cref{sec:unreachable}), while
+identity is what \emph{generates} that invariance from within. If a single
+symbol did both, the claim ``identity is unreachable from outside''
+(\Cref{thm:unreachable}) would be in tension with ``character is what the
+outside conserves''---one cannot both be reached and be unreachable. The
+resolution is that they are the same cut seen from opposite sides of the
+boundary: the outside reaches the \emph{character} (the boundary structure,
+conserved and approachable) but never the \emph{identity} (the interior
+partition, which an outside interrogation cannot resolve to a point,
+\Cref{thm:unreachable}). Where earlier sections write $\Char$ for the
+scalar invariant, they refer to the shared cost $\rho(\mathcal{Q}^\star)$
+carried by both faces.
+\end{remark}
 
 % =====================================================================
 \section{Behaviour: a gated walk, and the need for a drive}
@@ -451,10 +561,12 @@ partition and every singleton has strictly larger boundary cost.
 % =====================================================================
 
 Identity is standing; behaviour moves. We model the agent's conduct as a
-walk on its self-graph---a sequence of parts it passes through---and show
-that the graph alone does not determine the walk. Something more is
-needed to say what the agent does next, and naming that something is the
-route to purpose.
+walk on its self-graph---a sequence of parts it passes through, in the
+sense of walks on weighted graphs and Markov chains~\cite{levinperes2017}%
+---and show that the graph alone does not determine the walk. Something
+more is needed to say what the agent does next, and naming that something
+is the route to purpose. Histories are ordered and non-returning, an
+order-theoretic structure~\cite{daveypriestley2002}.
 
 \begin{definition}[Behaviour as a walk; state]
 \label{def:walk}
@@ -496,24 +608,48 @@ $\drive(v_i,v_iv_{i+1})>0$. The drive \emph{selects} at $v$ when it gives
 positive weight to exactly one incident separation.
 \end{definition}
 
-\begin{theorem}[Selection requires a drive]
+\begin{theorem}[The gating field is the only structure that resolves
+underdetermination]
 \label{thm:drive}
-Suppose some part of $\Agent$ has degree $\ge2$. Then a behaviour
-determined step by step requires a drive field: no rule depending on
-$\Self$ alone selects a unique next act at every branching part.
-Conversely, any rule that does select a unique next act at each part
-\emph{is} a selecting drive field.
+Suppose some part of $\Agent$ has degree $\ge2$. Then:
+\begin{enumerate}[label=\textup{(\roman*)},leftmargin=2.2em]
+\item \textbf{No graph-only rule selects.} Any selection rule whose output
+is a function of $(\V,\E,\wt)$ alone fails to select a unique next act at
+some branching part.
+\item \textbf{Every selecting rule is a gating field.} Any rule that does
+select a unique next act at each part uses a datum beyond $(\V,\E,\wt)$,
+and every such rule is encodeable as a selecting drive field---the drive
+field is not one option among many but the general form of any structure
+that could resolve the underdetermination.
+\end{enumerate}
+Hence selection requires exactly a drive field: it is necessary
+(by (i) nothing weaker suffices) and sufficient (by (ii) nothing stronger
+is needed).
 \end{theorem}
 
 \begin{proof}
-\emph{Necessity.} At a branching part, \Cref{lem:branch} exhibits $\ge2$
-admissible steps not distinguished by $\Self$. A rule that nonetheless
-outputs one of them uses a datum beyond $(\V,\E,\wt)$; encode that datum
-as $\drive(v,\cdot)$, positive on the chosen edge and zero elsewhere. This
-is a drive field by \Cref{def:drive}. \emph{Converse.} If $\drive$ gives,
-at each part, positive weight to exactly one incident edge, then from any
-start the next admissible part is unique at every step, so $\drive$
-determines a unique behaviour.
+(i) At a branching part $v$, \Cref{lem:branch} exhibits $\ge2$ admissible
+steps that $(\V,\E,\wt)$ does not distinguish: the triple carries no
+ordering of the edges incident to $v$. A rule that is a function of the
+triple alone therefore takes the same value on these indistinguishable
+options and cannot return a unique one---it either returns the whole set or
+returns nothing. So no graph-only rule selects; any rule that does select
+must consult a datum outside $(\V,\E,\wt)$.
+
+(ii) Let $R$ be any rule that selects a unique next edge $e_v$ at each part
+$v$. Whatever data $R$ consults---the agent's mood, its history, an
+external cue---enters only through the single edge $e_v$ it names at each
+$v$. Define $\drive_R(v,\cdot)$ to be $1$ on $e_v$ and $0$ on every other
+incident edge; then $\drive_R$ is a drive field (\Cref{def:drive}) that
+selects, and it reproduces $R$'s choice at every part. Thus every selecting
+rule factors through a selecting drive field: the drive field is the
+canonical form of \emph{any} datum-beyond-the-graph that could resolve the
+choice, so it is not a special construction but the general one. Conversely
+a selecting $\drive$ names a unique admissible successor at each part and so
+determines a unique behaviour from any start. The necessity of (i) and the
+sufficiency of (ii) together make the gating field exactly what selection
+requires, with no residual tautology: selection is defined as producing a
+unique next act, and (ii) shows the only way to do so is a gating field.
 \end{proof}
 
 \begin{remark}[Interpretation: motivation, on which nothing depends]
@@ -552,7 +688,10 @@ We now define purpose and prove it exists, is unique up to a natural
 equivalence, and attracts. To speak of ``where behaviour settles'' we put
 a mild, standard structure on the drive: we take it to be generated by a
 potential, so that behaviour flows downhill and purpose is the bottom.
-This is the one place we use continuous dynamics, and we keep it minimal.
+This is the one place we use continuous dynamics, and we keep it minimal,
+drawing only on standard convex analysis~\cite{rockafellar1970,%
+boydvandenberghe2004} and dynamical-systems theory~\cite{khalil2002,%
+hirschsmaledevaney2013}.
 
 \subsection{Behaviour as descent on a potential}
 
@@ -604,7 +743,10 @@ point, the unique minimiser of $\Phi$ on $\Beh$.
 \begin{proof}
 $\Phi$ is continuous on the compact set $\Beh$, so it attains a minimum;
 strong convexity makes the minimiser unique (a strongly convex function on
-a convex set has at most one minimiser). At an interior minimiser
+a convex set has at most one minimiser~\cite{boydvandenberghe2004}; the
+fixed point may equally be obtained by the lattice- and
+contraction-theoretic routes of~\cite{tarski1955,banach1922}). At an
+interior minimiser
 $\nabla\Phi(x^\star)=0$; at a boundary minimiser the KKT conditions hold.
 Conversely any fixed point of $\dot x=-\nabla\Phi$ in the interior has
 $\nabla\Phi=0$ and, by convexity, is the global minimiser; a boundary
@@ -645,23 +787,69 @@ Let $V(x)=\tfrac12\norm{x-x^\star}^2$. Along $\dot x=-\nabla\Phi(x)$,
 Since $\nabla\Phi(x^\star)=0$ (or, at the boundary, the KKT inequality
 holds in the descent direction), strong convexity gives the monotonicity
 $(x-x^\star)^\top(\nabla\Phi(x)-\nabla\Phi(x^\star))\ge\lambda\norm{x-
-x^\star}^2$, hence $\dot V\le-2\lambda V$. Grönwall's inequality yields
-$V(t)\le e^{-2\lambda t}V(0)$, i.e. the stated bound.
+x^\star}^2$, hence $\dot V\le-2\lambda V$. Grönwall's inequality~\cite{%
+khalil2002} yields $V(t)\le e^{-2\lambda t}V(0)$, i.e. the stated bound;
+this is the standard Lyapunov argument for a strongly convex
+potential~\cite{hirschsmaledevaney2013}.
+\end{proof}
+
+\Cref{thm:attractor} governs the continuous behaviour flow $\dot
+x=-\nabla\Phi$. The agent's conduct, however, is the \emph{gated walk} of
+\Cref{sec:behaviour}: a discrete sequence of committed acts. Before reading
+the return rate as a property of the character, we must show the rate
+survives discretisation.
+
+\begin{lemma}[The gated walk is a bounded-step discretisation]
+\label{lem:discretise}
+Let each committed act of the gated walk move the disposition by a step of
+size $\delta\in(0,\delta_{\max}]$, where the smallest step is bounded below
+by the act floor $\floorc_a>0$ (no act is free) and the largest by
+$\delta_{\max}$. Read as an explicit Euler step of the flow $\dot
+x=-\nabla\Phi$ with step size $\delta$, the gated walk
+$x_{k+1}=x_k-\delta\,\nabla\Phi(x_k)$ (projected onto $\Beh$) converges to
+$x^\star$ whenever $\delta_{\max}\le 1/L$, $L$ the Lipschitz constant of
+$\nabla\Phi$, at the geometric rate
+\[
+\norm{x_k-x^\star}\ \le\ (1-\lambda\delta)^{k}\,\norm{x_0-x^\star},
+\]
+so that after $k$ acts the walk is within a factor $(1-\lambda\delta)^k$ of
+purpose, matching the continuous rate $e^{-\lambda t}$ under $t=k\delta$ up
+to the constant determined by the step size $\delta\in[\floorc_a,
+\delta_{\max}]$.
+\end{lemma}
+
+\begin{proof}
+For a $\lambda$-strongly convex $\Phi$ with $L$-Lipschitz gradient, the
+projected gradient step $x_{k+1}=\Pi_\Beh(x_k-\delta\nabla\Phi(x_k))$ with
+$\delta\le1/L$ is a contraction toward the minimiser with factor
+$(1-\lambda\delta)$: projection onto the convex $\Beh$ is nonexpansive and
+$\norm{x_k-\delta\nabla\Phi(x_k)-x^\star}\le(1-\lambda\delta)
+\norm{x_k-x^\star}$ by strong convexity and Lipschitz-gradient descent
+(a standard estimate). Iterating gives the stated bound. The act floor
+$\floorc_a$ bounds $\delta$ below, so the per-act contraction factor is at
+most $(1-\lambda\floorc_a)<1$; identifying $t=k\delta$ recovers
+$e^{-\lambda t}$ to first order in $\delta$, with the discrepancy absorbed
+into the constant set by $\delta$.
 \end{proof}
 
 \begin{corollary}[Robust character]
 \label{cor:robust}
-A character defined by an identity $\Char(\Agent)$ and a purpose
-$x^\star$ is robust: a disturbance that pushes conduct off purpose decays
-at rate $\lambda$, and the agent resumes pursuing its purpose without
-external correction. The larger $\lambda$, the more single-minded the
-character; small $\lambda$ gives a character easily deflected and slow to
-return.
+A character defined by an identity $\Self(\Agent)$/character
+$\Char(\Agent)$ and a purpose $x^\star$ is robust: a disturbance that
+pushes conduct off purpose decays---along the gated walk the agent actually
+takes---at the geometric rate $(1-\lambda\delta)$ per act, and the agent
+resumes pursuing its purpose without external correction. The larger
+$\lambda$ (or the step $\delta$, up to the stability bound $1/L$), the more
+single-minded the character; small $\lambda$ gives a character easily
+deflected and slow to return.
 \end{corollary}
 
 \begin{proof}
-Immediate from \Cref{thm:attractor}: the return rate is exactly the
-strong-convexity constant $\lambda$ of the drive.
+By \Cref{lem:discretise} the discrete gated walk inherits the attractor of
+\Cref{thm:attractor} with per-act contraction $(1-\lambda\delta)$, the
+discrete counterpart of the continuous rate $\lambda$; the return is
+therefore a property of the walk the agent commits, not only of the flow it
+approximates.
 \end{proof}
 
 \begin{remark}[Interpretation: goal, on which nothing depends]
@@ -765,17 +953,97 @@ sub-societies, so the original was a union of coherent societies, not one.
 Read the society-level drive as the group's \emph{shared purpose}: the
 field that selects which member acts, toward what. \Cref{thm:onedrive}
 then says a coherent group has exactly one such field---one purpose---and
-that two purposes are the signature of a group that has really split. The
-society's own attractor (\Cref{thm:attractor} applied to a drive potential
-on the society's behaviour space) is the group's goal, standing to the
-group as an individual's purpose stands to the individual.
+that two purposes are the signature of a group that has really split.
+\end{remark}
+
+\subsection{Society purpose is an attractor}
+\label{sec:socpurpose}
+
+The shared purpose of \Cref{sec:coordwithout} below is stated as a
+\emph{target} region $\Purp^\ast$ in outcome space with tolerance $\tau$.
+For self-similarity to be genuine propagation of the individual invariant
+rather than a formal coincidence of vocabulary, the society must have a
+purpose that is an \emph{attractor}, exactly as the individual does---not
+merely a region one hopes to land near. We supply the society drive
+potential and prove its minimiser attracts by the same argument as
+\Cref{thm:purpexist,thm:attractor}, and then show it maps to the
+target region $\Purp^\ast$.
+
+\begin{definition}[Society disposition space; society drive]
+\label{def:socdrive}
+Let the \emph{society disposition space} $\Beh_\Soc$ be a compact convex
+subset of $\R^N$ coordinatising the collective's dispositions (for
+instance, the product of the members' disposition spaces, or a coarser
+collective summary). A \emph{society drive potential} is a continuously
+differentiable $\Phi_\Soc:\Beh_\Soc\to\R$ that is $\lambda_\Soc$-strongly
+convex for some $\lambda_\Soc>0$. Let $A_\Soc:\Beh_\Soc\to\Beh^\ast$ be the
+\emph{collective outcome map} carrying a society disposition to the
+outcome it produces.
+\end{definition}
+
+\begin{theorem}[The society purpose exists, is unique, and attracts]
+\label{thm:socattractor}
+For a society drive potential $\Phi_\Soc$ on the compact convex
+$\Beh_\Soc$, the collective behaviour flow $\dot X=-\nabla\Phi_\Soc(X)$ has
+a unique fixed point $X^\star_\Soc=\arg\min_{X\in\Beh_\Soc}\Phi_\Soc$, and
+it is globally exponentially attracting:
+$\norm{X(t)-X^\star_\Soc}\le e^{-\lambda_\Soc t}\norm{X(0)-X^\star_\Soc}$.
+If moreover $A_\Soc(X^\star_\Soc)\in\Purp^\ast$, the society's attractor
+maps into the target region, so $\Purp^\ast$ is the outcome-space image of
+a genuine collective attractor, not merely a tolerance ball.
+\end{theorem}
+
+\begin{proof}
+The existence, uniqueness, and exponential attraction of $X^\star_\Soc$ are
+\Cref{thm:purpexist} and \Cref{thm:attractor} verbatim, applied to
+$\Phi_\Soc$ on $\Beh_\Soc$: a strongly convex potential on a compact convex
+set has a unique minimiser, which is the unique flow fixed point, and the
+Lyapunov argument with $V=\tfrac12\norm{X-X^\star_\Soc}^2$ gives
+$\dot V\le-2\lambda_\Soc V$, hence the bound. Applying the continuous map
+$A_\Soc$ sends $X^\star_\Soc$ to $A_\Soc(X^\star_\Soc)$; the hypothesis
+places this image in $\Purp^\ast$, identifying the target region as the
+image of the attractor.
+\end{proof}
+
+\begin{corollary}[Self-similarity survives the quotient]
+\label{cor:selfsimilar}
+The society graph $\Soc$ satisfies the three axioms (\Cref{lem:society-graph})
+and so carries an identity/character (\Cref{cor:society-identity}); equipped
+with $\Phi_\Soc$ it carries a purpose that is a unique attractor
+(\Cref{thm:socattractor}). Thus the pair \emph{(conserved identity, attracting
+purpose)} that constitutes an individual character reappears, with the same
+structure and the same proofs, one level up on the quotient of the members'
+self-graphs. Self-similarity is the statement that this attractor structure
+survives the quotient---not a coincidence of names but the same theorems
+instantiated on $\Soc$.
+\end{corollary}
+
+\begin{proof}
+Immediate from \Cref{cor:society-identity} (identity survives) and
+\Cref{thm:socattractor} (purpose survives as an attractor): both the
+conserved invariant and the attracting fixed point are obtained on $\Soc$
+by the identical arguments used for an individual agent.
+\end{proof}
+
+\begin{remark}[Water-filling as the attractor under a finite budget]
+\label{rem:waterfill}
+The crowd-sharpening law of \Cref{thm:crowd} is then the expression of this
+collective attractor under a finite collective budget: distributing the
+society's bounded attainment capacity across members to minimise
+$\Phi_\Soc$ is a water-filling allocation, and its optimum is
+$X^\star_\Soc$. The group's goal, like the individual's, is where its
+constrained drive bottoms out; the society is an agent one level up, with
+an identity it conserves and a purpose it is drawn back to.
 \end{remark}
 
 \subsection{Coordination without shared identity}
+\label{sec:coordwithout}
 
 The strongest social claim is that agents need share \emph{nothing}
 internal to pursue a common purpose. We make ``common purpose'' live in
-the space of outcomes, not in any agent's head.
+the space of outcomes, not in any agent's head---a stance close to the
+outcome-based accounts of coordination and convention in the
+literature~\cite{schelling1960,lewis1969,aumann1976}.
 
 \begin{definition}[Outcome space; outcome purpose]
 \label{def:outcome}
@@ -846,8 +1114,8 @@ probability $\prod_i q_i$. Adding an agent multiplies by $q_{n+1}\le1$, so
 the product is non-increasing, and strictly decreasing if $q_{n+1}<1$. If
 $q_i\le q<1$ for infinitely many $i$, then $\prod_i q_i\le q^{\,k}\to0$ as
 the number $k$ of such agents grows. (This is the Borel--Cantelli-type
-dichotomy: $\prod_i q_i\to0$ iff $\sum_i(1-q_i)$ diverges, e.g. when the
-$q_i$ stay bounded below $1$.)
+dichotomy~\cite{borelcantelli}: $\prod_i q_i\to0$ iff $\sum_i(1-q_i)$
+diverges, e.g. when the $q_i$ stay bounded below $1$.)
 \end{proof}
 
 \begin{remark}[Emergent group competence]
@@ -884,7 +1152,9 @@ distinguished from---but leaves its character invariant $\Char(\Agent)$
 unchanged, since $\Char$ is an invariant of the agent's own structure and
 adding boundary edges is a change of the exterior, not of the internal
 partition minimising $\rho$. Hence after any finite interrogation the
-identity remains a region of size $\ge\floorc$, never a point.
+character invariant remains $\ge\floorc>0$, and for an agent of the
+block-cut class (\Cref{thm:identity}(iii)) the identity remains a region,
+never resolved to a point.
 \end{theorem}
 
 \begin{proof}
@@ -893,8 +1163,10 @@ residual over partitions of $\V$, the agent's own parts. An interrogation
 adds edges between $\V$ and vertices outside $\Agent$; it does not alter
 $\Self=(\V,\E,\wt)$ and so does not change any $\rho(\mathcal Q)$ for
 partitions $\mathcal Q$ of $\V$. Thus $\Char(\Agent)$ is invariant under
-interrogation, and by \Cref{thm:identity}(i),(iii) it remains
-$\ge\floorc>0$ and non-local---a region. What the interrogation reduces is
+interrogation, and by \Cref{thm:identity}(i) it remains $\ge\floorc>0$;
+whenever the agent is of the block-cut class of \Cref{thm:identity}(iii)
+the minimiser also stays non-local, so the identity remains a region and
+never collapses to a point. What the interrogation reduces is
 the exterior ambiguity (which things $\Agent$ might be confused with), not
 the interior invariant. Since no finite interrogation drives the interior
 to a point, identity is unreachable to a point from outside.
@@ -996,16 +1268,95 @@ and decreases geometrically in $n$ for $q_i\le q<1$ (\Cref{thm:crowd}).
 in committed count at every step (\Cref{thm:copy}).
 \end{enumerate}
 
-We report that on a sweep of randomly generated agents (varying part
-count, floor, edge density, and weight spread), together with the
-two-triangle witness and a battery of societies and crowds, every
-predicted inequality, invariance, and identity holds: no cut is sharp;
-$\Char$ is invariant under every relabelling; its minimiser is non-local
-on the witness family; the behaviour flow has a unique attractor with the
-predicted return rate; societies split into two drives exactly at the
-severing edge; disjoint agents co-attain a common outcome purpose; and
-collective failure follows $\prod_i q_i$. (The suite is deterministic
-given its inputs; figures and a reproducible harness accompany the source.)
+\subsection{Results}
+
+The suite is deterministic given its seed ($20260719$) and runs a floor of
+$\floorc=1$. Across the ten prediction groups it performs $3255$ individual
+checks and \emph{all $3255$ pass}; \Cref{tab:purpose-results} records the
+group-level outcomes and the sharpest quantitative margin in each.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Numerical validation of \emph{The Purpose of a Character}.
+Every one of $3255$ individual checks passes (seed $20260719$,
+floor $\floorc=1$). ``Margin'' is the tightest quantity witnessing the
+prediction in that group.}
+\label{tab:purpose-results}
+\begin{tabular}{@{}llr@{}}
+\toprule
+Prediction (theorem) & Checks & Margin \\
+\midrule
+V1 Floor (\Cref{thm:floor})            & $2664$ & $\min b(U)/\floorc = 1.010$ \\
+V2 Identity conserved (T1(ii))         & $200$  & dev.\ $\le1.8\times10^{-15}$ \\
+V3 Identity non-local (T1(iii))        & $1$    & blocks $3{+}3$; sing.\ $4.0$ \\
+V4 Purpose attracts (T3,T4)            & $160$  & bound viol.\ $=0$ \\
+V5 Society identity (\Cref{cor:society-identity}) & $30$ & $\Char(\Soc)\ge\floorc$ \\
+V6 One group, one drive (\Cref{thm:onedrive}) & $30$ & split at join edge \\
+V7 Coordination (\Cref{thm:coord})     & $40$   & all co-attain \\
+V8 Crowd sharpening (\Cref{thm:crowd}) & $50$   & err.\ $=0$ \\
+V9 Copies distinct (\Cref{thm:copy})   & $50$   & count strictly $\uparrow$ \\
+V10 Unreachable (\Cref{thm:unreachable}) & $30$ & $\Char$ fixed, $\ge\floorc$ \\
+\midrule
+\textbf{Total} & $\mathbf{3255}$ & \textbf{all pass} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The margins are worth reading as more than pass/fail. In V1 the smallest
+boundary cost found anywhere in the sweep is $1.010\,\floorc$: the floor is
+not merely respected but essentially \emph{tight}, so the bound of
+\Cref{thm:floor} is the best possible and not a loose over-estimate. In V2
+the character invariant is stable to $1.8\times10^{-15}$---machine
+epsilon---under every weight-preserving relabelling, exactly as an exact
+invariant should be (the residual is floating-point noise, not structural
+drift). In V3 the two-triangle witness realises $\Char=1.0$ by a
+symmetric $3{+}3$ block split while the cheapest \emph{singleton} boundary
+costs $4.0$: the minimiser is non-local by a factor of four, so identity is
+a region here not by a hair but decisively. In V4, across $160$ integrated
+trajectories from random starts, the empirical distance to purpose never
+once exceeds the $e^{-\lambda t}$ envelope (worst bound violation $0$),
+confirming the attractor rate is $\lambda$ and not slower. V6--V10 confirm
+the social and unreachability results with zero error: the collective
+failure equals $\prod_i q_i$ to machine precision, and interrogation leaves
+$\Char$ literally unchanged. \Cref{fig:purpose-1,fig:purpose-2} display the
+floor, the conserved non-local invariant, the unique attractor, and the
+society and crowd results as computed on these explicit agents.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/panel_1.png}\\[2pt]
+\includegraphics[width=\textwidth]{figures/panel_2.png}
+\caption{\textbf{Floor, identity, and purpose.}
+\textbf{(Top, A--D)} Every boundary cost $b(U)$ lands on or above the floor
+line, its histogram is supported on $b(U)/\floorc\ge1$ with the minimum at
+$1.010$, the character invariant $\Char$ is fixed on the diagonal under
+relabelling, and (3D) $\Char$ of the two-triangle agent tracks the
+\emph{join} weight, not the triangle weight---identity is where the cheap
+cut is. \textbf{(Bottom, A--D)} Convergence trajectories fall under the
+$e^{-\lambda t}$ envelope, the empirical return rate matches $\lambda$ on
+the diagonal, the 2D flow has a single fixed point (the purpose), and the
+strongly convex drive surface has a unique minimiser.}
+\label{fig:purpose-1}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/panel_3.png}\\[2pt]
+\includegraphics[width=\textwidth]{figures/panel_4.png}
+\caption{\textbf{Society and crowd.}
+\textbf{(Top, A--D)} The society realised floor stays strictly positive as
+the number of agents grows; the two-cluster society's $\Char$ follows the
+join weight while every singleton cut is dearer; collective failure
+$\prod_i q_i$ decays geometrically in the crowd size $n$ for each failure
+level; and (3D) the failure surface over $(n,q)$ collapses toward zero.
+\textbf{(Bottom, A--D)} Disjoint agents' outcomes cluster inside the shared
+tolerance cell; the reachable fraction rises with crowd size; committed-count
+trajectories of a fresh copy and its original never meet (copies stay
+distinct forever); and the committed record is strictly monotone even across
+revisited positions.}
+\label{fig:purpose-2}
+\end{figure*}
 
 % =====================================================================
 \section{Discussion}

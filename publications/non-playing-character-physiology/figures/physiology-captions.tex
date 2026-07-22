@@ -1,0 +1,134 @@
+% =====================================================================
+%  Figure captions for "The Physiology of Response".
+%  Four panels, each four data-driven charts (A--D), from the theorem
+%  computations of validate_physiology.py / make_panels.py (seed 20260719,
+%  response floor beta_c = 1). Palette: steel-blue #2563eb,
+%  sea-green #16a34a, amber #ea9a09, violet #7c3aed, crimson #dc2626.
+%  \input this file where the figures should appear, or copy each block in.
+% =====================================================================
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_1.png}
+    \caption{\textbf{Two-Factor Relevance: An Interaction Matters Only If a
+    Response Both Advances Purpose and Keeps Coherence.}
+    (\textbf{A})~Change in coherence margin on the linear $y$-axis versus
+    purpose gain $g$ on the linear $x$-axis, $600$ candidate responses
+    classified admissible (sea-green) or not (grey), with the zero axes
+    marked (crimson). The admissible set is exactly the upper-right
+    quadrant---positive gain \emph{and} non-negative coherence change---the
+    empirical content of \Cref{thm:conjunction}: relevance is the
+    conjunction of the two factors.
+    (\textbf{B})~Fraction of responses passing each test on the linear
+    $y$-axis ($0$ to $1$): gain-only (amber), coherence-only (violet), and
+    both together (sea-green). The ``both'' bar is strictly smaller than
+    either alone, the quantitative statement that neither factor alone
+    suffices (\Cref{thm:conjunction}(ii),(iii)).
+    (\textbf{C})~Purpose gain $g$ on the linear $y$-axis versus response step
+    size on the linear $x$-axis ($-0.5$ to $1.2$) (steel-blue), with the
+    zero line marked (crimson, dashed) and the positive-gain region shaded
+    (sea-green). Gain is positive only over a bounded interval of steps: a
+    response advances purpose only if it moves the disposition the right way
+    and not too far.
+    (\textbf{D})~Three-dimensional relevance indicator over purpose gain $g$
+    ($x$-axis, $-1$ to $2$) and coherence margin change ($y$-axis, $-1.5$ to
+    $0.5$) (viridis colourmap), viewing angle elevation $26^{\circ}$ azimuth
+    $-58^{\circ}$. The indicator is the raised plateau over the single
+    quadrant where both factors clear their bars, the geometric form of
+    two-factor relevance.}
+    \label{fig:physiology-1}
+\end{figure*}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_2.png}
+    \caption{\textbf{Bounded Attention and the Single-Price Threshold:
+    Present but Preoccupied.}
+    (\textbf{A})~Responses committed on the linear $y$-axis versus attention
+    budget $\att$ on the linear $x$-axis ($1$ to $20$): the realised greedy
+    count (steel-blue) tracks the cap $\lfloor\att/\floorc\rfloor$ (crimson,
+    dashed). The count never exceeds the cap, the empirical content of
+    \Cref{thm:inattention}: inattention is forced by finiteness, not a
+    defect.
+    (\textbf{B})~Gain density $g/c$ on the linear $y$-axis versus interaction
+    index on the linear $x$-axis, responses answered (sea-green) and ignored
+    (grey), with the shadow price $p^\star$ marked (crimson, dashed). The
+    agent responds to exactly those above the single price, the empirical
+    content of \Cref{thm:threshold}: the optimal policy is a gain-density
+    threshold.
+    (\textbf{C})~Threshold price $p^\star$ on the linear $y$-axis versus
+    attention budget $\att$ on the linear $x$-axis ($2$ to $25$) (violet).
+    The price rises as the budget falls, the quantitative dial of how
+    reachable the agent is: a busy agent prices attention high and answers
+    little.
+    (\textbf{D})~Three-dimensional secured-gain surface over attention
+    budget $\att$ ($x$-axis, $2$ to $20$) and number of arrivals ($y$-axis,
+    $2$ to $29$) (viridis colourmap), viewing angle elevation $26^{\circ}$
+    azimuth $-60^{\circ}$. Secured gain rises with budget and saturates as
+    arrivals grow, the value form of the threshold policy under a finite
+    budget.}
+    \label{fig:physiology-2}
+\end{figure*}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_3.png}
+    \caption{\textbf{Coherence as Vanishing Holonomy: The Test Is Local,
+    Ordinal, and Runs in Advance.}
+    (\textbf{A})~Histogram of the cycle holonomy norm $\lVert\eta\rVert$ on
+    the linear $x$-axis, $300$ coherent (sea-green) and $300$ incoherent
+    (amber) agents, with the zero line marked (crimson). Coherent agents
+    concentrate at zero and incoherent ones spread above it, the empirical
+    content of \Cref{def:coherence}: coherence is exactly the vanishing of
+    every cycle's holonomy.
+    (\textbf{B})~Realised post-response coherence margin on the linear
+    $y$-axis versus the margin predicted by the advance test on the linear
+    $x$-axis (violet), with the identity diagonal marked (crimson). The
+    advance test predicts the realised margin exactly---all $150$ checks on
+    the diagonal---the empirical content of \Cref{thm:cohtest}: coherence is
+    decidable before commitment.
+    (\textbf{C})~Three-dimensional holonomy walk of a broken cycle in
+    transport space $(\eta_x,\eta_y,\eta_z)$, the cumulative transport path
+    (steel-blue) from its start (sea-green) with the non-closing gap marked
+    (crimson, dashed), viewing angle elevation $24^{\circ}$ azimuth
+    $-55^{\circ}$. The path fails to return to its origin: the geometric
+    picture of a nonzero holonomy, a cycle whose routes disagree.
+    (\textbf{D})~Coherence effect (preserves / breaks) on the $y$-axis
+    versus purpose gain $g$ on the linear $x$-axis, responses admissible
+    (sea-green) and declined (crimson). Purpose-advancing responses that
+    break coherence fall in the declined row, the empirical content of
+    \Cref{cor:refuse}: the agent refuses a tempting but self-breaking
+    response in advance.}
+    \label{fig:physiology-3}
+\end{figure*}
+
+\begin{figure*}[!htbp]
+    \centering
+    \includegraphics[width=\textwidth]{figures/panel_4.png}
+    \caption{\textbf{Irreversibility and Phase Alternation: The Agent
+    Accumulates, and Reflection Excludes Action.}
+    (\textbf{A})~Committed count $m$ on the linear $y$-axis versus encounter
+    index on the linear $x$-axis, drawn as a strictly rising step
+    (steel-blue). The count only ever increases, the empirical content of
+    \Cref{thm:irreversible}: response is a one-way deposit.
+    (\textbf{B})~State distance from the first encounter on the linear
+    $y$-axis versus committed count on the linear $x$-axis (sea-green line,
+    points coloured by count in plasma). Although the disposition nearly
+    repeats, the distance grows because the count grows: a revisited
+    disposition is never a revisited state (\Cref{thm:irreversible}(ii)),
+    and the response also moves the disposition itself
+    (\Cref{prop:disp-moves}).
+    (\textbf{C})~Phase and response over time, the commitment phase shaded
+    (steel-blue) with each emitted response marked (crimson) versus time on
+    the linear $x$-axis ($0$ to $80$). No response mark ever falls in a
+    construction interval, the empirical content of \Cref{thm:alternation}:
+    the agent commits nothing while it is reshaping itself.
+    (\textbf{D})~Three-dimensional anti-phase orbit of the construction
+    activity $\sigma_K$ versus the commitment activity $\sigma_Y$ versus time
+    (both activity axes linear, plasma-coloured samples), viewing angle
+    elevation $24^{\circ}$ azimuth $-58^{\circ}$. The two activities are
+    exactly out of phase---each high only when the other is low---the
+    geometric form of phase exclusion (\Cref{ax:exclusion},
+    \Cref{rem:exclusion-grounded}).}
+    \label{fig:physiology-4}
+\end{figure*}
