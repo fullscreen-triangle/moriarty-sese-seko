@@ -1,90 +1,107 @@
-import AnimatedText from "@/components/AnimatedText";
-import { HireMe } from "@/components/HireMe";
-import { LinkArrow } from "@/components/Icons";
-import Layout from "@/components/Layout";
-import Head from "next/head";
-import Image from "next/image";
-import Link from "next/link";
-import lightBulb from "../../public/images/svgs/miscellaneous_icons_1.svg";
-import profilePic from "../../public/images/profile/developer-pic-1.png";
-import TransitionEffect from "@/components/TransitionEffect";
+// =====================================================================
+//  index.js — the demo home.
+//
+//  Left: the 3D character (client-only). Right: purpose card, chat, and
+//  the research-mode instrument panel. The page owns the two pieces of
+//  shared state — the active animation clip and the committed count —
+//  which the chat drives via onCommit / onVerdict.
+// =====================================================================
 
+import Head from "next/head";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+
+import TransitionEffect from "@/components/TransitionEffect";
+import PurposeCard from "@/components/demo/PurposeCard";
+import ChatPanel from "@/components/demo/ChatPanel";
+import InstrumentPanel from "@/components/demo/InstrumentPanel";
+import ResearchToggle from "@/components/demo/ResearchToggle";
+import { INITIAL_CLIP } from "@/lib/persona";
+import { DEFAULT_P_STAR } from "@/lib/scorer";
+
+// R3F must be client-only — no SSR.
+const Scene = dynamic(() => import("@/components/demo/Scene"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-full w-full items-center justify-center text-dark/50 dark:text-light/50">
+      loading 3D…
+    </div>
+  ),
+});
 
 export default function Home() {
-  
+  const [activeClip, setActiveClip] = useState(INITIAL_CLIP);
+  const [committedCount, setCommittedCount] = useState(0);
+  const [verdict, setVerdict] = useState(null);
+  const [research, setResearch] = useState(false);
+  const [pStar] = useState(DEFAULT_P_STAR);
+
+  // A persuaded verdict: commit the change (irreversible: count only grows).
+  function handleCommit(nextClip, v) {
+    setActiveClip(nextClip);
+    setCommittedCount((c) => c + 1);
+    setVerdict(v);
+  }
+
+  // Every turn reports its verdict so the instrument panel stays fresh
+  // even when the argument fails.
+  function handleVerdict(v) {
+    setVerdict(v);
+  }
+
   return (
     <>
       <Head>
-        <title>Awesome Portfolio Built with Nextjs</title>
+        <title>NPC Persuasion Demo — argue with a character that has a purpose</title>
         <meta
           name="description"
-          content="Explore CodeBucks's Next.js developer portfolio and 
-        discover the latest webapp projects and software engineering articles. 
-        Showcase your skills as a full-stack developer and software engineer."
+          content="A 3D character runs with a purpose. Chat with it and try to make a compelling case to change what it does — judged by a two-factor relevance gate from the NPC papers."
         />
       </Head>
-
       <TransitionEffect />
-      <article
-        className={`flex min-h-screen items-center text-dark dark:text-light sm:items-start`}
-      >
-        <Layout className="!pt-0 md:!pt-16 sm:!pt-16">
-          <div className="flex w-full items-start justify-between md:flex-col">
-            <div className="w-1/2 lg:hidden md:inline-block md:w-full">
-              <Image
-                src={profilePic}
-                alt="CodeBucks"
-                className="h-auto w-full"
-                sizes="100vw"
-                priority
+      <main className="flex min-h-screen w-full flex-col bg-light px-8 pb-8 pt-4 text-dark dark:bg-dark dark:text-light lg:px-6 md:px-4">
+        <div className="grid min-h-[calc(100vh-9rem)] flex-1 grid-cols-2 gap-6 lg:grid-cols-1">
+          {/* 3D stage */}
+          <section className="relative min-h-[50vh] overflow-hidden rounded-2xl border border-dark/10 dark:border-light/10">
+            <Scene activeClip={activeClip} />
+            <div className="pointer-events-none absolute left-4 top-4 rounded-full bg-dark/70 px-3 py-1 text-xs font-semibold text-light dark:bg-light/70 dark:text-dark">
+              {activeClip}
+            </div>
+          </section>
+
+          {/* control column */}
+          <section className="flex min-h-0 flex-col gap-4">
+            <PurposeCard />
+
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-dark/50 dark:text-light/50">
+                committed changes: <b>{committedCount}</b>
+              </span>
+              <ResearchToggle on={research} onChange={setResearch} />
+            </div>
+
+            <AnimatePresence>
+              {research && (
+                <InstrumentPanel
+                  verdict={verdict}
+                  committedCount={committedCount}
+                  pStar={pStar}
+                />
+              )}
+            </AnimatePresence>
+
+            <div className="min-h-[320px] flex-1">
+              <ChatPanel
+                currentAnimation={activeClip}
+                pStar={pStar}
+                onCommit={handleCommit}
+                onVerdict={handleVerdict}
               />
             </div>
-            <div className="flex w-1/2 flex-col items-center self-center lg:w-full lg:text-center">
-              <AnimatedText
-                text="Turning vision into reality with code and design."
-                className="!text-left !text-6xl xl:!text-5xl lg:!text-center lg:!text-6xl md:!text-5xl sm:!text-3xl"
-              />
-              <p className="my-4 text-base font-medium md:text-sm sm:!text-xs">
-              As a skilled full-stack developer, I am dedicated to turning ideas into innovative web applications. Explore my latest projects and articles, showcasing my expertise in React.js and web development.
-              </p>
-              <div className="mt-2 flex items-center self-start lg:self-center">
-                <Link
-                  // whileHover={{
-                  //   cursor: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='48' viewport='0 0 100 100' style='font-size:24px;'><text y='50%'>👆</text></svg>"), auto`,
-                  // }}
-                  href="/dummy.pdf"
-                  target={"_blank"}
-                  className={`flex items-center rounded-lg border-2 border-solid bg-dark p-2.5 px-6 text-lg font-semibold
-            capitalize text-light hover:border-dark hover:bg-transparent hover:text-dark 
-            dark:bg-light dark:text-dark dark:hover:border-light dark:hover:bg-dark dark:hover:text-light
-            md:p-2 md:px-4 md:text-base
-             `}
-                  download
-                >
-                  Resume <LinkArrow className="ml-1 !w-6 md:!w-4" />
-                </Link>
-
-                <Link
-                  href="mailto:codebucks27@gmail.com"
-                  className="ml-4 text-lg font-medium capitalize text-dark underline 
-                  dark:text-light md:text-base"
-                >
-                  Contact
-                </Link>
-              </div>
-            </div>
-          </div>
-        </Layout>
-
-        <HireMe />
-        <div className="absolute right-8 bottom-8 inline-block w-24 md:hidden">
-          <Image
-            className="relative h-auto w-full"
-            src={lightBulb}
-            alt="Codebucks"
-          />
+          </section>
         </div>
-      </article>
+      </main>
     </>
   );
 }
