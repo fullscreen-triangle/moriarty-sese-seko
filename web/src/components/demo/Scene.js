@@ -8,12 +8,7 @@
 
 import React, { Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import {
-  OrbitControls,
-  Environment,
-  ContactShadows,
-  Html,
-} from "@react-three/drei";
+import { OrbitControls, ContactShadows, Html } from "@react-three/drei";
 import Character from "./Character";
 
 // Mixamo models are authored in centimetres; scale to a ~1.8 unit avatar.
@@ -53,13 +48,21 @@ export default function Scene({ activeClip }) {
       className="rounded-2xl"
     >
       <color attach="background" args={[dark ? "#1b1b1b" : "#f5f5f5"]} />
-      <ambientLight intensity={dark ? 0.5 : 0.8} />
+      {/* Self-contained lighting — no CDN environment map, so nothing
+          external has to load before the character can render. */}
+      <hemisphereLight
+        intensity={dark ? 0.6 : 0.9}
+        color={dark ? "#9fb2ff" : "#ffffff"}
+        groundColor={dark ? "#1b1b1b" : "#d8d8d8"}
+      />
+      <ambientLight intensity={dark ? 0.4 : 0.6} />
       <directionalLight
         position={[3, 6, 4]}
-        intensity={dark ? 1.1 : 1.4}
+        intensity={dark ? 1.3 : 1.6}
         castShadow
         shadow-mapSize={[1024, 1024]}
       />
+      <directionalLight position={[-4, 3, -3]} intensity={dark ? 0.5 : 0.7} />
       <Suspense fallback={<Loader />}>
         <group position={[0, -0.9, 0]}>
           <Character activeClip={activeClip} scale={MODEL_SCALE} />
@@ -71,7 +74,6 @@ export default function Scene({ activeClip }) {
           blur={2.4}
           far={4}
         />
-        <Environment preset="city" />
       </Suspense>
       <OrbitControls
         enablePan={false}
