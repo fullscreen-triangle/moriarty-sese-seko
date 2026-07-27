@@ -2,9 +2,8 @@ import Link from "next/link";
 import React, { useState } from "react";
 import Logo from "./Logo";
 import { useRouter } from "next/router";
-import { GithubIcon, MoonIcon, SunIcon } from "./Icons";
+import { GithubIcon } from "./Icons";
 import { motion } from "framer-motion";
-import { useThemeSwitch } from "./Hooks/useThemeSwitch";
 
 const REPO_URL =
   "https://github.com/fullscreen-triangle/moriarty-sese-seko";
@@ -55,7 +54,6 @@ const CustomMobileLink = ({ href, title, className = "", toggle }) => {
 
 
 const Navbar = () => {
-  const [mode, setMode] = useThemeSwitch();
     const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => {
@@ -103,20 +101,6 @@ const Navbar = () => {
         >
           <GithubIcon />
         </motion.a>
-
-        <button
-          onClick={() => setMode(mode === "light" ? "dark" : "light")}
-          className={`w-6 h-6 ease ml-3 flex items-center justify-center rounded-full p-1
-            ${mode === "light" ? "bg-dark  text-light" : "bg-light  text-dark"}
-            `}
-          aria-label="theme-switcher"
-        >
-          {mode === "light" ? (
-            <SunIcon className={"fill-dark"} />
-          ) : (
-            <MoonIcon className={"fill-dark"} />
-          )}
-        </button>
       </nav>
       </div>
     {
@@ -148,20 +132,6 @@ const Navbar = () => {
         >
           <GithubIcon />
         </motion.a>
-
-        <button
-          onClick={() => setMode(mode === "light" ? "dark" : "light")}
-          className={`w-6 h-6 ease m-1 ml-3 sm:mx-1 flex items-center justify-center rounded-full p-1
-            ${mode === "light" ? "bg-dark  text-light" : "bg-light  text-dark"}
-            `}
-          aria-label="theme-switcher"
-        >
-          {mode === "light" ? (
-            <SunIcon className={"fill-dark"} />
-          ) : (
-            <MoonIcon className={"fill-dark"} />
-          )}
-        </button>
       </nav>
       </motion.div>
 

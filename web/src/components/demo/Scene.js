@@ -11,9 +11,6 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, ContactShadows, Html } from "@react-three/drei";
 import Character from "./Character";
 
-// Mixamo models are authored in centimetres; scale to a ~1.8 unit avatar.
-const MODEL_SCALE = 0.011;
-
 function Loader() {
   return (
     <Html center>
@@ -22,6 +19,33 @@ function Loader() {
       </div>
     </Html>
   );
+}
+
+// If anything in the 3D subtree throws (bad GLB, WebGL init failure, a drei
+// API mismatch), show the reason instead of a silently blank canvas.
+class GLErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+  componentDidCatch(error, info) {
+    // Surface it in the console too, so the exact stack is visible.
+    // eslint-disable-next-line no-console
+    console.error("3D scene failed:", error, info);
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="flex h-full w-full items-center justify-center p-6 text-center text-sm text-red-500">
+          3D scene failed to load: {String(this.state.error.message || this.state.error)}
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 function useIsDark() {
@@ -41,13 +65,19 @@ export default function Scene({ activeClip }) {
   const dark = useIsDark();
 
   return (
-    <Canvas
-      shadows
-      dpr={[1, 2]}
-      camera={{ position: [0, 1.1, 4.2], fov: 42 }}
-      className="rounded-2xl"
-    >
-      <color attach="background" args={[dark ? "#1b1b1b" : "#f5f5f5"]} />
+    <GLErrorBoundary>
+      {/* Absolute fill guarantees the Canvas has real pixel dimensions.
+          R3F sizes to its parent, and a bare Canvas in an auto-height grid
+          cell can collapse to 0×0 (invisible). The parent <section> is
+          position:relative, so this fills it. */}
+      <div className="absolute inset-0">
+        <Canvas
+          shadows
+          dpr={[1, 2]}
+          camera={{ position: [0, 1.4, 8.4], fov: 42 }}
+          className="rounded-2xl"
+        >
+          <color attach="background" args={[dark ? "#1b1b1b" : "#f5f5f5"]} />
       {/* Self-contained lighting — no CDN environment map, so nothing
           external has to load before the character can render. */}
       <hemisphereLight
@@ -64,11 +94,11 @@ export default function Scene({ activeClip }) {
       />
       <directionalLight position={[-4, 3, -3]} intensity={dark ? 0.5 : 0.7} />
       <Suspense fallback={<Loader />}>
-        <group position={[0, -0.9, 0]}>
-          <Character activeClip={activeClip} scale={MODEL_SCALE} />
-        </group>
+        {/* Character normalises itself to ~1.7m with feet at y=0, so it
+            sits directly on the ground plane — no manual scale/offset. */}
+        <Character activeClip={activeClip} />
         <ContactShadows
-          position={[0, -0.9, 0]}
+          position={[0, 0, 0]}
           opacity={dark ? 0.5 : 0.35}
           scale={8}
           blur={2.4}
@@ -77,12 +107,14 @@ export default function Scene({ activeClip }) {
       </Suspense>
       <OrbitControls
         enablePan={false}
-        minDistance={2.5}
-        maxDistance={7}
+        minDistance={4}
+        maxDistance={12}
         minPolarAngle={Math.PI / 6}
         maxPolarAngle={Math.PI / 1.9}
-        target={[0, 0.1, 0]}
-      />
-    </Canvas>
+        target={[0, 0.9, 0]}
+          />
+        </Canvas>
+      </div>
+    </GLErrorBoundary>
   );
 }

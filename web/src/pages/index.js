@@ -30,6 +30,7 @@ const Scene = dynamic(() => import("@/components/demo/Scene"), {
   ),
 });
 
+
 export default function Home() {
   const [activeClip, setActiveClip] = useState(INITIAL_CLIP);
   const [committedCount, setCommittedCount] = useState(0);
