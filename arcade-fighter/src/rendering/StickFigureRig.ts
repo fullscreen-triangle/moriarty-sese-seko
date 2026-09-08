@@ -1,5 +1,6 @@
 import type { FighterState } from '../entities/FighterState';
 import { SEGMENT_LENGTHS } from '../physics/Kinematics';
+import type { ImaginedPersona } from '../game/ImaginedMode';
 
 // Canvas pixels per simulation meter.
 const PPM = 90;
@@ -15,7 +16,8 @@ export const drawFighter = (
   ctx: CanvasRenderingContext2D,
   state: FighterState,
   floorPixelY: number,
-  color: string
+  color: string,
+  persona?: ImaginedPersona
 ): void => {
   const facing = state.facing;
   const rootX = state.position.x * PPM;
@@ -72,6 +74,54 @@ export const drawFighter = (
   ctx.beginPath();
   ctx.arc(head.x, head.y, SEGMENT_LENGTHS.headRadius * PPM, 0, Math.PI * 2);
   ctx.fill();
+
+  if (persona) drawImaginedCostume(ctx, persona, head, neckBase, pelvis, facing);
+};
+
+/**
+ * Costume overlay for Imagined Mode. No sprite-sheet rig exists — the fighters
+ * are pure vector stick figures — so the persona swap is a prop/line overlay
+ * drawn on top of the same rig rather than a different renderer.
+ */
+const drawImaginedCostume = (
+  ctx: CanvasRenderingContext2D,
+  persona: ImaginedPersona,
+  head: Point,
+  neckBase: Point,
+  pelvis: Point,
+  facing: number
+): void => {
+  const headR = SEGMENT_LENGTHS.headRadius * PPM;
+
+  if (persona === 'bhuru-pilot') {
+    ctx.strokeStyle = '#ffd166';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(head.x, head.y, headR * 1.15, Math.PI, 0);
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(255, 209, 102, 0.6)';
+    ctx.lineWidth = 1.5;
+    const canopyY = head.y - headR * 5;
+    for (const dx of [-1, -0.4, 0.4, 1]) {
+      ctx.beginPath();
+      ctx.moveTo(head.x + dx * headR * 3, canopyY);
+      ctx.lineTo(head.x, head.y - headR);
+      ctx.stroke();
+    }
+    ctx.beginPath();
+    ctx.ellipse(head.x, canopyY, headR * 3.2, headR * 1.1, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  } else {
+    ctx.strokeStyle = '#ef476f';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(neckBase.x - 6 * facing, neckBase.y);
+    ctx.lineTo(pelvis.x - 6 * facing, pelvis.y);
+    ctx.moveTo(neckBase.x + 6 * facing, neckBase.y);
+    ctx.lineTo(pelvis.x + 6 * facing, pelvis.y);
+    ctx.stroke();
+  }
 };
 
 export const FLOOR_PIXEL_MARGIN = 80;

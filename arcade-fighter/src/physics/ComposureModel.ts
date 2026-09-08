@@ -15,7 +15,8 @@ export const applyHitToComposure = (
   defender: FighterState,
   shape: ActionShape,
   chargeBonus: number,
-  outcome: ResolutionOutcome
+  outcome: ResolutionOutcome,
+  imagined = false
 ): number => {
   if (outcome === 'MISS') return 0;
 
@@ -23,6 +24,11 @@ export const applyHitToComposure = (
   const magnitude = outcome === 'GLANCING' ? 0.35 : 1.0;
   const drain =
     BASE_POWER[shape] * (0.5 + 0.5 * chargeBonus) * (1 - guardPartial) * magnitude;
+
+  // Imagined Mode: the hit still happens narratively (outcome/proficiency are
+  // computed normally upstream), but it is only in someone's head — it tickles,
+  // it does not injure. No real composure/disorientation cost.
+  if (imagined) return 0;
 
   defender.composure = Math.max(0, defender.composure - drain);
 

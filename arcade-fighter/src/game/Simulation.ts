@@ -19,6 +19,12 @@ import { CameraShake } from '../rendering/CameraShake';
 import { DebugOverlay } from '../ui/DebugOverlay';
 import type { CharacterId } from '../entities/Character';
 import { otherCharacter } from '../entities/Character';
+import { KnowledgeGraph } from '../ai/KnowledgeGraph';
+import { PolicyResolver } from '../ai/PolicyResolver';
+import { OllamaStrategist } from '../ai/OllamaStrategist';
+import { ImaginedMode } from './ImaginedMode';
+import type { ImaginedWindowTally } from './ImaginedMode';
+import type { ActionShape } from '../entities/MoveHistory';
 
 export class Simulation {
   p1: FighterState;
@@ -31,7 +37,10 @@ export class Simulation {
   debugOverlay = new DebugOverlay();
   private scores: Record<FighterId, number> = { p1: 0, p2: 0 };
   private clockMs = 0;
-  private aiCooldownMs = 0;
+  knowledgeGraph = new KnowledgeGraph();
+  private policyResolver = new PolicyResolver(this.knowledgeGraph);
+  private ollamaStrategist = new OllamaStrategist(this.knowledgeGraph);
+  imaginedMode = new ImaginedMode();
 
   constructor() {
     this.p1 = createFighter('p1', 'bhuru', { x: -2, y: 0 }, 1);
@@ -47,6 +56,9 @@ export class Simulation {
       if (e.key === 'Tab') {
         e.preventDefault();
         this.debugOverlay.toggle();
+      }
+      if (e.key === 'i' || e.key === 'I') {
+        this.imaginedMode.forceTrigger();
       }
     });
   }
@@ -81,34 +93,42 @@ export class Simulation {
       this.p1 = createFighter('p1', picks.p1, { x: -2, y: 0 }, 1);
       this.p2 = createFighter('p2', picks.p2, { x: 2, y: 0 }, -1);
       this.aiEnabled = this.phase.mode === '1P_VS_AI';
-      this.aiCooldownMs = 0;
+      this.knowledgeGraph = new KnowledgeGraph();
+      this.policyResolver = new PolicyResolver(this.knowledgeGraph);
+      this.ollamaStrategist = new OllamaStrategist(this.knowledgeGraph);
       this.phase = { kind: 'FIGHTING', remainingMs: MATCH_CONFIG.roundDurationMs };
     }
   }
 
-  /** Milestone-1 placeholder: legal-but-unintelligent scripted intents, replaced by ai/PolicyResolver in Milestone 2. */
+  /**
+   * Milestone 2: fast per-tick KnowledgeGraph-driven policy for Heinrich, plus a
+   * slow independent OllamaStrategist propagation cycle. The policy replaces
+   * InputManager as p2's ActionIntent producer; Ollama runs off the hot path and
+   * only ever mutates the graph, never blocks a tick.
+   */
   private updateAi(dtMs: number): void {
     const fighter = this.p2;
     const opponent = this.p1;
 
+    this.policyResolver.observe(fighter, opponent, this.clockMs);
+    this.policyResolver.refillAttention(dtMs);
+    this.ollamaStrategist.tick(dtMs);
+
     const distance = opponent.position.x - fighter.position.x;
-    const closeEnough = Math.abs(distance) < 1.6;
+    const desiredRange = 1.3;
+    const closeEnough = Math.abs(distance) < desiredRange + 0.3;
     fighter.position.x += Math.sign(distance) * (closeEnough ? 0 : 1) * 1.6 * (dtMs / 1000);
     fighter.position.x = Math.max(-ARENA.width / 2, Math.min(ARENA.width / 2, fighter.position.x));
     fighter.facing = fighter.position.x <= opponent.position.x ? 1 : -1;
-    fighter.blocking = fighter.composure < 0.4 && this.rng.next() < 0.5;
 
-    this.aiCooldownMs -= dtMs;
-    if (this.aiCooldownMs > 0) return;
-    if (fighter.actionState.kind !== 'idle' || !closeEnough) return;
+    const intent = this.policyResolver.resolve(fighter, opponent, this.rng);
+    if (!intent) return;
 
-    this.aiCooldownMs = 400 + this.rng.next() * 600;
-    const intent: ActionIntent = {
-      type: this.rng.next() < 0.6 ? 'punch' : 'kick',
-      direction: 'neutral',
-      chargeMs: this.rng.next() < 0.3 ? 250 : 0,
-      playerId: 'p2',
-    };
+    if (intent.type === 'block') {
+      fighter.blocking = true;
+      return;
+    }
+    fighter.blocking = false;
     this.buffers.p2.push(intent, this.clockMs, fighter.disorientation, this.rng);
   }
 
@@ -168,6 +188,9 @@ export class Simulation {
       this.checkStumble();
       this.checkFled();
       this.checkTimer(dtMs);
+
+      const closedTally = this.imaginedMode.tick(dtMs, this.rng);
+      if (closedTally) this.applyImaginedResidue(closedTally);
     }
 
     this.cameraShake.update(dtMs);
@@ -192,14 +215,17 @@ export class Simulation {
     if (intent.type !== 'punch' && intent.type !== 'kick') return;
 
     const opponent = this.opponentOf(fighter.id);
-    const result = resolveAction(fighter, opponent, intent, this.rng);
+    const imagined = this.imaginedMode.isActive();
+    const result = resolveAction(fighter, opponent, intent, this.rng, imagined);
     if (!result) return;
 
     this.debugOverlay.recordResolve(fighter.id, result);
+    this.imaginedMode.noteAttempt(fighter.id, result.shape);
 
     if (result.composureDrain > 0) {
       this.cameraShake.trigger(result.composureDrain);
       this.scores[fighter.id] += result.composureDrain;
+      this.imaginedMode.noteComposureDrain(result.composureDrain);
     }
 
     const durations = durationForShape(result.shape, fighter.moveHistory[result.shape].proficiency);
@@ -281,6 +307,19 @@ export class Simulation {
       this.phase = { kind: 'ROUND_END', reason: 'timer', winner };
     } else {
       this.phase = { kind: 'FIGHTING', remainingMs };
+    }
+  }
+
+  /**
+   * Imagined Mode leaves no damage behind, but Heinrich — the analyst literally
+   * building a case file on Bhuru — still remembers what he saw. Feed the closed
+   * window's attempted shapes into the KnowledgeGraph as permanent residue, the
+   * same "favors:<shape>" signal PolicyResolver already reads at rest.
+   */
+  private applyImaginedResidue(tally: Record<FighterId, ImaginedWindowTally>): void {
+    const entries = Object.entries(tally.p1.shapesAttempted) as Array<[ActionShape, number]>;
+    for (const [shape, count] of entries) {
+      this.knowledgeGraph.observe(`favors:${shape}`, 0.03 * count, this.clockMs);
     }
   }
 

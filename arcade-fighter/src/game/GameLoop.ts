@@ -34,10 +34,10 @@ export const startGameLoop = (
       const shake = simulation.cameraShake.offset();
       ctx.save();
       ctx.translate(shake.x, shake.y);
-      renderer.draw([simulation.p1, simulation.p2]);
+      renderer.draw([simulation.p1, simulation.p2], simulation.imaginedMode);
       ctx.restore();
       drawHUD(ctx, canvas.width, simulation.p1, simulation.p2, simulation.phase);
-      simulation.debugOverlay.draw(ctx, simulation.p1, simulation.p2);
+      simulation.debugOverlay.draw(ctx, simulation.p1, simulation.p2, simulation.knowledgeGraph);
     }
 
     requestAnimationFrame(frame);

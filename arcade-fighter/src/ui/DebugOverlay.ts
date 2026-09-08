@@ -1,6 +1,7 @@
 import type { FighterState } from '../entities/FighterState';
 import { ALL_ACTION_SHAPES } from '../entities/MoveHistory';
 import type { ResolutionResult } from '../physics/MoveResolver';
+import type { KnowledgeGraph } from '../ai/KnowledgeGraph';
 
 export class DebugOverlay {
   visible = false;
@@ -14,7 +15,7 @@ export class DebugOverlay {
     this.lastResolve[playerId] = result;
   }
 
-  draw(ctx: CanvasRenderingContext2D, p1: FighterState, p2: FighterState): void {
+  draw(ctx: CanvasRenderingContext2D, p1: FighterState, p2: FighterState, knowledgeGraph?: KnowledgeGraph): void {
     if (!this.visible) return;
 
     ctx.font = '12px monospace';
@@ -49,5 +50,16 @@ export class DebugOverlay {
 
     renderFighter(p1, 20);
     renderFighter(p2, 620);
+
+    if (knowledgeGraph) {
+      const obs = knowledgeGraph
+        .allObservations()
+        .filter((o) => o.weight > 0.02)
+        .sort((a, b) => b.weight - a.weight)
+        .slice(0, 6)
+        .map((o) => `${o.id}=${o.weight.toFixed(2)}`)
+        .join('  ');
+      ctx.fillText(`KG: ${obs || 'none'}`, 20, 400);
+    }
   }
 }

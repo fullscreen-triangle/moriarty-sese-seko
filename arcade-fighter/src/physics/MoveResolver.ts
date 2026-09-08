@@ -60,7 +60,8 @@ export const resolveAction = (
   attacker: FighterState,
   defender: FighterState,
   intent: ActionIntent,
-  rng: RNG
+  rng: RNG,
+  imagined = false
 ): ResolutionResult | null => {
   if (intent.type !== 'punch' && intent.type !== 'kick') return null;
 
@@ -81,7 +82,7 @@ export const resolveAction = (
 
   if (distance > effectiveReach) {
     const overextension = chargeBonus * (1 - proficiency) * (limb.fatigue + 0.3);
-    const injuryChance = clamp(overextension * 0.4 * bias.injuryRisk, 0, 0.6);
+    const injuryChance = imagined ? 0 : clamp(overextension * 0.4 * bias.injuryRisk, 0, 0.6);
     const selfInjuryOccurred = rng.next() < injuryChance;
     if (selfInjuryOccurred) rollInjury('overextension', limbId, limb, rng);
     updateProficiency(attacker.moveHistory[shape], 'MISS', selfInjuryOccurred, bias.learnRate);
@@ -115,21 +116,23 @@ export const resolveAction = (
   let selfInjuryOccurred = false;
   if (outcome === 'MISS') {
     const overextension = chargeBonus * (1 - proficiency) * (limb.fatigue + 0.3);
-    const injuryChance = clamp(overextension * 0.4 * bias.injuryRisk, 0, 0.6);
+    const injuryChance = imagined ? 0 : clamp(overextension * 0.4 * bias.injuryRisk, 0, 0.6);
     selfInjuryOccurred = rng.next() < injuryChance;
     if (selfInjuryOccurred) rollInjury('overextension', limbId, limb, rng);
   }
 
   let composureDrain = 0;
   if (outcome !== 'MISS') {
-    composureDrain = applyHitToComposure(defender, shape, chargeBonus, outcome);
+    composureDrain = applyHitToComposure(defender, shape, chargeBonus, outcome, imagined);
 
-    const struckLimb = shape === 'jab' || shape === 'hook' || shape === 'uppercut'
-      ? (defender.facing === 1 ? 'leftArm' : 'rightArm')
-      : (defender.facing === 1 ? 'leftLeg' : 'rightLeg');
-    const defLimb = defender.limbs[struckLimb];
-    if (defLimb.fatigue > 0.6) {
-      rollInjury('counterHit', struckLimb, defLimb, rng);
+    if (!imagined) {
+      const struckLimb = shape === 'jab' || shape === 'hook' || shape === 'uppercut'
+        ? (defender.facing === 1 ? 'leftArm' : 'rightArm')
+        : (defender.facing === 1 ? 'leftLeg' : 'rightLeg');
+      const defLimb = defender.limbs[struckLimb];
+      if (defLimb.fatigue > 0.6) {
+        rollInjury('counterHit', struckLimb, defLimb, rng);
+      }
     }
   }
 
