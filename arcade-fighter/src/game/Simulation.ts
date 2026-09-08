@@ -1,0 +1,334 @@
+import type { FighterState, FighterId } from '../entities/FighterState';
+import { createFighter } from '../entities/Fighter';
+import { InputManager } from '../input/InputManager';
+import { InputBuffer } from '../input/InputBuffer';
+import type { ActionIntent } from '../input/ActionIntent';
+import { RNG } from '../physics/RNG';
+import { resolveAction, durationForShape } from '../physics/MoveResolver';
+import { decayLimb } from '../physics/InjuryModel';
+import { regenStamina } from '../physics/StaminaModel';
+import { regenComposure, decayDisorientation } from '../physics/ComposureModel';
+import { ALL_LIMB_IDS } from '../entities/LimbState';
+import { POSES, interpolatePose } from '../rendering/Pose';
+import { IDLE_POSE } from '../entities/FighterState';
+import { ARENA } from '../physics/Kinematics';
+import { MATCH_CONFIG } from './MatchConfig';
+import type { MatchMode, MatchPhase } from './GameState';
+import { createInitialPhase } from './GameState';
+import { CameraShake } from '../rendering/CameraShake';
+import { DebugOverlay } from '../ui/DebugOverlay';
+import type { CharacterId } from '../entities/Character';
+import { otherCharacter } from '../entities/Character';
+
+export class Simulation {
+  p1: FighterState;
+  p2: FighterState;
+  phase: MatchPhase = createInitialPhase();
+  input = new InputManager();
+  buffers: Record<FighterId, InputBuffer> = { p1: new InputBuffer(), p2: new InputBuffer() };
+  rng = new RNG(Date.now() >>> 0);
+  cameraShake = new CameraShake();
+  debugOverlay = new DebugOverlay();
+  private scores: Record<FighterId, number> = { p1: 0, p2: 0 };
+  private clockMs = 0;
+  private aiCooldownMs = 0;
+
+  constructor() {
+    this.p1 = createFighter('p1', 'bhuru', { x: -2, y: 0 }, 1);
+    this.p2 = createFighter('p2', 'heinrich', { x: 2, y: 0 }, -1);
+
+    window.addEventListener('keydown', (e) => {
+      if (this.phase.kind === 'INTRO') {
+        if (e.key === '1') this.startCharacterSelect('1P_VS_AI');
+        if (e.key === '2') this.startCharacterSelect('2P');
+      } else if (this.phase.kind === 'CHARACTER_SELECT') {
+        this.handleCharacterSelectKey(e.key);
+      }
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        this.debugOverlay.toggle();
+      }
+    });
+  }
+
+  private startCharacterSelect(mode: MatchMode): void {
+    this.phase = { kind: 'CHARACTER_SELECT', mode, picks: {} };
+  }
+
+  private handleCharacterSelectKey(key: string): void {
+    if (this.phase.kind !== 'CHARACTER_SELECT') return;
+    const choice: CharacterId | null = key === '1' ? 'bhuru' : key === '2' ? 'heinrich' : null;
+    if (!choice) return;
+
+    const picks = { ...this.phase.picks };
+
+    if (this.phase.mode === '1P_VS_AI') {
+      picks.p1 = choice;
+      picks.p2 = otherCharacter(choice);
+    } else {
+      if (!picks.p1) {
+        picks.p1 = choice;
+      } else if (!picks.p2 && choice !== picks.p1) {
+        picks.p2 = choice;
+      } else {
+        return;
+      }
+    }
+
+    this.phase = { ...this.phase, picks };
+
+    if (picks.p1 && picks.p2) {
+      this.p1 = createFighter('p1', picks.p1, { x: -2, y: 0 }, 1);
+      this.p2 = createFighter('p2', picks.p2, { x: 2, y: 0 }, -1);
+      this.aiEnabled = this.phase.mode === '1P_VS_AI';
+      this.aiCooldownMs = 0;
+      this.phase = { kind: 'FIGHTING', remainingMs: MATCH_CONFIG.roundDurationMs };
+    }
+  }
+
+  /** Milestone-1 placeholder: legal-but-unintelligent scripted intents, replaced by ai/PolicyResolver in Milestone 2. */
+  private updateAi(dtMs: number): void {
+    const fighter = this.p2;
+    const opponent = this.p1;
+
+    const distance = opponent.position.x - fighter.position.x;
+    const closeEnough = Math.abs(distance) < 1.6;
+    fighter.position.x += Math.sign(distance) * (closeEnough ? 0 : 1) * 1.6 * (dtMs / 1000);
+    fighter.position.x = Math.max(-ARENA.width / 2, Math.min(ARENA.width / 2, fighter.position.x));
+    fighter.facing = fighter.position.x <= opponent.position.x ? 1 : -1;
+    fighter.blocking = fighter.composure < 0.4 && this.rng.next() < 0.5;
+
+    this.aiCooldownMs -= dtMs;
+    if (this.aiCooldownMs > 0) return;
+    if (fighter.actionState.kind !== 'idle' || !closeEnough) return;
+
+    this.aiCooldownMs = 400 + this.rng.next() * 600;
+    const intent: ActionIntent = {
+      type: this.rng.next() < 0.6 ? 'punch' : 'kick',
+      direction: 'neutral',
+      chargeMs: this.rng.next() < 0.3 ? 250 : 0,
+      playerId: 'p2',
+    };
+    this.buffers.p2.push(intent, this.clockMs, fighter.disorientation, this.rng);
+  }
+
+  private fighters(): FighterState[] {
+    return [this.p1, this.p2];
+  }
+
+  private opponentOf(id: FighterId): FighterState {
+    return id === 'p1' ? this.p2 : this.p1;
+  }
+
+  private aiEnabled = false;
+
+  tick(dtMs: number): void {
+    this.clockMs += dtMs;
+    const intents = this.input.poll(this.clockMs);
+
+    for (const fighter of this.fighters()) {
+      if (fighter.id === 'p2' && this.aiEnabled) continue;
+      this.updateMovement(fighter, dtMs);
+      fighter.blocking = this.input.isBlocking(fighter.id);
+    }
+    if (this.aiEnabled) this.updateAi(dtMs);
+
+    for (const intent of intents) {
+      const fighter = intent.playerId === 'p1' ? this.p1 : this.p2;
+      if (fighter.id === 'p2' && this.aiEnabled) continue;
+      this.buffers[fighter.id].push(intent, this.clockMs, fighter.disorientation, this.rng);
+    }
+
+    if (this.phase.kind === 'FIGHTING') {
+      for (const fighter of this.fighters()) {
+        const ready = this.buffers[fighter.id].drain(this.clockMs);
+        for (const readyIntent of ready) {
+          this.tryStartAction(fighter, readyIntent);
+        }
+        if (
+          this.input.isFleeing(fighter.id) &&
+          fighter.actionState.kind !== 'fleeing' &&
+          fighter.actionState.kind !== 'stumble'
+        ) {
+          fighter.actionState = { kind: 'fleeing', elapsedMs: 0, totalMs: MATCH_CONFIG.fleeWindupMs };
+        }
+      }
+
+      for (const fighter of this.fighters()) {
+        this.advanceActionState(fighter, dtMs);
+      }
+
+      for (const fighter of this.fighters()) {
+        for (const limbId of ALL_LIMB_IDS) decayLimb(fighter.limbs[limbId], dtMs);
+        regenStamina(fighter, dtMs);
+        regenComposure(fighter, dtMs);
+        decayDisorientation(fighter, dtMs);
+      }
+
+      this.checkStumble();
+      this.checkFled();
+      this.checkTimer(dtMs);
+    }
+
+    this.cameraShake.update(dtMs);
+    for (const fighter of this.fighters()) {
+      this.updatePose(fighter);
+    }
+  }
+
+  private updateMovement(fighter: FighterState, dtMs: number): void {
+    if (fighter.actionState.kind === 'stumble' || fighter.actionState.kind === 'fleeing') return;
+    const axis = this.input.movementAxis(fighter.id);
+    const speed = 3;
+    fighter.position.x += axis * speed * (dtMs / 1000);
+    fighter.position.x = Math.max(-ARENA.width / 2, Math.min(ARENA.width / 2, fighter.position.x));
+
+    const other = this.opponentOf(fighter.id);
+    fighter.facing = fighter.position.x <= other.position.x ? 1 : -1;
+  }
+
+  private tryStartAction(fighter: FighterState, intent: ActionIntent): void {
+    if (fighter.actionState.kind !== 'idle' && fighter.actionState.kind !== 'blocking') return;
+    if (intent.type !== 'punch' && intent.type !== 'kick') return;
+
+    const opponent = this.opponentOf(fighter.id);
+    const result = resolveAction(fighter, opponent, intent, this.rng);
+    if (!result) return;
+
+    this.debugOverlay.recordResolve(fighter.id, result);
+
+    if (result.composureDrain > 0) {
+      this.cameraShake.trigger(result.composureDrain);
+      this.scores[fighter.id] += result.composureDrain;
+    }
+
+    const durations = durationForShape(result.shape, fighter.moveHistory[result.shape].proficiency);
+    fighter.actionState = {
+      kind: 'startup',
+      shape: result.shape,
+      limb: result.limb,
+      elapsedMs: 0,
+      totalMs: durations.startup,
+    };
+    (fighter as unknown as { _pendingDurations: typeof durations })._pendingDurations = durations;
+  }
+
+  private advanceActionState(fighter: FighterState, dtMs: number): void {
+    const state = fighter.actionState;
+
+    if (state.kind === 'startup' || state.kind === 'active' || state.kind === 'recovery') {
+      const elapsed = state.elapsedMs + dtMs;
+      if (elapsed < state.totalMs) {
+        fighter.actionState = { ...state, elapsedMs: elapsed };
+        return;
+      }
+      const durations = (fighter as unknown as { _pendingDurations: { startup: number; active: number; recovery: number } })
+        ._pendingDurations;
+      if (state.kind === 'startup') {
+        fighter.actionState = { kind: 'active', shape: state.shape, limb: state.limb, elapsedMs: 0, totalMs: durations.active };
+      } else if (state.kind === 'active') {
+        fighter.actionState = { kind: 'recovery', shape: state.shape, limb: state.limb, elapsedMs: 0, totalMs: durations.recovery };
+      } else {
+        fighter.actionState = { kind: 'idle' };
+      }
+      return;
+    }
+
+    if (state.kind === 'stumble') {
+      const elapsed = state.elapsedMs + dtMs;
+      fighter.actionState = elapsed < state.totalMs ? { ...state, elapsedMs: elapsed } : { kind: 'idle' };
+      return;
+    }
+
+    if (state.kind === 'fleeing') {
+      const elapsed = state.elapsedMs + dtMs;
+      fighter.actionState = { ...state, elapsedMs: elapsed };
+      return;
+    }
+
+    if (state.kind === 'blocking' && !fighter.blocking) {
+      fighter.actionState = { kind: 'idle' };
+    } else if (state.kind === 'idle' && fighter.blocking) {
+      fighter.actionState = { kind: 'blocking' };
+    }
+  }
+
+  private checkStumble(): void {
+    for (const fighter of this.fighters()) {
+      if (fighter.composure <= 0 && fighter.actionState.kind !== 'stumble') {
+        fighter.actionState = { kind: 'stumble', elapsedMs: 0, totalMs: 1500 };
+        const winner = this.opponentOf(fighter.id).id;
+        this.phase = { kind: 'ROUND_END', reason: 'stumble', winner };
+      }
+    }
+  }
+
+  private checkFled(): void {
+    for (const fighter of this.fighters()) {
+      if (fighter.actionState.kind === 'fleeing' && fighter.actionState.elapsedMs >= fighter.actionState.totalMs) {
+        fighter.hasFled = true;
+        this.phase = { kind: 'FLED', fledPlayer: fighter.id };
+      }
+    }
+  }
+
+  private checkTimer(dtMs: number): void {
+    if (this.phase.kind !== 'FIGHTING') return;
+    const remainingMs = this.phase.remainingMs - dtMs;
+    if (remainingMs <= 0) {
+      const winner: FighterId | 'draw' =
+        this.scores.p1 === this.scores.p2 ? 'draw' : this.scores.p1 > this.scores.p2 ? 'p1' : 'p2';
+      this.phase = { kind: 'ROUND_END', reason: 'timer', winner };
+    } else {
+      this.phase = { kind: 'FIGHTING', remainingMs };
+    }
+  }
+
+  private updatePose(fighter: FighterState): void {
+    const state = fighter.actionState;
+
+    if (state.kind === 'idle') {
+      fighter.jointAngles = this.applyDebuffOverlay(fighter, { ...IDLE_POSE });
+      return;
+    }
+    if (state.kind === 'blocking') {
+      fighter.jointAngles = this.applyDebuffOverlay(fighter, { ...POSES.block });
+      return;
+    }
+    if (state.kind === 'stumble') {
+      fighter.jointAngles = { ...POSES.stumble };
+      return;
+    }
+    if (state.kind === 'fleeing') {
+      fighter.jointAngles = this.applyDebuffOverlay(fighter, { ...POSES.fleeStance });
+      return;
+    }
+
+    const phaseKey = state.kind === 'startup' ? 'Startup' : state.kind === 'active' ? 'Active' : 'Recovery';
+    const key = `${state.shape}${phaseKey}` as keyof typeof POSES;
+    const pose = POSES[key] ?? POSES.idle;
+    const t = Math.min(1, state.elapsedMs / state.totalMs);
+    const fromKey = `${state.shape}${phaseKey === 'Active' ? 'Startup' : 'Active'}` as keyof typeof POSES;
+    const from = state.kind === 'startup' ? IDLE_POSE : POSES[fromKey] ?? IDLE_POSE;
+    fighter.jointAngles = this.applyDebuffOverlay(fighter, interpolatePose(from, pose, t));
+  }
+
+  private applyDebuffOverlay(
+    fighter: FighterState,
+    pose: Record<string, number>
+  ): Record<string, number> {
+    const leftArm = fighter.limbs.leftArm;
+    const rightArm = fighter.limbs.rightArm;
+    if (leftArm.injurySeverity > 0.2) {
+      pose.leftShoulder += 0.3 * leftArm.injurySeverity;
+    }
+    if (rightArm.injurySeverity > 0.2) {
+      pose.rightShoulder -= 0.3 * rightArm.injurySeverity;
+    }
+    if (fighter.disorientation > 0) {
+      const wobble = Math.sin(this.clockMs / 120) * 0.05 * fighter.disorientation;
+      pose.neck += wobble;
+    }
+    return pose;
+  }
+}
