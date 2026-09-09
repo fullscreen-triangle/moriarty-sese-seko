@@ -75,6 +75,11 @@ button is charged when released — there is no separate "special move" input.
 (Player 2's controls apply only in 2P mode; in 1P mode Heinrich is driven by
 the AI.)
 
+### Pause
+
+Press `Esc` during a fight to pause. The pause menu shows the full control
+scheme for both players; press `Esc` again to resume.
+
 ### Debug
 
 | Key | Effect |

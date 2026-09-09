@@ -25,6 +25,8 @@ import { OllamaStrategist } from '../ai/OllamaStrategist';
 import { ImaginedMode } from './ImaginedMode';
 import type { ImaginedWindowTally } from './ImaginedMode';
 import type { ActionShape } from '../entities/MoveHistory';
+import { preloadImages } from '../rendering/ImageCache';
+import { ALL_SPRITE_SHEETS } from '../rendering/SpriteData';
 
 export class Simulation {
   p1: FighterState;
@@ -46,12 +48,24 @@ export class Simulation {
     this.p1 = createFighter('p1', 'bhuru', { x: -2, y: 0 }, 1);
     this.p2 = createFighter('p2', 'heinrich', { x: 2, y: 0 }, -1);
 
+    preloadImages(ALL_SPRITE_SHEETS, (fraction) => {
+      if (this.phase.kind === 'LOADING') {
+        this.phase = { kind: 'LOADING', progress: fraction };
+      }
+    }).then(() => {
+      if (this.phase.kind === 'LOADING') {
+        this.phase = { kind: 'INTRO' };
+      }
+    });
+
     window.addEventListener('keydown', (e) => {
       if (this.phase.kind === 'INTRO') {
         if (e.key === '1') this.startCharacterSelect('1P_VS_AI');
         if (e.key === '2') this.startCharacterSelect('2P');
       } else if (this.phase.kind === 'CHARACTER_SELECT') {
         this.handleCharacterSelectKey(e.key);
+      } else if (e.key === 'Escape' && (this.phase.kind === 'FIGHTING' || this.phase.kind === 'PAUSED')) {
+        this.togglePause();
       }
       if (e.key === 'Tab') {
         e.preventDefault();
@@ -61,6 +75,14 @@ export class Simulation {
         this.imaginedMode.forceTrigger();
       }
     });
+  }
+
+  private togglePause(): void {
+    if (this.phase.kind === 'FIGHTING') {
+      this.phase = { kind: 'PAUSED', previous: this.phase };
+    } else if (this.phase.kind === 'PAUSED') {
+      this.phase = this.phase.previous;
+    }
   }
 
   private startCharacterSelect(mode: MatchMode): void {
@@ -143,6 +165,7 @@ export class Simulation {
   private aiEnabled = false;
 
   tick(dtMs: number): void {
+    if (this.phase.kind === 'PAUSED') return;
     this.clockMs += dtMs;
     const intents = this.input.poll(this.clockMs);
 
@@ -200,9 +223,13 @@ export class Simulation {
   }
 
   private updateMovement(fighter: FighterState, dtMs: number): void {
-    if (fighter.actionState.kind === 'stumble' || fighter.actionState.kind === 'fleeing') return;
+    if (fighter.actionState.kind === 'stumble' || fighter.actionState.kind === 'fleeing') {
+      fighter.velocity.x = 0;
+      return;
+    }
     const axis = this.input.movementAxis(fighter.id);
     const speed = 3;
+    fighter.velocity.x = axis * speed;
     fighter.position.x += axis * speed * (dtMs / 1000);
     fighter.position.x = Math.max(-ARENA.width / 2, Math.min(ARENA.width / 2, fighter.position.x));
 

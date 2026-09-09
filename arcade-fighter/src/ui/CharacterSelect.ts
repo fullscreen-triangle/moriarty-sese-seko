@@ -1,5 +1,6 @@
 import { ROSTER } from '../entities/Character';
 import type { MatchPhase } from '../game/GameState';
+import { getImage, isImageReady } from '../rendering/ImageCache';
 
 const ORDER = ['bhuru', 'heinrich'] as const;
 
@@ -39,17 +40,40 @@ export const drawCharacterSelect = (
     ctx.lineWidth = p1Pick || p2Pick ? 4 : 2;
     ctx.strokeRect(x, y, cardW, cardH);
 
+    const portraitTop = y + 30;
+    const portraitH = cardH - 30 - 40;
+    const img = getImage(def.portrait.src);
+    if (isImageReady(img)) {
+      const scale = Math.min(
+        (cardW - 20) / def.portrait.sw,
+        portraitH / def.portrait.sh
+      );
+      const destW = def.portrait.sw * scale;
+      const destH = def.portrait.sh * scale;
+      ctx.drawImage(
+        img,
+        def.portrait.sx,
+        def.portrait.sy,
+        def.portrait.sw,
+        def.portrait.sh,
+        x + (cardW - destW) / 2,
+        portraitTop + (portraitH - destH) / 2,
+        destW,
+        destH
+      );
+    }
+
     ctx.fillStyle = def.color;
-    ctx.font = 'bold 20px monospace';
-    ctx.fillText(def.name, x + cardW / 2, y + 40);
+    ctx.font = 'bold 18px monospace';
+    ctx.fillText(def.name, x + cardW / 2, y + cardH - 58);
 
     ctx.fillStyle = '#c8ccdc';
-    ctx.font = '11px monospace';
-    wrapText(ctx, def.tagline, x + cardW / 2, y + 65, cardW - 20, 14);
+    ctx.font = '10px monospace';
+    wrapText(ctx, def.tagline, x + cardW / 2, y + cardH - 42, cardW - 20, 12);
 
     ctx.font = '13px monospace';
     ctx.fillStyle = '#8890a8';
-    ctx.fillText(`Press ${i + 1}`, x + cardW / 2, y + cardH - 20);
+    ctx.fillText(`Press ${i + 1}`, x + cardW / 2, y + cardH - 10);
 
     const tags: string[] = [];
     if (p1Pick) tags.push('P1');
@@ -57,7 +81,7 @@ export const drawCharacterSelect = (
     if (tags.length > 0) {
       ctx.fillStyle = def.color;
       ctx.font = 'bold 14px monospace';
-      ctx.fillText(tags.join(' / '), x + cardW / 2, y + cardH - 45);
+      ctx.fillText(tags.join(' / '), x + cardW / 2, y + 20);
     }
   });
 

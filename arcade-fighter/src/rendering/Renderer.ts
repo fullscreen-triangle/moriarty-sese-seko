@@ -1,6 +1,6 @@
 import type { FighterState } from '../entities/FighterState';
-import { drawFighter, FLOOR_PIXEL_MARGIN } from './StickFigureRig';
-import { ROSTER } from '../entities/Character';
+import { FLOOR_PIXEL_MARGIN } from './StickFigureRig';
+import { drawFighterSprite } from './SpriteRig';
 import type { ImaginedMode } from '../game/ImaginedMode';
 
 export class Renderer {
@@ -16,7 +16,7 @@ export class Renderer {
     this.height = canvas.height;
   }
 
-  draw(fighters: FighterState[], imaginedMode?: ImaginedMode): void {
+  draw(fighters: FighterState[], imaginedMode?: ImaginedMode, dtMs = 16): void {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.width, this.height);
 
@@ -43,7 +43,7 @@ export class Renderer {
 
     for (const fighter of fighters) {
       const persona = imagined ? imaginedMode!.personaFor(fighter.characterId) : undefined;
-      drawFighter(ctx, fighter, floorY, ROSTER[fighter.characterId].color, persona);
+      drawFighterSprite(ctx, fighter, floorY, dtMs, persona);
     }
 
     if (imagined) {
