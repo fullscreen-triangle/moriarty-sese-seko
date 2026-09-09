@@ -9,7 +9,12 @@ import {
   type SpriteRow,
 } from './SpriteData';
 
-const PPM = 90;
+// Pixels-per-meter: the arena is 12m wide (ARENA.width in physics/Kinematics.ts,
+// x clamped to [-6, 6]) and the canvas is 960px wide, centered at x=0 by
+// Renderer.draw's translate. 70px/m puts the arena's full width (840px) inside
+// the 960px canvas with margin either side; 90 would put fighters at the arena
+// edge (+/-540px) off the edge of a 960px-wide canvas.
+const PPM = 70;
 const DRAW_HEIGHT_METERS = 1.9;
 const FRAME_MS = 90;
 
@@ -31,7 +36,12 @@ const rowForState = (state: FighterState, imagined: boolean): SpriteRow => {
   return 'idle';
 };
 
-const advanceFrame = (fighterId: string, row: SpriteRow, dtMs: number): number => {
+const advanceFrame = (
+  fighterId: string,
+  row: SpriteRow,
+  dtMs: number,
+  sheet: ReturnType<typeof getMainSheet>
+): number => {
   const clock = animClocks[fighterId] ?? { row, elapsedMs: 0 };
   if (clock.row !== row) {
     clock.row = row;
@@ -40,7 +50,7 @@ const advanceFrame = (fighterId: string, row: SpriteRow, dtMs: number): number =
     clock.elapsedMs += dtMs;
   }
   animClocks[fighterId] = clock;
-  return Math.floor(clock.elapsedMs / FRAME_MS) % frameCount(row);
+  return Math.floor(clock.elapsedMs / FRAME_MS) % frameCount(sheet, row);
 };
 
 export const drawFighterSprite = (
@@ -52,9 +62,9 @@ export const drawFighterSprite = (
 ): void => {
   const imagined = persona !== undefined;
   const row = rowForState(state, imagined);
-  const frameIndex = advanceFrame(state.id, row, dtMs);
+  const sheet = imagined ? getImaginedSheet(persona!) : getMainSheet(state.characterId);
+  const frameIndex = advanceFrame(state.id, row, dtMs, sheet);
 
-  const sheet = imagined ? getImaginedSheet(persona) : getMainSheet(state.characterId);
   const rect = frameRect(sheet, row, frameIndex);
   const img = getImage(rect.src);
   if (!isImageReady(img)) return;

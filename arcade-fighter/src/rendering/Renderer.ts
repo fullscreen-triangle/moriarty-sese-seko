@@ -41,10 +41,16 @@ export class Renderer {
     ctx.lineTo(this.width, floorY);
     ctx.stroke();
 
+    // Fighter positions are in arena meters with x=0 at stage center; the sprite
+    // rig converts meters to pixels but has no notion of the canvas itself, so
+    // the horizontal recenter has to happen here via a translate before drawing.
+    ctx.save();
+    ctx.translate(this.width / 2, 0);
     for (const fighter of fighters) {
       const persona = imagined ? imaginedMode!.personaFor(fighter.characterId) : undefined;
       drawFighterSprite(ctx, fighter, floorY, dtMs, persona);
     }
+    ctx.restore();
 
     if (imagined) {
       ctx.fillStyle = 'rgba(210, 190, 255, 0.85)';
