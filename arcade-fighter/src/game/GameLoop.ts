@@ -1,23 +1,23 @@
 import { Renderer } from '../rendering/Renderer';
 import { drawHUD } from '../rendering/HUD';
-import { drawLoadingScreen } from '../ui/LoadingScreen';
-import { drawStartScreen } from '../ui/StartScreen';
-import { drawCharacterSelect } from '../ui/CharacterSelect';
 import { drawPauseMenu } from '../ui/PauseMenu';
 import { Simulation } from './Simulation';
+import type { DossierHandle } from '../ui/Dossier';
 
 const STEP_MS = 1000 / 120;
 
 export const startGameLoop = (
   canvas: HTMLCanvasElement,
   renderer: Renderer,
-  simulation: Simulation
+  simulation: Simulation,
+  dossier: DossierHandle
 ): void => {
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas 2D context unavailable');
 
   let accumulator = 0;
   let lastTime = performance.now();
+  let dossierDestroyed = false;
 
   const frame = (now: number) => {
     const frameDt = Math.min(now - lastTime, 250);
@@ -33,12 +33,15 @@ export const startGameLoop = (
     const fightPhase = phase.kind === 'PAUSED' ? phase.previous : phase;
 
     if (phase.kind === 'LOADING') {
-      drawLoadingScreen(ctx, canvas.width, canvas.height, phase.progress, frameDt);
-    } else if (phase.kind === 'INTRO') {
-      drawStartScreen(ctx, canvas.width, canvas.height, frameDt);
-    } else if (phase.kind === 'CHARACTER_SELECT') {
-      drawCharacterSelect(ctx, canvas.width, canvas.height, phase);
+      dossier.showLoading(phase.progress);
+    } else if (phase.kind === 'INTRO' || phase.kind === 'CHARACTER_SELECT') {
+      dossier.showSelect();
     } else {
+      if (!dossierDestroyed) {
+        dossier.destroy();
+        dossierDestroyed = true;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       const shake = simulation.cameraShake.offset();
       ctx.save();
       ctx.translate(shake.x, shake.y);

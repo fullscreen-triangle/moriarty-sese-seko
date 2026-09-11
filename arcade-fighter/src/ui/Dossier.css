@@ -1,0 +1,521 @@
+/* ==========================================================================
+   BHURU-SUKURIN — LOADING + CHARACTER SELECT DOSSIER
+   DOM overlay shown during LOADING / INTRO / CHARACTER_SELECT phases.
+   --bhuru / --heinrich are set inline from ROSTER colors in Dossier.ts so
+   this file never hardcodes a color that could drift from Character.ts.
+   ========================================================================== */
+
+#dossier-root {
+  --void: #0c0d14;
+  --panel: #15161f;
+  --panel-raised: #1b1d29;
+  --hairline: #2c2f3d;
+  --paper: #e8eaf2;
+  --paper-dim: #a8acc0;
+  --paper-faint: #6b6f82;
+  --violation: #ff6b6b;
+
+  --font-display: 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+  --font-editorial: 'Source Serif 4', Georgia, serif;
+  --font-data: 'JetBrains Mono', 'Courier New', monospace;
+
+  --measure: 62ch;
+  --gutter: clamp(20px, 4vw, 56px);
+
+  position: absolute;
+  inset: 0;
+  background: var(--void);
+  color: var(--paper);
+  font-family: var(--font-editorial);
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 10;
+}
+
+#dossier-root[hidden] { display: none; }
+
+#dossier-root * { box-sizing: border-box; }
+#dossier-root img { display: block; max-width: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  #dossier-root * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* Boot strip / loading readout ------------------------------------------ */
+
+.dossier-boot {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px var(--gutter);
+  background: var(--panel);
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--paper-dim);
+  letter-spacing: 0.02em;
+}
+
+.dossier-boot__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--bhuru);
+  flex-shrink: 0;
+}
+
+.dossier-boot__dot.armed { background: var(--heinrich); }
+
+.dossier-boot__bar {
+  flex: 1;
+  max-width: 240px;
+  height: 4px;
+  background: var(--hairline);
+  overflow: hidden;
+}
+
+.dossier-boot__bar-fill {
+  height: 100%;
+  background: var(--bhuru);
+  width: 0%;
+  transition: width 0.2s ease;
+}
+
+.dossier-boot__pct {
+  min-width: 3.5em;
+  text-align: right;
+}
+
+/* Hero -------------------------------------------------------------------- */
+
+.dossier-hero {
+  padding: clamp(40px, 10vw, 96px) var(--gutter) 64px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.dossier-hero__case {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--paper-faint);
+  margin-bottom: 24px;
+}
+
+.dossier-hero__title {
+  font-family: var(--font-display);
+  line-height: 0.82;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: clamp(48px, 10vw, 140px);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.06em;
+}
+
+.dossier-hero__title .a { color: var(--bhuru); }
+.dossier-hero__title .b { color: var(--heinrich); }
+.dossier-hero__title .versus {
+  font-family: var(--font-data);
+  font-size: clamp(16px, 1.8vw, 22px);
+  align-self: center;
+  color: var(--paper-faint);
+  margin: 0 0.15em;
+  text-transform: none;
+}
+
+.dossier-hero__sub {
+  max-width: var(--measure);
+  margin-top: 24px;
+  font-size: clamp(15px, 1.4vw, 18px);
+  line-height: 1.6;
+  color: var(--paper-dim);
+}
+
+.dossier-hero__sub em { color: var(--paper); font-style: normal; }
+
+/* Section shell ------------------------------------------------------------ */
+
+.dossier-section {
+  padding: clamp(48px, 7vw, 80px) var(--gutter);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.dossier-label {
+  font-family: var(--font-data);
+  font-size: 11px;
+  color: var(--paper-faint);
+  margin-bottom: 16px;
+}
+
+.dossier-heading {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(26px, 4vw, 46px);
+  line-height: 0.95;
+  max-width: 14ch;
+  margin: 0 0 24px;
+}
+
+/* The Law ------------------------------------------------------------------ */
+
+.dossier-law {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  gap: var(--gutter);
+}
+
+.dossier-law__body p {
+  max-width: var(--measure);
+  color: var(--paper-dim);
+  line-height: 1.7;
+  font-size: 16px;
+  margin: 0 0 14px;
+}
+
+.dossier-law__body strong { color: var(--paper); font-weight: 600; }
+
+.dossier-tiers {
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  align-self: start;
+}
+
+.dossier-tier {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 13px;
+}
+
+.dossier-tier:last-child { border-bottom: none; }
+.dossier-tier__n { font-family: var(--font-data); color: var(--paper-faint); }
+.dossier-tier__t { color: var(--paper-dim); line-height: 1.4; }
+
+/* Fighter section ----------------------------------------------------------- */
+
+.dossier-fighter {
+  --accent: var(--bhuru);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.dossier-fighter.heinrich { --accent: var(--heinrich); transform: translateX(20px); }
+.dossier-fighter[data-in='true'] { opacity: 1; transform: translateX(0); }
+
+@media (min-width: 860px) {
+  .dossier-fighter { grid-template-columns: 1fr 1.1fr; align-items: start; }
+  .dossier-fighter.heinrich { grid-template-columns: 1.1fr 1fr; }
+  .dossier-fighter.heinrich .dossier-fighter__portrait { order: 2; }
+  .dossier-fighter.heinrich .dossier-fighter__text { order: 1; }
+}
+
+.dossier-fighter__portrait {
+  aspect-ratio: 3 / 4;
+  border: 1px solid var(--hairline);
+  background-color: var(--panel);
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
+}
+
+.dossier-fighter__portrait::before {
+  content: attr(data-tag);
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.dossier-fighter__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(32px, 4.5vw, 54px);
+  line-height: 0.9;
+  color: var(--accent);
+  margin: 0;
+}
+
+.dossier-fighter__archetype {
+  font-family: var(--font-data);
+  font-size: 12px;
+  color: var(--paper-faint);
+  margin: 8px 0 18px;
+}
+
+.dossier-fighter__bio {
+  color: var(--paper-dim);
+  font-size: 15px;
+  line-height: 1.7;
+  max-width: 50ch;
+  margin: 0 0 20px;
+}
+
+.dossier-fighter__quote {
+  border-left: 2px solid var(--accent);
+  padding-left: 14px;
+  font-family: var(--font-editorial);
+  font-style: italic;
+  color: var(--paper);
+  margin: 0 0 22px;
+  max-width: 44ch;
+}
+
+.dossier-readout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  margin-bottom: 22px;
+}
+
+.dossier-readout__cell { background: var(--panel); padding: 10px 12px; }
+
+.dossier-readout__k {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--paper-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+}
+
+.dossier-readout__v { font-family: var(--font-data); font-size: 13px; color: var(--accent); }
+
+.dossier-fighter__system {
+  border: 1px dashed var(--accent);
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--paper-dim);
+  line-height: 1.6;
+}
+
+.dossier-fighter__system strong { color: var(--paper); }
+
+/* VS rule -------------------------------------------------------------------- */
+
+.dossier-vs-rule {
+  padding: 22px var(--gutter);
+  border-bottom: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-family: var(--font-data);
+  font-size: 11px;
+  color: var(--paper-faint);
+}
+
+.dossier-vs-rule__line { flex: 1; height: 1px; background: var(--hairline); }
+
+/* Comparison table ------------------------------------------------------------ */
+
+.dossier-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+.dossier-table th,
+.dossier-table td {
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--hairline);
+  vertical-align: top;
+}
+
+.dossier-table thead th {
+  font-family: var(--font-data);
+  font-size: 10px;
+  color: var(--paper-faint);
+  text-transform: uppercase;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.dossier-table tbody th {
+  font-family: var(--font-editorial);
+  color: var(--paper-dim);
+  font-weight: 400;
+  width: 28%;
+}
+
+.dossier-table td.a { color: var(--bhuru); }
+.dossier-table td.b { color: var(--heinrich); }
+
+/* Permanence callout ------------------------------------------------------------ */
+
+.dossier-permanence { display: grid; gap: var(--gutter); }
+
+@media (min-width: 860px) {
+  .dossier-permanence { grid-template-columns: 1fr 1fr; }
+}
+
+.dossier-permanence__body p {
+  color: var(--paper-dim);
+  line-height: 1.7;
+  font-size: 16px;
+  max-width: var(--measure);
+  margin: 0 0 14px;
+}
+
+.dossier-permanence__flag {
+  border: 1px solid var(--violation);
+  padding: 16px 18px;
+  align-self: start;
+}
+
+.dossier-permanence__flag h3 {
+  font-family: var(--font-data);
+  font-size: 11px;
+  color: var(--violation);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 8px;
+}
+
+.dossier-permanence__flag p { font-size: 13px; color: var(--paper-dim); line-height: 1.6; margin: 0; }
+
+/* Select ------------------------------------------------------------------------ */
+
+.dossier-select {
+  padding: clamp(48px, 7vw, 80px) var(--gutter) clamp(64px, 10vw, 120px);
+}
+
+.dossier-select[data-locked-out='true'] { opacity: 0.4; pointer-events: none; }
+
+.dossier-mode-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  margin-bottom: 28px;
+}
+
+@media (min-width: 640px) { .dossier-mode-grid { grid-template-columns: 1fr 1fr; } }
+
+.dossier-mode {
+  background: var(--panel);
+  padding: 18px 22px;
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  transition: background 0.15s ease;
+  position: relative;
+}
+
+.dossier-mode:hover { background: var(--panel-raised); }
+.dossier-mode:focus-visible { outline: 2px solid var(--paper); outline-offset: -2px; }
+.dossier-mode[data-active='true'] { background: var(--panel-raised); }
+.dossier-mode[data-active='true']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--paper);
+  pointer-events: none;
+}
+
+.dossier-mode__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 20px;
+  color: var(--paper);
+}
+
+.dossier-mode__desc { font-family: var(--font-data); font-size: 12px; color: var(--paper-faint); margin-top: 6px; }
+
+.dossier-select-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+}
+
+@media (min-width: 720px) { .dossier-select-grid { grid-template-columns: 1fr 1fr; } }
+
+.dossier-pick {
+  background: var(--panel);
+  padding: 28px;
+  cursor: pointer;
+  border: none;
+  text-align: left;
+  color: inherit;
+  font: inherit;
+  position: relative;
+  transition: background 0.15s ease;
+}
+
+.dossier-pick:hover { background: var(--panel-raised); }
+.dossier-pick:focus-visible { outline: 2px solid var(--paper); outline-offset: -2px; }
+.dossier-pick[data-active='true'] { background: var(--panel-raised); }
+.dossier-pick[data-active='true']::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--pick-accent, var(--paper));
+  pointer-events: none;
+}
+
+.dossier-pick__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(26px, 3vw, 38px);
+  color: var(--pick-accent, var(--paper));
+  line-height: 0.95;
+}
+
+.dossier-pick__tag { font-family: var(--font-data); font-size: 11px; color: var(--paper-faint); margin-top: 6px; }
+.dossier-pick__radio { margin-top: 16px; font-family: var(--font-data); font-size: 11px; color: var(--paper-dim); }
+
+.dossier-cta {
+  margin-top: 2px;
+  background: var(--panel);
+  border: 1px solid var(--hairline);
+  padding: 20px var(--gutter);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.dossier-cta__text { font-family: var(--font-data); font-size: 12px; color: var(--paper-dim); }
+.dossier-cta__text strong { color: var(--paper); }
+
+.dossier-lock-btn {
+  font-family: var(--font-data);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--void);
+  background: var(--paper-faint);
+  border: none;
+  padding: 13px 26px;
+  cursor: not-allowed;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dossier-lock-btn[data-ready='true'] { background: var(--pick-accent, var(--paper)); cursor: pointer; }
+.dossier-lock-btn[data-confirming='true'] { background: var(--violation); color: var(--paper); }
+.dossier-lock-btn:focus-visible { outline: 2px solid var(--paper); outline-offset: 2px; }
+
+.dossier-hint {
+  margin-top: 16px;
+  font-family: var(--font-data);
+  font-size: 11px;
+  color: var(--paper-faint);
+}

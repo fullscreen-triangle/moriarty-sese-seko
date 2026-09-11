@@ -18,7 +18,6 @@ import { createInitialPhase } from './GameState';
 import { CameraShake } from '../rendering/CameraShake';
 import { DebugOverlay } from '../ui/DebugOverlay';
 import type { CharacterId } from '../entities/Character';
-import { otherCharacter } from '../entities/Character';
 import { KnowledgeGraph } from '../ai/KnowledgeGraph';
 import { PolicyResolver } from '../ai/PolicyResolver';
 import { OllamaStrategist } from '../ai/OllamaStrategist';
@@ -54,17 +53,19 @@ export class Simulation {
       }
     }).then(() => {
       if (this.phase.kind === 'LOADING') {
-        this.phase = { kind: 'INTRO' };
+        // The Dossier overlay (ui/Dossier.ts) presents mode + fighter pick as a
+        // single scroll, so there's no separate INTRO beat to wait in — go
+        // straight to CHARACTER_SELECT with a default mode the overlay's own
+        // mode buttons can still change before a fighter is picked.
+        this.startCharacterSelect('1P_VS_AI');
       }
     });
 
+    // Character-select input (mode + fighter pick) is owned entirely by the
+    // Dossier overlay now (ui/Dossier.ts calls simulation.lockIn directly, with
+    // its own keyboard fallback) — Simulation no longer listens for 1/2 here.
     window.addEventListener('keydown', (e) => {
-      if (this.phase.kind === 'INTRO') {
-        if (e.key === '1') this.startCharacterSelect('1P_VS_AI');
-        if (e.key === '2') this.startCharacterSelect('2P');
-      } else if (this.phase.kind === 'CHARACTER_SELECT') {
-        this.handleCharacterSelectKey(e.key);
-      } else if (e.key === 'Escape' && (this.phase.kind === 'FIGHTING' || this.phase.kind === 'PAUSED')) {
+      if (e.key === 'Escape' && (this.phase.kind === 'FIGHTING' || this.phase.kind === 'PAUSED')) {
         this.togglePause();
       }
       if (e.key === 'Tab') {
@@ -89,37 +90,20 @@ export class Simulation {
     this.phase = { kind: 'CHARACTER_SELECT', mode, picks: {} };
   }
 
-  private handleCharacterSelectKey(key: string): void {
-    if (this.phase.kind !== 'CHARACTER_SELECT') return;
-    const choice: CharacterId | null = key === '1' ? 'bhuru' : key === '2' ? 'heinrich' : null;
-    if (!choice) return;
-
-    const picks = { ...this.phase.picks };
-
-    if (this.phase.mode === '1P_VS_AI') {
-      picks.p1 = choice;
-      picks.p2 = otherCharacter(choice);
-    } else {
-      if (!picks.p1) {
-        picks.p1 = choice;
-      } else if (!picks.p2 && choice !== picks.p1) {
-        picks.p2 = choice;
-      } else {
-        return;
-      }
-    }
-
-    this.phase = { ...this.phase, picks };
-
-    if (picks.p1 && picks.p2) {
-      this.p1 = createFighter('p1', picks.p1, { x: -2, y: 0 }, 1);
-      this.p2 = createFighter('p2', picks.p2, { x: 2, y: 0 }, -1);
-      this.aiEnabled = this.phase.mode === '1P_VS_AI';
-      this.knowledgeGraph = new KnowledgeGraph();
-      this.policyResolver = new PolicyResolver(this.knowledgeGraph);
-      this.ollamaStrategist = new OllamaStrategist(this.knowledgeGraph);
-      this.phase = { kind: 'FIGHTING', remainingMs: MATCH_CONFIG.roundDurationMs };
-    }
+  /**
+   * Single entry point for finalizing a character pick — called by the Dossier
+   * overlay's click-driven and keyboard-fallback flows alike (see ui/Dossier.ts,
+   * wired in main.ts) so both input paths produce identical fighter/AI/
+   * knowledge-graph setup.
+   */
+  lockIn(mode: MatchMode, p1: CharacterId, p2: CharacterId): void {
+    this.p1 = createFighter('p1', p1, { x: -2, y: 0 }, 1);
+    this.p2 = createFighter('p2', p2, { x: 2, y: 0 }, -1);
+    this.aiEnabled = mode === '1P_VS_AI';
+    this.knowledgeGraph = new KnowledgeGraph();
+    this.policyResolver = new PolicyResolver(this.knowledgeGraph);
+    this.ollamaStrategist = new OllamaStrategist(this.knowledgeGraph);
+    this.phase = { kind: 'FIGHTING', remainingMs: MATCH_CONFIG.roundDurationMs };
   }
 
   /**
