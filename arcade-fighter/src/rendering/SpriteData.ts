@@ -66,7 +66,11 @@ export type SpriteSheetDef = {
 const mainSheetFor = (characterId: CharacterId): SpriteSheetDef => ({
   src: MAIN_SHEET,
   table: characterId === 'bhuru' ? MAIN_BHURU : MAIN_HEINRICH,
-  originX: 0,
+  // MAIN_HEINRICH's sx values were measured relative to the sheet's right
+  // half (heinrich's frames actually live at x >= HALF_W=656 — confirmed by
+  // cropping the raw PNG) — originX must add that offset back, or Heinrich's
+  // draws sample frames from inside Bhuru's own half of the sheet instead.
+  originX: characterId === 'bhuru' ? 0 : HALF_W,
 });
 
 // Imagined-mode alternate sheet: geometry not yet measured against the real
